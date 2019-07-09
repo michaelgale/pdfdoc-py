@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Learn more: https://github.com/michaelgale/ldraw-py
+# Learn more: https://github.com/michaelgale/pdfdoc-py
 
 import os
 import sys
 import setuptools
 
-PACKAGE_NAME = 'ldrawpy'
+PACKAGE_NAME = 'pdfdoc'
 MINIMUM_PYTHON_VERSION = '3.6'
 
 def check_python_version():
@@ -43,8 +43,8 @@ check_python_version()
 setuptools.setup(
     name=read_package_variable('__project__'),
     version=read_package_variable('__version__'),
-    description="A python utility package for creating, modifying, and reading LDraw files and data structures.",
-    url='https://github.com/michaelgale/ldraw-py',
+    description="Python utility library for compositing PDF documents with reportlab.",
+    url='https://github.com/michaelgale/pdfdoc-py',
     author='Michael Gale',
     author_email='michael@fxbricks.com',
     packages=setuptools.find_packages(),
@@ -58,5 +58,5 @@ setuptools.setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License'
     ],
-    install_requires=['fxgeometry']
+    install_requires=['reportlab', 'fxgeometry']
 )

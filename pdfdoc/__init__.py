@@ -1,8 +1,8 @@
-"""ldrawpy - A utility package for creating, modifying, and reading LDraw files and data structures."""
+"""pdfdoc - Python utility library for compositing PDF documents with reportlab."""
 
 import os
 
-__project__ = 'ldrawpy'
+__project__ = 'pdfdoc'
 __version__ = '0.1.0'
 
 VERSION = __project__ + '-' + __version__
