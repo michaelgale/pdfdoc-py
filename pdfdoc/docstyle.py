@@ -23,6 +23,8 @@
 #
 # PDF document utilities
 
+import copy
+
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -34,7 +36,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-from pdfdoc import *
+from .pdfdoc import *
 
 attr_aliases = {
   "title-color": "title-colour",
@@ -69,9 +71,9 @@ class DocStyle:
             "title-font": "",
             "title-colour": (0, 0, 0),
             "title-font-size": 0,
-            "font": "",
+            "font": DEF_FONT_NAME,
             "font-colour": (0, 0, 0),
-            "font-size": 0,
+            "font-size": DEF_FONT_SIZE,
             "line-width": 0,
             "line-colour": (0, 0, 0),
             "border-width": 0,
@@ -79,17 +81,28 @@ class DocStyle:
             "background-colour": (0, 0, 0),
             "background-fill": False,
             "border-outline": False,
-            "vert-align": "centre",
-            "horz-align": "centre",
+            "vertical-align": "centre",
+            "horizontal-align": "centre",
         }
 
     def add_attr(self, attr_name, attr_value=None):
         self.attr[attr_name] = attr_value
 
-    def get_attr(self, attr_name, def_value=None):
+    def set_attr(self, attr_key, attr_value):
+        attr_name = attr_key.replace("_", "-")
+        if attr_name in self.attr:
+            self.attr[attr_name] = attr_value
+        else:
+            if attr_name in attr_aliases:
+                alias = attr_aliases[attr_name]
+                if alias in self.attr:
+                    self.attr[alias] = attr_value
+
+    def get_attr(self, attr_key, def_value=None):
+        attr_name = attr_key.replace("_", "-")
         if attr_name in self.attr:
             return self.attr[attr_name]
-        if attr_name is attr_aliases:
+        if attr_name in attr_aliases:
             alias = attr_aliases[attr_name]
             if alias in self.attr:
                 return self.attr[alias]
@@ -97,8 +110,7 @@ class DocStyle:
 
     def set_with_dict(self, dict):
         for key, value in dict.items():
-            if key in self.attr:
-                self.attr[key] = value
+            self.set_attr(key, value)
 
     def get_width_trim(self):
         return (

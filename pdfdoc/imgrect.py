@@ -39,41 +39,25 @@ from .pdfdoc import *
 from .docstyle import DocStyle
 from .contentrect import ContentRect
 
-class TextRect(ContentRect):
-    def __init__(self, w=1, h=1, withText="", style=None):
+
+class ImageRect(ContentRect):
+
+    def __init__(self, w=1, h=1, filename="", style=None):
         super().__init__(w, h, style)
-        self.text = withText
-        self.clip_text = False
+        self.filename = filename
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
-        self.draw_text(c)
+        self.draw_image_rect(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
-    def draw_text(self, c):
-        font_name = self.style.get_attr("font-name", DEF_FONT_NAME)
-        font_size = self.style.get_attr("font-size", DEF_FONT_SIZE)
-        c.setFont(font_name, font_size)
-        tw, th = GetStringMetrics(c, self.text, font_name, font_size)
-        tx = self.rect.left
-        font_colour = rl_colour(self.style.get_attr("font-colour", (0, 0, 0)))
-        c.setFillColor(font_colour)
-        c.setStrokeColor(font_colour)
-        text_width = self.rect.width - self.style.get_width_trim()
-        if self.clip_text:
-            textLabel = TrimStringToFit(
-                c,
-                self.text,
-                self.font_name,
-                self.font_size,
-                text_width,
-            )
-        else:
-            textLabel = self.text
+    def draw_image_rect(self, c):
+        (iw, ih) = GetImageMetrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
+        tw, th = self.GetBestRectMetrics(iw, ih, inset_rect.width, inset_rect.height)
         vert_align = self.style.get_attr("vert-align", "centre")
         if vert_align == "centre":
             tmp, ty = inset_rect.get_centre()
@@ -86,10 +70,35 @@ class TextRect(ContentRect):
         horz_align = self.style.get_attr("horz-align", "centre")
         if horz_align == "centre":
             tx, tmp = inset_rect.get_centre()
-            c.drawCentredString(tx, ty, textLabel)
+            tx -= tw / 2.0
         elif horz_align == "right":
             tx = inset_rect.right
-            c.drawRightString(tx, ty, textLabel)
+            tx -= tw
         else:
             tx = inset_rect.left
-            c.drawString(tx, ty, textLabel)
+        c.setFillColor(rl_colour((0,0,0)))
+        c.drawImage(
+            self.filename,
+            tx,
+            ty,
+            tw,
+            th,
+            [0.99, 0.999, 0.99, 0.999, 0.99, 0.999],
+            )
+
+    def GetBestRectMetrics(self, fromWidth, fromHeight, inWidth, inHeight):
+        if fromWidth > fromHeight:
+            bestHeight = inHeight
+            bestWidth = (inHeight / fromHeight) * fromWidth
+        else:
+            bestWidth = inWidth
+            bestHeight = (inWidth / fromWidth) * fromHeight
+        if bestHeight > inHeight:
+            scale = inHeight/bestHeight
+            bestHeight *= scale
+            bestWidth *= scale
+        if bestWidth > inWidth:
+            scale = inWidth/bestWidth
+            bestHeight *= scale
+            bestWidth *= scale
+        return bestWidth, bestHeight

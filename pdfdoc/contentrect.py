@@ -21,10 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# PDF document utilities
-
-from PIL import Image
-from pathlib import Path
+# Content rectangle class
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -37,48 +34,46 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
-pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
-
 from fxgeometry import Rect
+from .pdfdoc import *
+from .docstyle import DocStyle
 
-DEF_FONT_NAME = "DroidSans"
-DEF_FONT_SIZE = 15
+class ContentRect:
+    def __init__(self, w=1, h=1, style=None):
+        self.rect = Rect()
+        self.rect.set_size(w, h)
+        self.style = DocStyle()
+        if style is not None:
+            self.style.set_with_dict(style)
+        self.show_debug_rects = False
 
-def register_font(font_name, font_filename):
-    pdfmetrics.registerFont(TTFont(font_name, font_filename))
+    def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
+        c.setFillColor(rl_colour_trans())
+        c.setStrokeColor(rl_colour(colour))
+        c.setLineWidth(0.1)
+        c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
 
-def rl_colour(fromColour):
-    return Color(fromColour[0], fromColour[1], fromColour[2], alpha=1.0)
+    def draw_rect(self, c):
+        has_background = self.style.get_attr("background-fill", False)
+        background_colour = self.style.get_attr("background-colour", (1, 1, 1))
+        if has_background:
+            fc = rl_colour(background_colour)
+            c.setFillColor(fc)
+        else:
+            fc = rl_colour_trans()
+        has_border = self.style.get_attr("border-outline", False)
+        if has_border:
+            border_colour = self.style.get_attr("border-colour", (1, 1, 1))
+            border_width = self.style.get_attr("border-width", 0)
+            rc = rl_colour(border_colour)
+            c.setStrokeColor(rc)
+            c.setLineWidth(border_width)
 
-def rl_colour_trans():
-    return Color(1, 1, 1, alpha=0.0)
-
-
-def GetStringMetrics(c, label, fontname, fontsize):
-    face = pdfmetrics.getFont(fontname).face
-    ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
-    height = ascent - descent  # + descent
-    height *= fontsize
-    width = c.stringWidth(label, fontname, fontsize)
-    return (width, height)
-
-def GetImageMetrics(filename):
-    img_file = Path(filename)
-    if img_file.is_file():
-        im = Image.open(filename)
-        width, height = im.size
-        im.close()
-        return width, height
-    return (0, 0)
-
-
-def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
-    sn = s
-    sw = canvas.stringWidth(sn, fontname, fontsize)
-    while sw > toWidth:
-        # print("sn: %s w: %f sw: %f" %(sn, toWidth, sw))
-        sn = sn[:-1]
-        sw = canvas.stringWidth(sn, fontname, fontsize)
-
-    return sn
+        c.rect(
+            self.rect.left,
+            self.rect.bottom,
+            self.rect.width,
+            self.rect.height,
+            stroke=has_border,
+            fill=has_background
+        )

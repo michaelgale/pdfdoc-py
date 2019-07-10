@@ -1,0 +1,63 @@
+# Sample Test passing with nose and pytest
+
+import os
+import sys
+import pytest
+
+from fxgeometry import Point
+from pdfdoc.textrect import TextRect
+from pdfdoc.tablerow import TableRow, Column
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+
+_test_dict = {
+  "left-margin": 1 * inch,
+  "right-margin": 1 * inch,
+  "horz-align": "left",
+}
+
+def test_tablerow_init():
+    tr = TableRow(6, 1, _test_dict)
+    assert tr.rect.left == -3
+    assert tr.rect.right == 3
+    assert tr.rect.top == 0.5
+    assert tr.rect.bottom == -0.5
+
+_text_dict = {
+  "border-outline": True,
+  "border-width": 0.02 * inch,
+  "border-colour": (1.0, 0.1, 0.2),
+  "top-padding": 0 * inch,
+  "bottom-padding": 0 * inch,
+  "left-padding": 0,
+  "right-padding": 0
+}
+
+def test_tablerow_col():
+    tr = TableRow(6 * inch, 1 * inch)
+    t1 = TextRect(0, 0, "Column 1", _text_dict)
+    t1.show_debug_rects = True
+    t2 = TextRect(0, 0, "Column 2", _text_dict)
+    t2.show_debug_rects = True
+    t3 = TextRect(0, 0, "Column 3", _text_dict)
+    t3.show_debug_rects = True
+    tr.add_column("Col 1", t1)
+    tr.add_column("Col 2", t2)
+    tr.add_column("Col 3", t3)
+    assert len(tr) == 3
+    assert tr.columns[0].label == "Col 1"
+    assert tr.columns[1].label == "Col 2"
+    assert tr.columns[2].label == "Col 3"
+    c = canvas.Canvas("tablerow_test.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c.saveState()
+    tr.rect.move_top_left_to(Point(1*inch, 9*inch))
+    tr.set_column_width("Col 1", 0.5)
+    tr.draw_in_canvas(c)
+
+    tr.set_column_order("Col 1", 3)
+    tr.rect.set_size(6.5*inch, 0.5*inch)
+    tr.rect.move_top_left_to(Point(1*inch, 7.5*inch))
+    tr.draw_in_canvas(c)
+
+    c.showPage()
+    c.save()
