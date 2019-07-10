@@ -21,10 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# PDF document utilities
-
-from PIL import Image
-from pathlib import Path
+# Table row class
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -37,52 +34,29 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
-pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
+from fxgeometry import Rect, Point
+from .docstyle import DocStyle
+from .pdfdoc import rl_colour, rl_colour_trans
+from .tablecell import TableCell, TableVector
 
-from fxgeometry import Rect
+class TableColumn(TableVector):
+    def __init__(self, w, h, style=None):
+        super().__init__(w, h, style)
 
-DEF_FONT_NAME = "DroidSans"
-DEF_FONT_SIZE = 15
+    def add_row(self, label, content, order=None, height=0):
+        if order is not None:
+            cell = TableCell(label, content, order, 0, height)
+        else:
+            cell = TableCell(label, content, len(self.cells), 0, height)
+        self.cells.append(cell)
 
+    def set_row_order(self, label, order):
+        self.set_cell_order(label, order)
 
-def register_font(font_name, font_filename):
-    pdfmetrics.registerFont(TTFont(font_name, font_filename))
+    def set_row_height(self, label, height):
+        for cell in self.cells:
+            if cell.label == label:
+                cell.height = height
 
-
-def rl_colour(fromColour):
-    return Color(fromColour[0], fromColour[1], fromColour[2], alpha=1.0)
-
-
-def rl_colour_trans():
-    return Color(1, 1, 1, alpha=0.0)
-
-
-def GetStringMetrics(c, label, fontname, fontsize):
-    face = pdfmetrics.getFont(fontname).face
-    ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
-    height = ascent - descent  # + descent
-    height *= fontsize
-    width = c.stringWidth(label, fontname, fontsize)
-    return (width, height)
-
-
-def GetImageMetrics(filename):
-    img_file = Path(filename)
-    if img_file.is_file():
-        im = Image.open(filename)
-        width, height = im.size
-        im.close()
-        return width, height
-    return (0, 0)
-
-
-def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
-    sn = s
-    sw = canvas.stringWidth(sn, fontname, fontsize)
-    while sw > toWidth:
-        # print("sn: %s w: %f sw: %f" %(sn, toWidth, sw))
-        sn = sn[:-1]
-        sw = canvas.stringWidth(sn, fontname, fontsize)
-
-    return sn
+    def draw_in_canvas(self, canvas):
+        self.draw_cells_in_canvas(canvas, "height")

@@ -39,14 +39,15 @@ from reportlab.lib.colors import Color
 from .pdfdoc import *
 
 attr_aliases = {
-  "title-color": "title-colour",
-  "line-color": "line-colour",
-  "font-color": "font-colour",
-  "border-color": "border-colour",
-  "background-color": "background-colour",
-  "horz-align": "horizontal-align",
-  "vert-align": "vertical-align"
+    "title-color": "title-colour",
+    "line-color": "line-colour",
+    "font-color": "font-colour",
+    "border-color": "border-colour",
+    "background-color": "background-colour",
+    "horz-align": "horizontal-align",
+    "vert-align": "vertical-align",
 }
+
 
 class DocStyle:
     def __init__(self):
@@ -86,7 +87,7 @@ class DocStyle:
             "border-line-left": False,
             "border-line-right": False,
             "border-line-top": False,
-            "border-line-bottom": False
+            "border-line-bottom": False,
         }
 
     def add_attr(self, attr_name, attr_value=None):
@@ -116,45 +117,85 @@ class DocStyle:
         for key, value in dict.items():
             self.set_attr(key, value)
 
+    def set_all_margins(self, withMargin):
+        self.set_attr("left-margin", withMargin)
+        self.set_attr("right-margin", withMargin)
+        self.set_attr("top-margin", withMargin)
+        self.set_attr("bottom-margin", withMargin)
+
+    def set_lr_margins(self, withMargin):
+        self.set_attr("left-margin", withMargin)
+        self.set_attr("right-margin", withMargin)
+
+    def set_tb_margins(self, withMargin):
+        self.set_attr("top-margin", withMargin)
+        self.set_attr("bottom-margin", withMargin)
+
+    def set_all_padding(self, withPadding):
+        self.set_attr("left-padding", withPadding)
+        self.set_attr("right-padding", withPadding)
+        self.set_attr("top-padding", withPadding)
+        self.set_attr("bottom-padding", withPadding)
+
+    def set_lr_padding(self, withPadding):
+        self.set_attr("left-padding", withPadding)
+        self.set_attr("right-padding", withPadding)
+
+    def set_tb_padding(self, withPadding):
+        self.set_attr("top-padding", withPadding)
+        self.set_attr("bottom-padding", withPadding)
+
     def get_width_trim(self):
         return (
-          self.get_attr("left-margin", 0)
-          + self.get_attr("right-margin", 0)
-          + self.get_attr("left-padding", 0)
-          + self.get_attr("right-padding", 0)
+            self.get_attr("left-margin", 0)
+            + self.get_attr("right-margin", 0)
+            + self.get_attr("left-padding", 0)
+            + self.get_attr("right-padding", 0)
         )
 
     def get_height_trim(self):
         return (
-          self.get_attr("top-margin", 0)
-          + self.get_attr("bottom-margin", 0)
-          + self.get_attr("top-padding", 0)
-          + self.get_attr("bottom-padding", 0)
+            self.get_attr("top-margin", 0)
+            + self.get_attr("bottom-margin", 0)
+            + self.get_attr("top-padding", 0)
+            + self.get_attr("bottom-padding", 0)
         )
 
     def get_right_trim(self):
-        return (
-          self.get_attr("right-margin", 0)
-          + self.get_attr("right-padding", 0)
-        )
+        return self.get_attr("right-margin", 0) + self.get_attr("right-padding", 0)
+
+    def get_right_margin(self):
+        return self.get_attr("right-margin", 0)
+
+    def get_right_padding(self):
+        return self.get_attr("right-padding", 0)
 
     def get_left_trim(self):
-        return (
-          self.get_attr("left-margin", 0)
-          + self.get_attr("left-padding", 0)
-        )
+        return self.get_attr("left-margin", 0) + self.get_attr("left-padding", 0)
+
+    def get_left_margin(self):
+        return self.get_attr("left-margin", 0)
+
+    def get_left_padding(self):
+        return self.get_attr("left-padding", 0)
 
     def get_top_trim(self):
-        return (
-          self.get_attr("top-margin", 0)
-          + self.get_attr("top-padding", 0)
-        )
+        return self.get_attr("top-margin", 0) + self.get_attr("top-padding", 0)
+
+    def get_top_margin(self):
+        return self.get_attr("top-margin", 0)
+
+    def get_top_padding(self):
+        return self.get_attr("top-padding", 0)
 
     def get_bottom_trim(self):
-        return (
-          self.get_attr("bottom-margin", 0)
-          + self.get_attr("bottom-padding", 0)
-        )
+        return self.get_attr("bottom-margin", 0) + self.get_attr("bottom-padding", 0)
+
+    def get_bottom_margin(self):
+        return self.get_attr("bottom-margin", 0)
+
+    def get_bottom_padding(self):
+        return self.get_attr("bottom-padding", 0)
 
     def get_inset_rect(self, fromRect):
         inset_rect = copy.copy(fromRect)
@@ -164,3 +205,12 @@ class DocStyle:
         inset_rect.bottom += self.get_bottom_trim()
         inset_rect.get_size()
         return inset_rect
+
+    def get_margin_rect(self, fromRect):
+        margin_rect = copy.copy(fromRect)
+        margin_rect.left += self.get_left_margin()
+        margin_rect.right -= self.get_right_margin()
+        margin_rect.top -= self.get_top_margin()
+        margin_rect.bottom += self.get_bottom_margin()
+        margin_rect.get_size()
+        return margin_rect

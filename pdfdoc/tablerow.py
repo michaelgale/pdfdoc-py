@@ -37,117 +37,26 @@ from reportlab.lib.colors import Color
 from fxgeometry import Rect, Point
 from .docstyle import DocStyle
 from .pdfdoc import rl_colour, rl_colour_trans
+from .tablecell import TableCell, TableVector
 
-def keyOrder(elem):
-    return elem.order
-
-class Column:
-    def __init__(self, label, content=None, order=0, width=0):
-        self.label = label
-        self.content = content
-        self.order = order
-        self.width = width
-
-class TableRow:
+class TableRow(TableVector):
     def __init__(self, w, h, style=None):
-        self.rect = Rect()
-        self.rect.set_size(w, h)
-        self.clip_text = False
-        self.style = DocStyle()
-        if style is not None:
-            self.style.set_with_dict(style)
-        self.columns = []
-        self.column_order = []
-
-    def __len__(self):
-        return len(self.columns)
+        super().__init__(w, h, style)
 
     def add_column(self, label, content, order=None, width=0):
         if order is not None:
-            column = Column(label, content, order, width)
+            column = TableCell(label, content, order, width)
         else:
-            column = Column(label, content, len(self.columns), width)
-        self.columns.append(column)
+            column = TableCell(label, content, len(self.cells), width)
+        self.cells.append(column)
 
     def set_column_order(self, label, order):
-        for column in self.columns:
-            if column.label == label:
-                column.order = order
+        self.set_cell_order(label, order)
 
     def set_column_width(self, label, width):
-        for column in self.columns:
-            if column.label == label:
-                column.width = width
-
-    def compute_column_widths(self):
-        self.compute_column_order()
-        row_rect = self.style.get_inset_rect(self.rect)
-        total_width = row_rect.width
-        acc_width = 0
-        unassigned = []
-
-        # set column widths for columns with a specification
-        for col_label in self.column_order:
-            for column in self.columns:
-                if col_label == column.label:
-                    if column.width > 0:
-                        cwidth = column.width * total_width
-                        column.content.rect.set_size(cwidth, row_rect.height)
-                        acc_width += cwidth
-                    else:
-                        unassigned.append(col_label)
-
-        # set column widths for remaining columns automatically
-        # based on the remaining space in the row
-        rem_width = total_width - acc_width
-        for col in unassigned:
-            if rem_width > 0:
-                cwidth = rem_width / len(unassigned)
-            else:
-                cwidth = 0
-            for column in self.columns:
-                if column.label == col:
-                    column.content.rect.set_size(cwidth, row_rect.height)
-                    acc_width += cwidth
-
-        # move each column's origin based on the column order and width
-        cx = row_rect.left
-        cy = row_rect.top
-        for col_label in self.column_order:
-            for column in self.columns:
-                if col_label == column.label:
-                    column.content.rect.move_top_left_to(Point(cx, cy))
-                    cx += column.content.rect.width
+        for cell in self.cells:
+            if cell.label == label:
+                cell.width = width
 
     def draw_in_canvas(self, canvas):
-        row_rect = self.style.get_inset_rect(self.rect)
-        self.compute_column_widths()
-        for column in self.columns:
-            column.content.draw_in_canvas(canvas)
-        self.draw_border_lines(canvas)
-
-    def compute_column_order(self):
-        order = []
-        labels = []
-        for column in self.columns:
-            order.append(column.order)
-            labels.append(column.label)
-        cols = zip(order, labels)
-        ocols = sorted(cols, key=lambda x: x[0])
-        self.column_order = []
-        for col in ocols:
-            self.column_order.append(col[1])
-
-    def draw_border_lines(self, c):
-        border_colour = self.style.get_attr("border-colour", (1, 1, 1))
-        border_width = self.style.get_attr("border-width", 0)
-        c.setStrokeColor(rl_colour(border_colour))
-        c.setLineWidth(border_width)
-        if self.style.get_attr("border-line-left", False):
-            c.line(self.rect.left, self.rect.top, self.rect.left, self.rect.bottom)
-        if self.style.get_attr("border-line-right", False):
-            c.line(self.rect.right, self.rect.top, self.rect.right, self.rect.bottom)
-        if self.style.get_attr("border-line-top", False):
-            c.line(self.rect.left, self.rect.top, self.rect.right, self.rect.top)
-        if self.style.get_attr("border-line-bottom", False):
-            c.line(self.rect.left, self.rect.bottom, self.rect.right, self.rect.bottom)
+        self.draw_cells_in_canvas(canvas, "width")

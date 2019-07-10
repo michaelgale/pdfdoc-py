@@ -41,7 +41,6 @@ from .contentrect import ContentRect
 
 
 class ImageRect(ContentRect):
-
     def __init__(self, w=1, h=1, filename="", style=None):
         super().__init__(w, h, style)
         self.filename = filename
@@ -76,15 +75,10 @@ class ImageRect(ContentRect):
             tx -= tw
         else:
             tx = inset_rect.left
-        c.setFillColor(rl_colour((0,0,0)))
+        c.setFillColor(rl_colour((0, 0, 0)))
         c.drawImage(
-            self.filename,
-            tx,
-            ty,
-            tw,
-            th,
-            [0.99, 0.999, 0.99, 0.999, 0.99, 0.999],
-            )
+            self.filename, tx, ty, tw, th, [0.99, 0.999, 0.99, 0.999, 0.99, 0.999]
+        )
 
     def GetBestRectMetrics(self, fromWidth, fromHeight, inWidth, inHeight):
         if fromWidth > fromHeight:
@@ -94,11 +88,11 @@ class ImageRect(ContentRect):
             bestWidth = inWidth
             bestHeight = (inWidth / fromWidth) * fromHeight
         if bestHeight > inHeight:
-            scale = inHeight/bestHeight
+            scale = inHeight / bestHeight
             bestHeight *= scale
             bestWidth *= scale
         if bestWidth > inWidth:
-            scale = inWidth/bestWidth
+            scale = inWidth / bestWidth
             bestHeight *= scale
             bestWidth *= scale
         return bestWidth, bestHeight

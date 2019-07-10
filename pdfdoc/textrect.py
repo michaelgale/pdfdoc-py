@@ -39,6 +39,7 @@ from .pdfdoc import *
 from .docstyle import DocStyle
 from .contentrect import ContentRect
 
+
 class TextRect(ContentRect):
     def __init__(self, w=1, h=1, withText="", style=None):
         super().__init__(w, h, style)
@@ -65,11 +66,7 @@ class TextRect(ContentRect):
         text_width = self.rect.width - self.style.get_width_trim()
         if self.clip_text:
             textLabel = TrimStringToFit(
-                c,
-                self.text,
-                self.font_name,
-                self.font_size,
-                text_width,
+                c, self.text, self.font_name, self.font_size, text_width
             )
         else:
             textLabel = self.text

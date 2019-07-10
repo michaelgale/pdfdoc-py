@@ -6,11 +6,8 @@ import pytest
 
 from pdfdoc.docstyle import DocStyle
 
-_test_dict = {
-  "left-margin": 2,
-  "right-margin": 3,
-  "horz-align": "left",
-}
+_test_dict = {"left-margin": 2, "right-margin": 3, "horz-align": "left"}
+
 
 def test_docstyle_attr():
     s1 = DocStyle()
@@ -22,6 +19,7 @@ def test_docstyle_attr():
     assert a2 == 0
     a2 = s1.get_attr("top-margin", 3)
     assert a2 == 0
+
 
 def test_docstyle_setattr():
     s1 = DocStyle()

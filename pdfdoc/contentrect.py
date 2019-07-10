@@ -38,6 +38,7 @@ from fxgeometry import Rect
 from .pdfdoc import *
 from .docstyle import DocStyle
 
+
 class ContentRect:
     def __init__(self, w=1, h=1, style=None):
         self.rect = Rect()
@@ -68,12 +69,12 @@ class ContentRect:
             rc = rl_colour(border_colour)
             c.setStrokeColor(rc)
             c.setLineWidth(border_width)
-
+        mrect = self.style.get_margin_rect(self.rect)
         c.rect(
-            self.rect.left,
-            self.rect.bottom,
-            self.rect.width,
-            self.rect.height,
+            mrect.left,
+            mrect.bottom,
+            mrect.width,
+            mrect.height,
             stroke=has_border,
-            fill=has_background
+            fill=has_background,
         )
