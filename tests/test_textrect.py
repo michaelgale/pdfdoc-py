@@ -44,7 +44,7 @@ _text_dict = {
 }
 
 def test_textrect_render():
-    c = canvas.Canvas("textrect_test.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("test_textrect.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     t1 = TextRect(3*inch, 1*inch, "My Centre Test", _text_dict)
     t1.show_debug_rects = True

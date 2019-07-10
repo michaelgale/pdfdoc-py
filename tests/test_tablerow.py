@@ -36,9 +36,9 @@ _text_dict = {
 def test_tablerow_col():
     tr = TableRow(6 * inch, 1 * inch)
     t1 = TextRect(0, 0, "Column 1", _text_dict)
-    t1.show_debug_rects = True
+    t1.show_debug_rects = False
     t2 = TextRect(0, 0, "Column 2", _text_dict)
-    t2.show_debug_rects = True
+    t2.show_debug_rects = False
     t3 = TextRect(0, 0, "Column 3", _text_dict)
     t3.show_debug_rects = True
     tr.add_column("Col 1", t1)
@@ -48,10 +48,13 @@ def test_tablerow_col():
     assert tr.columns[0].label == "Col 1"
     assert tr.columns[1].label == "Col 2"
     assert tr.columns[2].label == "Col 3"
-    c = canvas.Canvas("tablerow_test.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("test_tablerow.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     tr.rect.move_top_left_to(Point(1*inch, 9*inch))
     tr.set_column_width("Col 1", 0.5)
+    tr.style.set_attr("border-line-bottom", True)
+    tr.style.set_attr("border-colour", (0.1, 0.1, 0.1))
+    tr.style.set_attr("border-width", 0.02 * inch)
     tr.draw_in_canvas(c)
 
     tr.set_column_order("Col 1", 3)

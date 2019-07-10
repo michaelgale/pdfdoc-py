@@ -124,6 +124,7 @@ class TableRow:
         self.compute_column_widths()
         for column in self.columns:
             column.content.draw_in_canvas(canvas)
+        self.draw_border_lines(canvas)
 
     def compute_column_order(self):
         order = []
@@ -136,3 +137,17 @@ class TableRow:
         self.column_order = []
         for col in ocols:
             self.column_order.append(col[1])
+
+    def draw_border_lines(self, c):
+        border_colour = self.style.get_attr("border-colour", (1, 1, 1))
+        border_width = self.style.get_attr("border-width", 0)
+        c.setStrokeColor(rl_colour(border_colour))
+        c.setLineWidth(border_width)
+        if self.style.get_attr("border-line-left", False):
+            c.line(self.rect.left, self.rect.top, self.rect.left, self.rect.bottom)
+        if self.style.get_attr("border-line-right", False):
+            c.line(self.rect.right, self.rect.top, self.rect.right, self.rect.bottom)
+        if self.style.get_attr("border-line-top", False):
+            c.line(self.rect.left, self.rect.top, self.rect.right, self.rect.top)
+        if self.style.get_attr("border-line-bottom", False):
+            c.line(self.rect.left, self.rect.bottom, self.rect.right, self.rect.bottom)

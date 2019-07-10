@@ -83,6 +83,10 @@ class DocStyle:
             "border-outline": False,
             "vertical-align": "centre",
             "horizontal-align": "centre",
+            "border-line-left": False,
+            "border-line-right": False,
+            "border-line-top": False,
+            "border-line-bottom": False
         }
 
     def add_attr(self, attr_name, attr_value=None):
