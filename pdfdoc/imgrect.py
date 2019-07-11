@@ -54,6 +54,8 @@ class ImageRect(ContentRect):
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
     def draw_image_rect(self, c):
+        if self.filename == "":
+            return
         (iw, ih) = GetImageMetrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
         tw, th = self.GetBestRectMetrics(iw, ih, inset_rect.width, inset_rect.height)
@@ -81,6 +83,8 @@ class ImageRect(ContentRect):
         )
 
     def GetBestRectMetrics(self, fromWidth, fromHeight, inWidth, inHeight):
+        if fromWidth < 1e-3 or fromHeight < 1e-3:
+            return 0, 0
         if fromWidth > fromHeight:
             bestHeight = inHeight
             bestWidth = (inHeight / fromHeight) * fromWidth

@@ -11,4 +11,7 @@ script_dir = os.path.dirname(__file__)
 
 from .docstyle import DocStyle
 from .tablerow import TableRow
+from .tablecolumn import TableColumn
 from .textrect import TextRect
+from .imgrect import ImageRect
+

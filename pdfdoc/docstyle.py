@@ -206,8 +206,11 @@ class DocStyle:
         inset_rect.get_size()
         return inset_rect
 
-    def get_margin_rect(self, fromRect):
-        margin_rect = copy.copy(fromRect)
+    def get_margin_rect(self, fromRect=None):
+        if fromRect is not None:
+            margin_rect = copy.copy(fromRect)
+        else:
+            margin_rect = Rect(self.get_attr("width", 0), self.get_attr("height", 0))
         margin_rect.left += self.get_left_margin()
         margin_rect.right -= self.get_right_margin()
         margin_rect.top -= self.get_top_margin()
