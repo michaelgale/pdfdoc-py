@@ -14,4 +14,4 @@ from .tablerow import TableRow
 from .tablecolumn import TableColumn
 from .textrect import TextRect
 from .imgrect import ImageRect
-
+from .pdfdoc import *

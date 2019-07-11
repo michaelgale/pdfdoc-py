@@ -46,6 +46,7 @@ attr_aliases = {
     "background-color": "background-colour",
     "horz-align": "horizontal-align",
     "vert-align": "vertical-align",
+    "font": "font-name",
 }
 
 
@@ -72,7 +73,7 @@ class DocStyle:
             "title-font": "",
             "title-colour": (0, 0, 0),
             "title-font-size": 0,
-            "font": DEF_FONT_NAME,
+            "font-name": DEF_FONT_NAME,
             "font-colour": (0, 0, 0),
             "font-size": DEF_FONT_SIZE,
             "line-width": 0,

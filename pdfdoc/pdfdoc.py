@@ -81,8 +81,20 @@ def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
     sn = s
     sw = canvas.stringWidth(sn, fontname, fontsize)
     while sw > toWidth:
-        # print("sn: %s w: %f sw: %f" %(sn, toWidth, sw))
         sn = sn[:-1]
         sw = canvas.stringWidth(sn, fontname, fontsize)
+    return sn
 
+def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
+    sw = canvas.stringWidth(s, fontname, fontsize)
+    level = 0
+    sn = s
+    while sw > toWidth and level < 8:
+        sn = func(sn, level)
+        sw = canvas.stringWidth(sn, fontname, fontsize)
+        # print("level: %d w=%.0f sw=%.0f s=%s sn=%s" % (level, toWidth, sw, s, sn))
+        level += 1
+    while sw > toWidth:
+        sn = sn[:-1]
+        sw = canvas.stringWidth(sn, fontname, fontsize)
     return sn

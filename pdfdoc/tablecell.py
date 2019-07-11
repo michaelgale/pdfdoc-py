@@ -46,6 +46,7 @@ class TableCell:
         self.order = order
         self.width = width
         self.height = height
+        self.visible = True
 
 class TableVector:
     def __init__(self, w, h, style=None):
@@ -60,6 +61,11 @@ class TableVector:
 
     def __len__(self):
         return len(self.cells)
+
+    def set_cell_visible(self, label, is_visible=True):
+        for cell in self.cells:
+            if cell.label == label:
+                cell.visible = is_visible
 
     def set_cell_order(self, label, order):
         for cell in self.cells:
@@ -91,7 +97,7 @@ class TableVector:
         # set cell size for cells with a specification
         for cell_label in self.cell_order:
             for cell in self.cells:
-                if cell_label == cell.label:
+                if cell_label == cell.label and cell.visible:
                     if axis == "width":
                         if cell.width > 0:
                             cwidth = cell.width * total_limit
@@ -116,7 +122,7 @@ class TableVector:
             else:
                 csize = 0
             for cell in self.cells:
-                if cell.label == ucell:
+                if cell.label == ucell and cell.visible:
                     if axis == "width":
                         cell.content.rect.set_size(csize, cell_rect.height)
                     else:
@@ -128,7 +134,7 @@ class TableVector:
         cy = cell_rect.top
         for cell_label in self.cell_order:
             for cell in self.cells:
-                if cell_label == cell.label:
+                if cell_label == cell.label and cell.visible:
                     cell.content.rect.move_top_left_to(Point(cx, cy))
                     if axis == "width":
                         cx += cell.content.rect.width
@@ -153,5 +159,6 @@ class TableVector:
     def draw_cells_in_canvas(self, canvas, axis):
         self.compute_cell_sizes(axis)
         for cell in self.cells:
-            cell.content.draw_in_canvas(canvas)
+            if cell.visible:
+                cell.content.draw_in_canvas(canvas)
         self.draw_border_lines(canvas)
