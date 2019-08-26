@@ -48,11 +48,21 @@ class ContentRect:
             self.style.set_with_dict(style)
         self.show_debug_rects = False
 
+    def __str__():
+        return "Content Rect: %s" % (self.rect)
+
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
         c.setFillColor(rl_colour_trans())
         c.setStrokeColor(rl_colour(colour))
         c.setLineWidth(0.1)
         c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
+
+    def draw_in_canvas(self, c):
+        self.draw_rect(c)
+        if self.show_debug_rects:
+            self.draw_debug_rect(c, self.rect)
+            inset_rect = self.style.get_inset_rect(self.rect)
+            self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
     def draw_rect(self, c):
         has_background = self.style.get_attr("background-fill", False)

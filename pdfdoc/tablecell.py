@@ -49,7 +49,7 @@ class TableCell:
         self.visible = True
 
 class TableVector:
-    def __init__(self, w, h, style=None):
+    def __init__(self, w=0, h=0, style=None):
         self.rect = Rect()
         self.rect.set_size(w, h)
         self.clip_text = False
@@ -61,6 +61,10 @@ class TableVector:
 
     def __len__(self):
         return len(self.cells)
+
+    def clear(self):
+        self.cells = []
+        self.cell_order = []
 
     def set_cell_visible(self, label, is_visible=True):
         for cell in self.cells:

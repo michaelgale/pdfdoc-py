@@ -39,6 +39,12 @@ from reportlab.lib.colors import Color
 
 pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
 pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
+pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
+pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
+pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
+pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
+pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
+pdfmetrics.registerFont(TTFont("British-Rail-Light", "britrln_.ttf"))
 
 from fxgeometry import Rect
 
@@ -59,6 +65,11 @@ def rl_colour_trans():
 
 
 def GetStringMetrics(c, label, fontname, fontsize):
+    # print("fontname: %s fontsize: %s" % (fontname, fontsize))
+    if fontsize is None or fontname is None:
+        return (0, 0)
+    if fontsize == 0 or fontname == "":
+        return (0, 0)
     face = pdfmetrics.getFont(fontname).face
     ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
     height = ascent - descent  # + descent

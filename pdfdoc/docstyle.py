@@ -91,6 +91,28 @@ class DocStyle:
             "border-line-bottom": False,
         }
 
+    def __str__(self):
+        s = []
+        k1 = []
+        v1 = []
+        k2 = []
+        v2 = []
+        col = 0
+        for key, value in self.attr.items():
+            if not col:
+                k1.append(key)
+                v1.append(value)
+            else:
+                k2.append(key)
+                v2.append(value)
+            col = not col
+        if len(v2) < len(v1):
+            k2.append("")
+            v2.append("")
+        for key1, val1, key2, val2 in zip(k1, v1, k2, v2):
+            s.append("%20s: %-16s %20s: %-16s" % (key1, val1, key2, val2))
+        return "\n".join(s)
+
     def add_attr(self, attr_name, attr_value=None):
         self.attr[attr_name] = attr_value
 

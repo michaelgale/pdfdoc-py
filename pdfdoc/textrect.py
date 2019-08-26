@@ -45,6 +45,13 @@ class TextRect(ContentRect):
         super().__init__(w, h, style)
         self.text = withText
         self.clip_text = False
+        self.trim_callback = None
+
+    def __str__(self):
+        s = []
+        s.append("TextRect: %s" % (self.rect))
+        s.append("  Text: %s" % (self.text))
+        return "\n".join(s)
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
@@ -64,7 +71,10 @@ class TextRect(ContentRect):
         c.setFillColor(font_colour)
         c.setStrokeColor(font_colour)
         text_width = self.rect.width - self.style.get_width_trim()
-        if self.clip_text:
+        if self.trim_callback is not None:
+            textLabel = self.trim_callback(c, self.text, self)
+            # trim_string(canvas, part.desc, self.desc)
+        elif self.clip_text:
             textLabel = TrimStringToFit(
                 c, self.text, self.font_name, self.font_size, text_width
             )
