@@ -76,7 +76,7 @@ class TextRect(ContentRect):
             # trim_string(canvas, part.desc, self.desc)
         elif self.clip_text:
             textLabel = TrimStringToFit(
-                c, self.text, self.font_name, self.font_size, text_width
+                c, self.text, font_name, font_size, text_width
             )
         else:
             textLabel = self.text

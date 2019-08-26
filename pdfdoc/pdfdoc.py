@@ -42,8 +42,8 @@ pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
 pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
 pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
-pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
-pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
+# pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
+# pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
 pdfmetrics.registerFont(TTFont("British-Rail-Light", "britrln_.ttf"))
 
 from fxgeometry import Rect

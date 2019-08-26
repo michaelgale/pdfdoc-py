@@ -58,6 +58,7 @@ class TableVector:
             self.style.set_with_dict(style)
         self.cells = []
         self.cell_order = []
+        self.overlay_content = None
 
     def __len__(self):
         return len(self.cells)
@@ -65,6 +66,7 @@ class TableVector:
     def clear(self):
         self.cells = []
         self.cell_order = []
+        self.overlay_content = None
 
     def set_cell_visible(self, label, is_visible=True):
         for cell in self.cells:
@@ -144,6 +146,9 @@ class TableVector:
                         cx += cell.content.rect.width
                     else:
                         cy -= cell.content.rect.height
+        # finally assign overlay content rect
+        if self.overlay_content is not None:
+            self.overlay_content.rect = self.style.get_inset_rect(self.rect)
 
     def draw_border_lines(self, c):
         border_colour = self.style.get_attr("border-colour", (1, 1, 1))
@@ -166,3 +171,5 @@ class TableVector:
             if cell.visible:
                 cell.content.draw_in_canvas(canvas)
         self.draw_border_lines(canvas)
+        if self.overlay_content is not None:
+            self.overlay_content.draw_in_canvas(canvas)
