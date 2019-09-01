@@ -82,7 +82,8 @@ class ImageRect(ContentRect):
             self.filename, tx, ty, tw, th, [0.99, 0.999, 0.99, 0.999, 0.99, 0.999]
         )
 
-    def GetBestRectMetrics(self, fromWidth, fromHeight, inWidth, inHeight):
+    @staticmethod
+    def GetBestRectMetrics(fromWidth, fromHeight, inWidth, inHeight):
         if fromWidth < 1e-3 or fromHeight < 1e-3:
             return 0, 0
         if fromWidth > fromHeight:
