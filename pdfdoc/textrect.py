@@ -64,7 +64,10 @@ class TextRect(ContentRect):
     def draw_text(self, c):
         font_name = self.style.get_attr("font-name", DEF_FONT_NAME)
         font_size = self.style.get_attr("font-size", DEF_FONT_SIZE)
-        c.setFont(font_name, font_size)
+        try:
+            c.setFont(font_name, font_size)
+        except:
+            c.setFont(DEF_FONT_NAME, font_size)
         tw, th = GetStringMetrics(c, self.text, font_name, font_size)
         tx = self.rect.left
         font_colour = rl_colour(self.style.get_attr("font-colour", (0, 0, 0)))

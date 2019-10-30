@@ -42,9 +42,18 @@ pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
 pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
 pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
 pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
-pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
-pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
-pdfmetrics.registerFont(TTFont("British-Rail-Light", "britrln_.ttf"))
+try:
+    pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
+except:
+    pass
+try:
+    pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
+except:
+    pass
+try:
+    pdfmetrics.registerFont(TTFont("British-Rail-Light", "britrln_.ttf"))
+except:
+    pass
 
 from fxgeometry import Rect
 
@@ -70,11 +79,17 @@ def GetStringMetrics(c, label, fontname, fontsize):
         return (0, 0)
     if fontsize == 0 or fontname == "":
         return (0, 0)
-    face = pdfmetrics.getFont(fontname).face
+    try:
+        face = pdfmetrics.getFont(fontname).face
+        fontname_ = fontname
+    except:
+        face = pdfmetrics.getFont(DEF_FONT_NAME).face
+        fontname_ = DEF_FONT_NAME
+
     ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
     height = ascent - descent  # + descent
     height *= fontsize
-    width = c.stringWidth(label, fontname, fontsize)
+    width = c.stringWidth(label, fontname_, fontsize)
     return (width, height)
 
 
@@ -97,15 +112,21 @@ def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
     return sn
 
 def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
-    sw = canvas.stringWidth(s, fontname, fontsize)
+    try:
+        sw = canvas.stringWidth(s, fontname, fontsize)
+        fontname_ = fontname
+    except:
+        sw = canvas.stringWidth(s, DEF_FONT_NAME, fontsize)
+        fontname_ = fontname
+
     level = 0
     sn = s
     while sw > toWidth and level < 8:
         sn = func(sn, level)
-        sw = canvas.stringWidth(sn, fontname, fontsize)
+        sw = canvas.stringWidth(sn, fontname_, fontsize)
         # print("level: %d w=%.0f sw=%.0f s=%s sn=%s" % (level, toWidth, sw, s, sn))
         level += 1
     while sw > toWidth:
         sn = sn[:-1]
-        sw = canvas.stringWidth(sn, fontname, fontsize)
+        sw = canvas.stringWidth(sn, fontname_, fontsize)
     return sn
