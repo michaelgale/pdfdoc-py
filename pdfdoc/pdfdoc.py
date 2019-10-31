@@ -117,7 +117,7 @@ def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
         fontname_ = fontname
     except:
         sw = canvas.stringWidth(s, DEF_FONT_NAME, fontsize)
-        fontname_ = fontname
+        fontname_ = DEF_FONT_NAME
 
     level = 0
     sn = s
