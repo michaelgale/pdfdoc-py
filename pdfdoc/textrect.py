@@ -21,7 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# PDF text rectangle class
+# TextRect text cell container class derived from ContentRect
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -35,9 +35,7 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
 from fxgeometry import Rect
-from .pdfdoc import *
-from .docstyle import DocStyle
-from .contentrect import ContentRect
+from pdfdoc import *
 
 
 class TextRect(ContentRect):
@@ -46,6 +44,7 @@ class TextRect(ContentRect):
         self.text = withText
         self.clip_text = False
         self.trim_callback = None
+        self.split_lines = True
 
     def __str__(self):
         s = []
@@ -56,6 +55,8 @@ class TextRect(ContentRect):
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_text(c)
+        if self.overlay_content is not None:
+            self.overlay_content.draw_in_canvas(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
@@ -69,6 +70,7 @@ class TextRect(ContentRect):
         except:
             c.setFont(DEF_FONT_NAME, font_size)
         tw, th = GetStringMetrics(c, self.text, font_name, font_size)
+        _, td = GetStringAscDes(c, self.text, font_name, font_size)
         tx = self.rect.left
         font_colour = rl_colour(self.style.get_attr("font-colour", (0, 0, 0)))
         c.setFillColor(font_colour)
@@ -76,7 +78,6 @@ class TextRect(ContentRect):
         text_width = self.rect.width - self.style.get_width_trim()
         if self.trim_callback is not None:
             textLabel = self.trim_callback(c, self.text, self)
-            # trim_string(canvas, part.desc, self.desc)
         elif self.clip_text:
             textLabel = TrimStringToFit(
                 c, self.text, font_name, font_size, text_width
@@ -85,21 +86,34 @@ class TextRect(ContentRect):
             textLabel = self.text
         inset_rect = self.style.get_inset_rect(self.rect)
         vert_align = self.style.get_attr("vert-align", "centre")
-        if vert_align == "centre":
-            tmp, ty = inset_rect.get_centre()
-            ty -= th / 2.0
-        elif vert_align == "top":
-            ty = inset_rect.top - th
+        if self.split_lines:
+            lines = SplitStringToFit(c, textLabel, font_name, font_size, text_width)
         else:
-            ty = inset_rect.bottom
+            lines = [textLabel]
+        ls = 1 + self.style.get_attr("line-spacing", 1.1)
+        cy = (len(lines) - 1) * (th/2) * ls
+        for i, line in enumerate(lines):
+            if vert_align == "centre":
+                tmp, ty = inset_rect.get_centre()
+                if len(lines) == 1:
+                    ty -= th/2
+                else:
+                    ty = ty + cy - th/2 - (i * th * ls)
+            elif vert_align == "top":
+                ty = inset_rect.top - th - (i * th * ls)
+            else:
+                if len(lines) == 1:
+                    ty = inset_rect.bottom + cy
+                else:
+                    ty = inset_rect.bottom + cy - ((i-1) * th * ls)
 
-        horz_align = self.style.get_attr("horz-align", "centre")
-        if horz_align == "centre":
-            tx, tmp = inset_rect.get_centre()
-            c.drawCentredString(tx, ty, textLabel)
-        elif horz_align == "right":
-            tx = inset_rect.right
-            c.drawRightString(tx, ty, textLabel)
-        else:
-            tx = inset_rect.left
-            c.drawString(tx, ty, textLabel)
+            horz_align = self.style.get_attr("horz-align", "centre")
+            if horz_align == "centre":
+                tx, tmp = inset_rect.get_centre()
+                c.drawCentredString(tx, ty, line)
+            elif horz_align == "right":
+                tx = inset_rect.right
+                c.drawRightString(tx, ty, line)
+            else:
+                tx = inset_rect.left
+                c.drawString(tx, ty, line)

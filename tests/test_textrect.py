@@ -5,9 +5,9 @@ import sys
 import pytest
 
 from fxgeometry import Point
-from pdfdoc.textrect import TextRect
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
+from pdfdoc import *
 
 _test_dict = {"left-margin": 2, "right-margin": 3, "horz-align": "left"}
 
@@ -37,7 +37,6 @@ def test_textrect_pos():
     assert r2.top == 0.9
     assert r2.bottom == -0.9
 
-
 _text_dict = {
     "border-outline": True,
     "border-width": 0.1 * inch,
@@ -51,6 +50,33 @@ _text_dict = {
     "left-padding": 0.25 * inch,
     "right-padding": 0.5 * inch,
 }
+
+
+test_para = "This is a very long string of words which will hopefully split over a few lines"
+
+def test_string_splitting():
+    t1 = TextRect(4 * inch, 1.5 * inch, test_para, _text_dict)
+    c = canvas.Canvas("test_splitlines.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c.saveState()
+    t1.split_lines = True
+    t1.show_debug_rects = True
+    t1.style.set_attr("horz-align", "left")
+    t1.style.set_attr("vert-align", "top")
+    t1.rect.move_top_left_to(Point(1 * inch, 8 * inch))
+    t1.draw_in_canvas(c)
+
+    t1.style.set_attr("horz-align", "left")
+    t1.style.set_attr("vert-align", "bottom")
+    t1.rect.move_top_left_to(Point(1 * inch, 6 * inch))
+    t1.draw_in_canvas(c)
+
+    t1.style.set_attr("horz-align", "left")
+    t1.style.set_attr("vert-align", "centre")
+    t1.rect.move_top_left_to(Point(1 * inch, 4 * inch))
+    t1.draw_in_canvas(c)
+
+    c.showPage()
+    c.save()
 
 
 def test_textrect_render():

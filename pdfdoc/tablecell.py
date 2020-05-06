@@ -21,7 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# Table cell class
+# TableCell and TableVector container classes
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -35,18 +35,26 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
 from fxgeometry import Rect, Point
-from .docstyle import DocStyle
-from .pdfdoc import rl_colour, rl_colour_trans
+from pdfdoc import *
 
 
 class TableCell:
-    def __init__(self, label, content=None, order=0, width=0, height=0):
+    def __init__(self, label, content=None, order=0, width=AUTO_SIZE, height=AUTO_SIZE):
         self.label = label
-        self.content = content
+        # If no content is provided, create a placeholder ContentRect
+        if content is not None:
+            self.content = content
+        else:
+            self.content = ContentRect(width, height)
         self.order = order
+        # width and height are specified as ratios between 0 and 1 and
+        # not in absolute units. These values are used by parent TableVector
+        # classes to compute absolute dimensions relative to peers in the
+        # same row or column
         self.width = width
         self.height = height
         self.visible = True
+
 
 class TableVector:
     def __init__(self, w=0, h=0, style=None):
@@ -67,6 +75,12 @@ class TableVector:
         self.cells = []
         self.cell_order = []
         self.overlay_content = None
+
+    def get_cell_content(self, label):
+        for cell in self.cells:
+            if cell.label == label:
+                return cell.content
+        return None
 
     def set_cell_visible(self, label, is_visible=True):
         for cell in self.cells:

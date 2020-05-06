@@ -21,7 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# Content rectangle class
+# Generic ContentRect parent container class
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -47,6 +47,7 @@ class ContentRect:
         if style is not None:
             self.style.set_with_dict(style)
         self.show_debug_rects = False
+        self.overlay_content = None
 
     def __str__():
         return "Content Rect: %s" % (self.rect)
@@ -80,11 +81,23 @@ class ContentRect:
             c.setStrokeColor(rc)
             c.setLineWidth(border_width)
         mrect = self.style.get_margin_rect(self.rect)
-        c.rect(
-            mrect.left,
-            mrect.bottom,
-            mrect.width,
-            mrect.height,
-            stroke=has_border,
-            fill=has_background,
-        )
+        border_radius = self.style.get_attr("border-radius", 0)
+        if border_radius > 0:
+            c.roundRect(
+                mrect.left,
+                mrect.bottom,
+                mrect.width,
+                mrect.height,
+                radius=border_radius,
+                stroke=has_border,
+                fill=has_background,
+            )
+        else:
+            c.rect(
+                mrect.left,
+                mrect.bottom,
+                mrect.width,
+                mrect.height,
+                stroke=has_border,
+                fill=has_background,
+            )

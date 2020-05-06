@@ -21,7 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# Table row class
+# TableColumn class derived from TableVector
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
@@ -38,6 +38,7 @@ from fxgeometry import Rect, Point
 from .docstyle import DocStyle
 from .pdfdoc import rl_colour, rl_colour_trans
 from .tablecell import TableCell, TableVector
+
 
 class TableColumn(TableVector):
     def __init__(self, w, h, style=None):
@@ -60,3 +61,9 @@ class TableColumn(TableVector):
 
     def draw_in_canvas(self, canvas):
         self.draw_cells_in_canvas(canvas, "height")
+
+    def set_cell_content(self, label, content):
+        for cell in self.cells:
+            if cell.label == label:
+                cell.content = content
+                self.compute_cell_sizes("height")

@@ -4,7 +4,7 @@ import os
 import sys
 import pytest
 
-from pdfdoc.docstyle import DocStyle
+from pdfdoc import *
 
 _test_dict = {"left-margin": 2, "right-margin": 3, "horz-align": "left"}
 

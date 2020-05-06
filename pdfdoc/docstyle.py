@@ -36,7 +36,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-from .pdfdoc import *
+from pdfdoc import *
 
 attr_aliases = {
     "title-color": "title-colour",
@@ -67,7 +67,9 @@ class DocStyle:
             "right-padding": 0,
             "cell-padding": 0,
             "text-baseline": 0,
+            "line-spacing": 1.1,
             "gutter-width": 0,
+            "gutter-height": 0,
             "title-width": 0,
             "title-height": 0,
             "title-font": "",
@@ -83,6 +85,7 @@ class DocStyle:
             "background-colour": (0, 0, 0),
             "background-fill": False,
             "border-outline": False,
+            "border-radius": 0.0,
             "vertical-align": "centre",
             "horizontal-align": "centre",
             "border-line-left": False,

@@ -21,7 +21,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# PDF text rectangle class
+# ImageRect image cell container class derived from ContentRect
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
