@@ -37,12 +37,20 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
-pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
-pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
-pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
-pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
-pdfmetrics.registerFont(TTFont("FontAwesome", "fontawesome-webfont.ttf"))
+from pdfdoc import DEF_FONT_NAME
+
+try:
+    pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
+except:
+    pass
+try:
+    pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
+except:
+    pass
+# pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
+# pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
+# pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
+# pdfmetrics.registerFont(TTFont("FontAwesome", "fontawesome-webfont.ttf"))
 
 try:
     pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))

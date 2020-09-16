@@ -65,6 +65,9 @@ class ContentRect:
             inset_rect = self.style.get_inset_rect(self.rect)
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
+    def get_content_size(self):
+        return self.rect.width, self.rect.height
+
     def draw_rect(self, c):
         has_background = self.style.get_attr("background-fill", False)
         background_colour = self.style.get_attr("background-colour", (1, 1, 1))

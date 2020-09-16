@@ -45,12 +45,32 @@ class TextRect(ContentRect):
         self.clip_text = False
         self.trim_callback = None
         self.split_lines = True
+        self.detect_fractions = True
 
     def __str__(self):
         s = []
         s.append("TextRect: %s" % (self.rect))
         s.append("  Text: %s" % (self.text))
         return "\n".join(s)
+
+    def get_content_size(self, with_padding=True):
+        c = canvas.Canvas("tmp.pdf")
+        c.saveState()
+        font_name = self.style.get_attr("font-name", DEF_FONT_NAME)
+        font_size = self.style.get_attr("font-size", DEF_FONT_SIZE)
+        try:
+            c.setFont(font_name, font_size)
+        except:
+            c.setFont(DEF_FONT_NAME, font_size)
+        tw, th = GetStringMetrics(c, self.text, font_name, font_size)
+        ta, td = GetStringAscDes(c, self.text, font_name, font_size)
+        th += ta
+        tw += self.style.get_width_trim()
+        tw *= 1.05
+        if with_padding:
+            tw += self.style.get_width_trim()
+            th += self.style.get_height_trim()
+        return tw, th
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
@@ -79,9 +99,7 @@ class TextRect(ContentRect):
         if self.trim_callback is not None:
             textLabel = self.trim_callback(c, self.text, self)
         elif self.clip_text:
-            textLabel = TrimStringToFit(
-                c, self.text, font_name, font_size, text_width
-            )
+            textLabel = TrimStringToFit(c, self.text, font_name, font_size, text_width)
         else:
             textLabel = self.text
         inset_rect = self.style.get_inset_rect(self.rect)
@@ -91,21 +109,21 @@ class TextRect(ContentRect):
         else:
             lines = [textLabel]
         ls = 1 + self.style.get_attr("line-spacing", 1.1)
-        cy = (len(lines) - 1) * (th/2) * ls
+        cy = (len(lines) - 1) * (th / 2) * ls
         for i, line in enumerate(lines):
             if vert_align == "centre":
                 tmp, ty = inset_rect.get_centre()
                 if len(lines) == 1:
-                    ty -= th/2
+                    ty -= th / 2
                 else:
-                    ty = ty + cy - th/2 - (i * th * ls)
+                    ty = ty + cy - th / 2 - (i * th * ls)
             elif vert_align == "top":
                 ty = inset_rect.top - th - (i * th * ls)
             else:
                 if len(lines) == 1:
                     ty = inset_rect.bottom + cy
                 else:
-                    ty = inset_rect.bottom + cy - ((i-1) * th * ls)
+                    ty = inset_rect.bottom + cy - ((i - 1) * th * ls)
 
             horz_align = self.style.get_attr("horz-align", "centre")
             if horz_align == "centre":

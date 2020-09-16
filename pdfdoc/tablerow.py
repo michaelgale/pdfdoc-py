@@ -55,15 +55,28 @@ class TableRow(TableVector):
         self.set_cell_order(label, order)
 
     def set_column_width(self, label, width):
-        for cell in self.cells:
-            if cell.label == label:
-                cell.width = width
+        cell = self.get_cell(label)
+        if cell is not None:
+            cell.width = width
 
     def draw_in_canvas(self, canvas):
         self.draw_cells_in_canvas(canvas, "width")
 
     def set_cell_content(self, label, content):
-        for cell in self.cells:
-            if cell.label == label:
-                cell.content = content
-                self.compute_cell_sizes("width")
+        cell = self.get_cell(label)
+        if cell is not None:
+            cell.content = content
+            self.compute_cell_sizes("width")
+
+    def get_content_size(self, with_padding=True):
+        sw, sh = 0, 0
+        for cell in self.iter_cells():
+            cw, ch = cell.content.get_content_size()
+            if ch > 0:
+                sh = max(sh, ch)
+            sw += cw
+        if with_padding:
+            sw += self.style.get_width_trim()
+            sh += self.style.get_height_trim()
+        return sw, sh
+        

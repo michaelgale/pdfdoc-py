@@ -47,12 +47,15 @@ attr_aliases = {
     "horz-align": "horizontal-align",
     "vert-align": "vertical-align",
     "font": "font-name",
+    "overlay-horz-align": "overlay-horizontal-align",
+    "overlay-vert-align": "overlay-vertical-align",
 }
 
 
 class DocStyle:
     def __init__(self):
         self.attr = {
+            "length": 0,
             "width": 0,
             "height": 0,
             "left-margin": 0,
@@ -92,6 +95,9 @@ class DocStyle:
             "border-line-right": False,
             "border-line-top": False,
             "border-line-bottom": False,
+            "overlay-horizontal-align": "centre",
+            "overlay-vertical-align": "centre",
+            "overlay-size": "auto",
         }
 
     def __str__(self):

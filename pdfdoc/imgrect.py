@@ -41,24 +41,43 @@ from .contentrect import ContentRect
 
 
 class ImageRect(ContentRect):
-    def __init__(self, w=1, h=1, filename="", style=None):
+    def __init__(self, w=1, h=1, filename="", style=None, dpi=None, auto_size=None):
         super().__init__(w, h, style)
         self.filename = filename
+        self.auto_size = auto_size if auto_size is not None else True
+        self.dpi = dpi if dpi is not None else 300
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_image_rect(c)
+        if self.overlay_content is not None:
+            self.overlay_content.draw_in_canvas(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
+
+    def get_content_size(self, with_padding=True):
+        if self.filename == "":
+            return 0, 0
+        (iw, ih) = GetImageMetrics(self.filename)
+        tw, th = iw / self.dpi * 72, ih / self.dpi * 72
+        if with_padding:
+            tw += self.style.get_width_trim()
+            th += self.style.get_height_trim()
+        return tw, th
 
     def draw_image_rect(self, c):
         if self.filename == "":
             return
         (iw, ih) = GetImageMetrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
-        tw, th = self.GetBestRectMetrics(iw, ih, inset_rect.width, inset_rect.height)
+        if self.auto_size:
+            tw, th = self.GetBestRectMetrics(
+                iw, ih, inset_rect.width, inset_rect.height
+            )
+        else:
+            tw, th = iw / self.dpi * 72, ih / self.dpi * 72
         vert_align = self.style.get_attr("vert-align", "centre")
         if vert_align == "centre":
             tmp, ty = inset_rect.get_centre()
@@ -78,9 +97,7 @@ class ImageRect(ContentRect):
         else:
             tx = inset_rect.left
         c.setFillColor(rl_colour((0, 0, 0)))
-        c.drawImage(
-            self.filename, tx, ty, tw, th, [0.99, 0.999, 0.99, 0.999, 0.99, 0.999]
-        )
+        c.drawImage(self.filename, tx, ty, tw, th, mask="auto")
 
     @staticmethod
     def GetBestRectMetrics(fromWidth, fromHeight, inWidth, inHeight):

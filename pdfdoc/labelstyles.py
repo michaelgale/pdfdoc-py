@@ -25,6 +25,23 @@
 
 from reportlab.lib.units import inch
 
+# Avery 5260
+# - 30 labels per sheet
+# - 1" x 2-5/8" label size
+
+AVERY_5260_LABEL_DOC_STYLE = {
+    "height": 11 * inch,
+    "width": 8.5 * inch,
+    "ncolumns": 3,
+    "nrows": 10,
+    "top-margin": 0.5 * inch,
+    "bottom-margin": 0.5 * inch,
+    "left-margin": 3/ 16 * inch,
+    "right-margin": 3 / 16 * inch,
+    "gutter-width": 1 / 8 * inch,
+    "gutter-height": 0,
+}
+
 # Avery 5262
 # - 14 labels per sheet
 # - 1-1/3" x 4" label size

@@ -41,14 +41,21 @@ from ldrawpy import LDRColour
 from pdfdoc import *
 
 class GenericLabel(TableColumn):
-    def __init__(self, title="", subtitle=None, colour=None, pattern=None, symbol=None):
+    def __init__(self, title="", subtitle=None, colour=None, pattern=None, symbol=None, image=None, titleimage=None):
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         self.titlerow = TableRow(0, 0)
-        self.title = TextRect(0, 0, title, GENERIC_LABEL_TITLE)
-        symbol_text = symbol if symbol is not None else ""
-        self.symbol = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
-        self.symbol2 = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
+        if titleimage is not None:
+            self.title = ImageRect(0, 0, filename=titleimage)
+        else:
+            self.title = TextRect(0, 0, title, GENERIC_LABEL_TITLE)
+        if image is not None:
+            self.symbol = ImageRect(0, 0, filename=image)
+            self.symbol2 = ImageRect(0, 0, filename=image)
+        else:
+            symbol_text = symbol if symbol is not None else ""
+            self.symbol = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
+            self.symbol2 = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
         t1, t2 = "", ""
         ht = 0.3
         hp2 = 0.07
@@ -82,7 +89,7 @@ class GenericLabel(TableColumn):
             # self.set_cell_visible("Pattern", False)
             self.set_cell_visible("PatternTop", False)
             self.pattern.background_colour = self.pattern.foreground_colour
-        if symbol is not None:
+        if symbol is not None or image is not None:
             self.titlerow.set_cell_visible("Symbol", True)
             self.titlerow.set_cell_visible("Symbol2", True)
         else:

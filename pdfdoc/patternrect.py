@@ -133,9 +133,7 @@ class PatternRect(ContentRect):
         c.setFillColor(bc)
         c.setStrokeColor(bc)
         c.setLineWidth(0.1)
-        c.rect(
-            mrect.left, mrect.bottom, mrect.width, mrect.height, stroke=0, fill=1,
-        )
+        c.rect(mrect.left, mrect.bottom, mrect.width, mrect.height, stroke=0, fill=1)
         if self.pattern == "slant-line":
             self._draw_slant_line(c, fc)
         elif self.pattern == "squares":
