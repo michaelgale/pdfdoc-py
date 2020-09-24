@@ -69,16 +69,42 @@ class TableVector:
         self.cell_order = []
         self.overlay_content = None
         self.show_debug_rects = False
+        self.total_width = 0
+        self.total_height = 0
 
     def __len__(self):
         return len(self.cells)
 
-    def iter_cells(self):
+    def __str__(self):
+        s = []
+        s.append("TableVector: %r" % (self))
+        s.append("  Cell count: %d" % (len(self.cells)))
+        s.append("  Rect: %s" % (str(self.rect)))
+        w, h = self.get_content_size()
+        s.append("  Content size: %.1f, %.1f" % (w, h))
+        s.append("  Overlay content: %r" % (self.overlay_content))
+        s.append("  Show debug rects: %s" % (self.show_debug_rects))
+        idx = 1
+        for cell in self.iter_cells(only_visible=False):
+            s.append(
+                "  %d. Cell(%-12s) order=%-2d visible=%-5s type=%r"
+                % (idx, cell.label, cell.order, cell.visible, cell.content)
+            )
+            if cell.visible:
+                s.append(
+                    "      rect: %s content size: (%.1f, %.1f)"
+                    % (cell.content.rect, *cell.content.get_content_size())
+                )
+            idx += 1
+        return "\n".join(s)
+
+    def iter_cells(self, only_visible=True):
         self.compute_cell_order()
         for cell_label in self.cell_order:
             for cell in self.cells:
-                if cell_label == cell.label and cell.visible:
-                    yield cell
+                if cell_label == cell.label:
+                    if not only_visible or cell.visible:
+                        yield cell
 
     def get_cell(self, label):
         for cell in self.cells:
@@ -95,10 +121,12 @@ class TableVector:
         cell = self.get_cell(label)
         return cell.content.rect if cell is not None else None
 
-    def set_cell_constraints(self, label, constraints):
+    def set_cell_constraints(self, label, constraints, order=None):
         cell = self.get_cell(label)
         if cell is not None:
             cell.constraints = constraints
+        if order is not None:
+            cell.order = order
 
     def set_cell_rect(self, label, rect):
         cell = self.get_cell(label)
@@ -300,33 +328,19 @@ class TableVector:
                     ch = cell.content.rect.height
                     ow = cell.content.overlay_content.rect.width
                     oh = cell.content.overlay_content.rect.height
-                    if (
-                        cell.content.style.get_attr("overlay-horz-align")
-                        == "left"
-                    ):
+                    if cell.content.style.get_attr("overlay-horz-align") == "left":
                         ox = cell.content.rect.left
-                    elif (
-                        cell.content.style.get_attr("overlay-horz-align")
-                        == "right"
-                    ):
+                    elif cell.content.style.get_attr("overlay-horz-align") == "right":
                         ox = cell.content.rect.right - ow
                     else:
                         ox = cell.content.rect.left + cw / 2 - ow / 2
-                    if (
-                        cell.content.style.get_attr("overlay-vert-align")
-                        == "top"
-                    ):
+                    if cell.content.style.get_attr("overlay-vert-align") == "top":
                         oy = cell.content.rect.top
-                    elif (
-                        cell.content.style.get_attr("overlay-vert-align")
-                        == "bottom"
-                    ):
+                    elif cell.content.style.get_attr("overlay-vert-align") == "bottom":
                         oy = cell.content.rect.bottom
                     else:
                         oy = cell.content.rect.top + ch / 2 - oh / 2
-                    cell.content.overlay_content.rect.move_top_left_to(
-                        Point(ox, oy)
-                    )
+                    cell.content.overlay_content.rect.move_top_left_to(Point(ox, oy))
         # finally assign overlay content rect
         if self.overlay_content is not None:
             self.overlay_content.rect = self.style.get_inset_rect(self.rect)
@@ -334,6 +348,9 @@ class TableVector:
     def draw_cells_in_canvas(self, canvas, axis):
         self.compute_cell_sizes(axis)
         self.draw_background(canvas)
+        if self.show_debug_rects:
+            for cell in self.iter_cells():
+                cell.content.show_debug_rects = True
         for cell in self.iter_cells():
             cell.content.draw_in_canvas(canvas)
         self.draw_border_lines(canvas)

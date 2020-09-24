@@ -56,7 +56,7 @@ test_para = "This is a very long string of words which will hopefully split over
 
 def test_string_splitting():
     t1 = TextRect(4 * inch, 1.5 * inch, test_para, _text_dict)
-    c = canvas.Canvas("test_splitlines.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_splitlines.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     t1.split_lines = True
     t1.show_debug_rects = True
@@ -80,7 +80,7 @@ def test_string_splitting():
 
 
 def test_textrect_render():
-    c = canvas.Canvas("test_textrect.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_textrect.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     t1 = TextRect(3 * inch, 1 * inch, "My Centre Test", _text_dict)
     t1.show_debug_rects = True

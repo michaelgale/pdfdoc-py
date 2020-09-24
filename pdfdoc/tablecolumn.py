@@ -59,7 +59,11 @@ class TableColumn(TableVector):
         if cell is not None:
             cell.height = height
 
-    def draw_in_canvas(self, canvas):
+    def draw_in_canvas(self, canvas, auto_size=False, auto_size_anchor=None):
+        if auto_size:
+            w, h = self.get_content_size()
+            anchor = "top left" if auto_size_anchor is None else auto_size_anchor
+            self.rect.set_size_anchored(w, h, anchor_pt=anchor)
         self.draw_cells_in_canvas(canvas, "height")
 
     def set_cell_content(self, label, content):
@@ -78,5 +82,6 @@ class TableColumn(TableVector):
         if with_padding:
             sw += self.style.get_width_trim()
             sh += self.style.get_height_trim()
+        self.total_width = sw
+        self.total_height = sh
         return sw, sh
-        

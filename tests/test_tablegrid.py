@@ -54,7 +54,7 @@ def test_tablegrid_rows():
     # assert tr.cells[0].label == "TableCell-0"
     # assert tr.cells[1].label == "Grid 1"
     # assert tr.cells[2].label == "TableCell-2"
-    c = canvas.Canvas("test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
@@ -95,7 +95,7 @@ def test_tablegrid_cols():
     # assert tr.cells[0].label == "TableCell-0"
     # assert tr.cells[1].label == "Grid 1"
     # assert tr.cells[2].label == "TableCell-2"
-    c = canvas.Canvas("test_tablegrid_cols.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_tablegrid_cols.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))

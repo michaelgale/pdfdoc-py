@@ -41,13 +41,14 @@ from .docstyle import DocStyle
 
 class ContentRect:
     def __init__(self, w=1, h=1, style=None):
-        self.rect = Rect()
-        self.rect.set_size(w, h)
+        self.rect = Rect(w, h)
         self.style = DocStyle()
         if style is not None:
             self.style.set_with_dict(style)
         self.show_debug_rects = False
         self.overlay_content = None
+        self.is_fixed_size = False
+        self.fixed_rect = Rect(w, h)
 
     def __str__():
         return "Content Rect: %s" % (self.rect)
@@ -66,6 +67,8 @@ class ContentRect:
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
     def get_content_size(self):
+        if self.is_fixed_size:
+            return self.fixed_rect.width, self.fixed_rect.height
         return self.rect.width, self.rect.height
 
     def draw_rect(self, c):

@@ -14,14 +14,14 @@ from pdfdoc import *
 _test_dict = {"left-margin": 1 * inch, "right-margin": 1 * inch, "horz-align": "left"}
 
 def test_labeldoc_init():
-    ld = LabelDoc("test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE)
+    ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE)
     assert ld.nrows == 3
     assert ld.ncolumns == 2
     assert ld.total_rows == 3
     assert ld.total_columns == 3
 
 def test_content_idx():
-    ld = LabelDoc("test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE)
+    ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE)
     rx = [0, 0, 1, 1, 2, 2, 0, 0, 1, 1]
     cx = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
     for i, x in enumerate(range(10)):
@@ -29,7 +29,7 @@ def test_content_idx():
         assert r == rx[i] and c == cx[i]
 
 def test_labeldoc_iter():
-    ld = LabelDoc("test_labeldoc.pdf", style=AVERY_5262_LABEL_DOC_STYLE)
+    ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5262_LABEL_DOC_STYLE)
     labels = [i for i in range(25)]
     for label, row, col in ld.iter_label(labels):
         tr = TextRect(withText="Label %d" % (label))
@@ -37,7 +37,7 @@ def test_labeldoc_iter():
         ld.set_table_cell(tr, row, col)
 
 def test_generic_labeldoc():
-    ld = LabelDoc("test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE)
+    ld = LabelDoc("./testfiles/test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE)
     labels = [i for i in range(25)]
     for label, row, col in ld.iter_label(labels):
         rt = random.random()

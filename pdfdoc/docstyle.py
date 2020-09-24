@@ -24,18 +24,20 @@
 # PDF document utilities
 
 import copy
-
+from collections import OrderedDict
+import string
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.rl_config import defaultPageSize
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch, mm, cm
 from reportlab.lib import colors
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
+from toolbox import Params
 from pdfdoc import *
 
 attr_aliases = {
@@ -53,11 +55,18 @@ attr_aliases = {
 
 
 class DocStyle:
-    def __init__(self):
+    """ Container class for storing style information using CSS-like tag/attributes.
+    This class offers the convenience of robust access to styles by name with features
+    such default value substitution, aliases for attribute names (e.g. allowing the
+    use of "colour" and "color"), and computation of derived values from the
+    style such as page dimensions with or without margins/padding etc."""
+
+    def __init__(self, style=None):
         self.attr = {
             "length": 0,
             "width": 0,
             "height": 0,
+            "orientation": "portrait",
             "left-margin": 0,
             "right-margin": 0,
             "top-margin": 0,
@@ -81,8 +90,9 @@ class DocStyle:
             "font-name": DEF_FONT_NAME,
             "font-colour": (0, 0, 0),
             "font-size": DEF_FONT_SIZE,
-            "line-width": 0,
+            "line-width": 0.1 * mm,
             "line-colour": (0, 0, 0),
+            "line-style": "solid",
             "border-width": 0,
             "border-colour": (0, 0, 0),
             "background-colour": (0, 0, 0),
@@ -99,6 +109,14 @@ class DocStyle:
             "overlay-vertical-align": "centre",
             "overlay-size": "auto",
         }
+        if style is not None:
+            self.set_with_dict(style)
+
+    def __getitem__(self, key):
+        return self.get_attr(key)
+
+    def __setitem__(self, key, value):
+        self.set_attr(key, value)
 
     def __str__(self):
         s = []
@@ -122,17 +140,39 @@ class DocStyle:
             s.append("%20s: %-16s %20s: %-16s" % (key1, val1, key2, val2))
         return "\n".join(s)
 
+    def rgb_from_hex(self, hexStr):
+        if len(hexStr) < 6:
+            return 0, 0, 0
+        hs = hexStr.lstrip("#")
+        if not all(c in string.hexdigits for c in hs):
+            return 0, 0, 0
+        [rd, gd, bd] = tuple(int(hs[i : i + 2], 16) for i in (0, 2, 4))
+        r = float(rd) / 255.0
+        g = float(gd) / 255.0
+        b = float(bd) / 255.0
+        return r, g, b
+
     def add_attr(self, attr_name, attr_value=None):
         self.attr[attr_name] = attr_value
 
     def set_attr(self, attr_key, attr_value):
         attr_name = attr_key.replace("_", "-")
         if attr_name in self.attr:
+            if "colour" in attr_name or "color" in attr_name:
+                if isinstance(attr_value, str):
+                    if attr_value[0] == "#":
+                        self.attr[attr_name] = self.rgb_from_hex(attr_value)
+                        return
             self.attr[attr_name] = attr_value
         else:
             if attr_name in attr_aliases:
                 alias = attr_aliases[attr_name]
                 if alias in self.attr:
+                    if "colour" in alias or "color" in alias:
+                        if isinstance(attr_value, str):
+                            if attr_value[0] == "#":
+                                self.attr[alias] = self.rgb_from_hex(attr_value)
+                                return
                     self.attr[alias] = attr_value
 
     def get_attr(self, attr_key, def_value=None):
@@ -145,9 +185,14 @@ class DocStyle:
                 return self.attr[alias]
         return def_value
 
-    def set_with_dict(self, dict):
-        for key, value in dict.items():
-            self.set_attr(key, value)
+    def set_with_dict(self, style_dict):
+        if isinstance(style_dict, dict):
+            for key, value in style_dict.items():
+                self.set_attr(key, value)
+        elif isinstance(style_dict, DocStyle):
+            for key, value in style_dict.attr.items():
+                self.set_attr(key, value)
+
 
     def set_all_margins(self, withMargin):
         self.set_attr("left-margin", withMargin)
@@ -249,3 +294,77 @@ class DocStyle:
         margin_rect.bottom += self.get_bottom_margin()
         margin_rect.get_size()
         return margin_rect
+
+class DocStyleSheet():
+    """ Container class for multiple DocStyle instances indexed in a dictionary.
+    All the styles can be conveniently loaded from a YAML file.  The format of the
+    YAML file must have a top level key called "styles" under which a tree of 
+    styles can be listed with the name of the style as a child of "styles" and the
+    attributes of each style as children of the style name."""
+
+    def __init__(self, filename=None):
+        self.styles = {}
+        if filename is not None:
+            self.load_from_yml(filename)
+
+    def __getitem__(self, key):
+        if key in self.styles:
+            return self.styles[key]
+        return None
+
+    def __setitem__(self, key, value):
+        self.set_style(key, value)
+
+    def print_styles(self):
+        for k, v in self.styles.items():
+            print(k)
+
+    def clear(self):
+        self.styles = {}
+
+    def get_style(self, style_name):
+        if style_name in self.styles:
+            return self.styles[style_name]
+        return None
+
+    def set_style(self, style_name, style):
+        if isinstance(style, dict):
+            sd = DocStyle(style=style)
+            self.styles[style_name] = sd
+        elif isinstance(style, DocStyle):
+            self.styles[style_name] = style
+
+    def load_from_yml(self, filename):
+        sp = Params(yml=filename)
+        sd = sp.__dict__
+        if "styles" in sd:
+            for k, v in sd["styles"].items():
+                s = DocStyle(style=v)
+                self.styles[k] = s
+
+def roman_number(num):
+
+    roman = OrderedDict()
+    roman[1000] = "M"
+    roman[900] = "CM"
+    roman[500] = "D"
+    roman[400] = "CD"
+    roman[100] = "C"
+    roman[90] = "XC"
+    roman[50] = "L"
+    roman[40] = "XL"
+    roman[10] = "X"
+    roman[9] = "IX"
+    roman[5] = "V"
+    roman[4] = "IV"
+    roman[1] = "I"
+
+    def roman_num(num):
+        for r in roman.keys():
+            x, y = divmod(num, r)
+            yield roman[r] * x
+            num -= r * x
+            if num <= 0:
+                break
+
+    return "".join([a for a in roman_num(num)])

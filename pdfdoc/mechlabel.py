@@ -37,11 +37,11 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
 from fxgeometry import Rect, Point
-from ldrawpy import LDRColour
 from pdfdoc import *
 
 class MechanicalLabel(TableRow):
     def __init__(self, title="", subtitle=None, colour=None, symbol=None):
+        from ldrawpy import LDRColour
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         filename = symbol if symbol is not None else ""

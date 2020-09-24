@@ -31,7 +31,7 @@ from pdfdoc.pdfdoc import (
     hazsymbol,
     set_icon,
 )
-from .docstyle import DocStyle
+from .docstyle import DocStyle, DocStyleSheet, roman_number
 from .contentrect import ContentRect
 from .textrect import TextRect
 from .imgrect import ImageRect
@@ -47,6 +47,9 @@ from .genericlabel import GenericLabel
 from .safetylabel import SafetyLabel
 from .mechlabel import MechanicalLabel
 from .eleclabel import ElectronicLabel
+from .pagestyles import *
+from .document import Document
+from .doccallbacks import *
 
 try:
     pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))

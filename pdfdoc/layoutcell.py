@@ -129,8 +129,37 @@ class LayoutCell(TableVector):
         super().__init__(w, h, style)
         self.width_constraint = w
         self.height_constraint = h
-        self.total_width = 0
-        self.total_height = 0
+
+    def __str__(self):
+        s = []
+        s.append("LayoutCell: %r" % (self))
+        s.append("  Cell count: %d" % (len(self.cells)))
+        s.append("  Rect: %s" % (str(self.rect)))
+        w, h = self.get_content_size()
+        s.append("  Content size: %.1f, %.1f" % (w, h))
+        s.append("  Overlay content: %r" % (self.overlay_content))
+        s.append("  Show debug rects: %s" % (self.show_debug_rects))
+        s.append(
+            "  Width/height constraint: %.1f, %.1f"
+            % (self.width_constraint, self.height_constraint)
+        )
+        s.append(
+            "  Width/height total: %.1f, %.1f" % (self.total_width, self.total_height)
+        )
+        idx = 1
+        for cell in self.iter_cells(only_visible=False):
+            s.append(
+                "  %d. Cell(%-12s) order=%-2d visible=%-5s type=%r"
+                % (idx, cell.label, cell.order, cell.visible, cell.content)
+            )
+            if cell.visible:
+                s.append(
+                    "      rect: %s content size: (%.1f, %.1f)"
+                    % (cell.content.rect, *cell.content.get_content_size())
+                )
+                s.append("      constraints: %s" % (cell.constraints))
+            idx += 1
+        return "\n".join(s)
 
     def layout_cells(self):
         prect = self.style.get_inset_rect(self.rect)

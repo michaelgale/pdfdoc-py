@@ -37,7 +37,6 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
 from fxgeometry import Rect, Point
-from ldrawpy import LDRColour
 from pdfdoc import *
 
 class GenericLabel(TableColumn):
@@ -103,6 +102,7 @@ class GenericLabel(TableColumn):
         self.pattern_top.pattern_slant = 12
     
     def set_colour(self, colour):
+        from ldrawpy import LDRColour
         c = LDRColour(colour)
         self.title.style.set_attr("background-fill", True)
         self.title.style.set_attr("background-colour", c.as_tuple())

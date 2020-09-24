@@ -54,7 +54,7 @@ _text_dict = {
 
 
 def test_patternrect_render():
-    c = canvas.Canvas("test_patternrect.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_patternrect.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     t1 = PatternRect(3.25 * inch, 0.25 * inch)
     t1.show_debug_rects = True

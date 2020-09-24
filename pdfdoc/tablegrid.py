@@ -52,9 +52,39 @@ class TableGrid(TableVector):
         self.fill_dir = "row-wise"
         self.width_constraint = w
         self.height_constraint = h
-        self.total_width = 0
-        self.total_height = 0
         self.auto_adjust = True
+
+    def __str__(self):
+        s = []
+        s.append("TableGrid: %r" % (self))
+        s.append("  Cell count: %d" % (len(self.cells)))
+        s.append("  Rect: %s" % (str(self.rect)))
+        w, h = self.get_content_size()
+        s.append("  Content size: %.1f, %.1f" % (w, h))
+        s.append("  Overlay content: %r" % (self.overlay_content))
+        s.append("  Show debug rects: %s" % (self.show_debug_rects))
+        s.append("  Fill direction: %s" % (self.fill_dir))
+        s.append("  Auto adjust: %s" % (self.auto_adjust))
+        s.append(
+            "  Width/height constraint: %.1f, %.1f"
+            % (self.width_constraint, self.height_constraint)
+        )
+        s.append(
+            "  Width/height total: %.1f, %.1f" % (self.total_width, self.total_height)
+        )
+        idx = 1
+        for cell in self.iter_cells(only_visible=False):
+            s.append(
+                "  %d. Cell(%-12s) order=%-2d visible=%-5s type=%r"
+                % (idx, cell.label, cell.order, cell.visible, cell.content)
+            )
+            if cell.visible:
+                s.append(
+                    "      rect: %s content size: (%.1f, %.1f)"
+                    % (cell.content.rect, *cell.content.get_content_size())
+                )
+            idx += 1
+        return "\n".join(s)
 
     def add_cell(self, label, content, order=None):
         if order is not None:
@@ -110,9 +140,7 @@ class TableGrid(TableVector):
         )
         idx = 0
         for cell in self.iter_cells():
-            cell.content.rect.set_size(
-                new_rects[idx].width, new_rects[idx].height
-            )
+            cell.content.rect.set_size(new_rects[idx].width, new_rects[idx].height)
             cell.content.rect.move_top_left_to(
                 (new_rects[idx].left, new_rects[idx].top)
             )
@@ -131,6 +159,9 @@ class TableGrid(TableVector):
     def draw_cells_in_canvas(self, canvas):
         self.compute_cell_sizes()
         self.draw_background(canvas)
+        if self.show_debug_rects:
+            for cell in self.iter_cells():
+                cell.content.show_debug_rects = True
         for cell in self.iter_cells():
             cell.content.draw_in_canvas(canvas)
         self.draw_border_lines(canvas)

@@ -18,7 +18,7 @@ def test_safety_init():
     assert s.desc.text == "Falling Rocks"
 
 def test_safety_label():
-    c = canvas.Canvas("test_safetylabel.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_safetylabel.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     s = SafetyLabel(icon="caution", title="Danger", desc="", colour="yellow")
     s.set_overlayed_symbol("caution", shape="triangle")

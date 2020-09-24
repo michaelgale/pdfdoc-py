@@ -38,9 +38,9 @@ def test_layoutcell():
 
     t1 = TextRect(0, 0, "42", _text_dict)
     t1.show_debug_rects = True
-    t2 = ImageRect(0, 0, "square.png")
+    t2 = ImageRect(0, 0, "./testfiles/square.png")
     t2.show_debug_rects = True
-    t3 = ImageRect(0, 0, "tall.png")
+    t3 = ImageRect(0, 0, "./testfiles/tall.png")
     t3.show_debug_rects = True
     t4 = TextRect(0, 0, "Bottom Text Box", _text_dict)
     t4.show_debug_rects = True
@@ -52,7 +52,7 @@ def test_layoutcell():
     tl.show_debug_rects = True
 
     assert len(tl) == 4
-    c = canvas.Canvas("test_layoutcells.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_layoutcells.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
 
     tl.rect.move_top_left_to(Point(1 * inch, 9 * inch))
@@ -76,9 +76,9 @@ def test_layoutcell_inside():
 
     t1 = TextRect(0, 0, "42", _text_dict)
     t1.show_debug_rects = True
-    t2 = ImageRect(0, 0, "square.png")
+    t2 = ImageRect(0, 0, "./testfiles/square.png")
     t2.show_debug_rects = True
-    t3 = ImageRect(0, 0, "tall.png")
+    t3 = ImageRect(0, 0, "./testfiles/tall.png")
     t3.show_debug_rects = True
     t4 = TextRect(0, 0, "Bottom Text Box", _text_dict)
     t4.show_debug_rects = True
@@ -102,9 +102,9 @@ def test_layoutcell_inside():
 
     t1 = TextRect(0, 0, "43", _text_dict)
     t1.show_debug_rects = True
-    t2 = ImageRect(0, 0, "tall.png")
+    t2 = ImageRect(0, 0, "./testfiles/tall.png")
     t2.show_debug_rects = True
-    t3 = ImageRect(0, 0, "long.png")
+    t3 = ImageRect(0, 0, "./testfiles/long.png")
     t3.show_debug_rects = True
     t4 = TextRect(0, 0, "Another Bottom Text Box", _text_dict)
     t4.show_debug_rects = True
@@ -130,7 +130,7 @@ def test_layoutcell_inside():
     tr.add_row("Row1", tl, height=CONTENT_SIZE)
     tr.add_row("Row2", tl2, height=CONTENT_SIZE)
     tr.show_debug_rects = True
-    c = canvas.Canvas("test_layoutcells_inside.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas("./testfiles/test_layoutcells_inside.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
