@@ -40,6 +40,10 @@ from reportlab.lib.colors import Color
 from pdfdoc import DEF_FONT_NAME
 
 try:
+    pdfmetrics.registerFont(TTFont("AvenirNextLight", "Avenir Next.ttc", subfontIndex=7))
+except:
+    pass
+try:
     pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
 except:
     pass

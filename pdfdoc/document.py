@@ -38,6 +38,7 @@ from fxgeometry import Rect, Point
 from pdfdoc import *
 from .doccallbacks import DocumentCallback
 
+
 class Document:
     def __init__(self, filename=None, style=None):
         self.style = DocStyle(style=DEFAULT_MARGINS)
@@ -48,17 +49,23 @@ class Document:
         self.page_number = 1
         self.section = None
         self.cursor = (0, 0)
+        self.num_columns = 1
+        self.column = 1
         self.page_end_callbacks = None
         self.page_start_callbacks = None
         self.doc_start_callbacks = None
         self.doc_end_callbacks = None
         self.section_start_callbacks = None
         self.section_end_callbacks = None
+        self.column_start_callbacks = None
+        self.column_end_callbacks = None
         self.bleed_rect = Rect(0, 0)
         self.page_rect = Rect(0, 0)
         self.inset_rect = Rect(0, 0)
         self.header_rect = Rect(0, 0)
         self.footer_rect = Rect(0, 0)
+        self.column_rects = [Rect(0, 0)]
+        self.gutter_rects = []
         self.c = None
         if style is not None:
             self.style.set_with_dict(style)
@@ -73,11 +80,18 @@ class Document:
             "page_number": self.page_number,
             "cursor": self.cursor,
             "section": self.section,
+            "column": self.column,
+            "num_columns": self.num_columns,
             "page_rect": self.page_rect,
             "inset_rect": self.inset_rect,
             "header_rect": self.header_rect,
             "footer_rect": self.footer_rect,
             "bleed_rect": self.bleed_rect,
+            "column_rects": self.column_rects,
+            "gutter_rect": None
+            if self.column >= self.num_columns
+            else self.gutter_rects[self.column - 1],
+            "column_rect": self.column_rects[self.column - 1],
         }
 
     def set_page_size(self, page_style, orientation=None, with_bleed=None):
@@ -109,6 +123,30 @@ class Document:
         self.header_rect.set_points((ri.left, r.top), (ri.right, ri.top))
         self.footer_rect = Rect()
         self.footer_rect.set_points((ri.left, ri.bottom), (ri.right, r.bottom))
+        self.set_columns(self.num_columns)
+
+    def set_columns(self, num_columns):
+        self.num_columns = num_columns
+        num_gutters = num_columns - 1
+        self.gutter_rects = []
+        self.column_rects = []
+        gw = self.style.get_attr("gutter-width")
+        cw = (self.inset_rect.width - (num_columns - 1) * gw) / num_columns
+        for column in range(num_columns):
+            cx = self.inset_rect.left + column * (cw + gw)
+            crect = Rect(cw, self.inset_rect.height)
+            crect.move_top_left_to((cx, self.inset_rect.top))
+            self.column_rects.append(crect)
+            if column > 0:
+                grect = Rect(gw, self.inset_rect.height)
+                grect.move_top_left_to((cx - gw, self.inset_rect.top))
+                self.gutter_rects.append(grect)
+
+    def is_portrait(self):
+        return True if self.page_rect.height > self.page_rect.width else False
+
+    def is_landscape(self):
+        return True if self.page_rect.height < self.page_rect.width else False
 
     def set_author(self, author):
         self.author = author
@@ -121,11 +159,34 @@ class Document:
 
     # Convenience accessors for page geometry
 
+    def get_column_width(self):
+        return self.column_rects[self.column - 1].width
+
     def get_remaining_height(self):
         return self.cursor[1] - self.inset_rect.bottom
 
-    def get_top_left(self, with_margins=True):
+    def get_remaining_width(self):
+        return self.inset_rect.right - self.cursor[0]
+
+    def is_enough_height(self, for_height):
+        return for_height < self.get_remaining_height()
+
+    def is_enough_width(self, for_width):
+        return for_width < self.get_remaining_width()
+
+    def is_enough_space(self, for_space):
+        if self.is_portrait():
+            return self.is_enough_height(for_space)
+        else:
+            return self.is_enough_width(for_space)
+
+    def get_current_column_rect(self):
+        return self.column_rects[self.column - 1]
+
+    def get_top_left(self, with_margins=True, in_column=False):
         """ Returns the coordinate of the top left corner of the page or content region."""
+        if in_column:
+            return self.get_current_column_rect().get_top_left()
         r = (
             self.style.get_inset_rect(self.page_rect)
             if with_margins
@@ -133,8 +194,10 @@ class Document:
         )
         return r.left, r.top
 
-    def get_bottom_left(self, with_margins=True):
+    def get_bottom_left(self, with_margins=True, in_column=False):
         """ Returns the coordinate of the bottom left corner of the page or content region."""
+        if in_column:
+            return self.get_current_column_rect().get_bottom_left()
         r = (
             self.style.get_inset_rect(self.page_rect)
             if with_margins
@@ -142,8 +205,10 @@ class Document:
         )
         return r.left, r.bottom
 
-    def get_top_right(self, with_margins=True):
+    def get_top_right(self, with_margins=True, in_column=False):
         """ Returns the coordinate of the top right corner of the page or content region."""
+        if in_column:
+            return self.get_current_column_rect().get_top_right()
         r = (
             self.style.get_inset_rect(self.page_rect)
             if with_margins
@@ -151,8 +216,10 @@ class Document:
         )
         return r.right, r.top
 
-    def get_bottom_right(self, with_margins=True):
+    def get_bottom_right(self, with_margins=True, in_column=False):
         """ Returns the coordinate of the bottom right corner of the page or content region."""
+        if in_column:
+            return self.get_current_column_rect().get_bottom_right()
         r = (
             self.style.get_inset_rect(self.page_rect)
             if with_margins
@@ -160,25 +227,50 @@ class Document:
         )
         return r.right, r.bottom
 
-    def _cursor_top_left(self, with_margins=True):
+    def cursor_top_left(self, with_margins=True, column=None):
         """ Moves document coordinate pointer to top left of content region."""
-        self.cursor = self.get_top_left(with_margins=with_margins)
+        if column is not None:
+            if column - 1 < self.num_columns:
+                self.cursor = self.column_rects[column - 1].get_top_left()
+        else:
+            self.cursor = self.get_top_left(with_margins=with_margins)
 
-    def _cursor_top_right(self, with_margins=True):
+    def cursor_top_right(self, with_margins=True, column=None):
         """ Moves document coordinate pointer to top right of content region."""
-        self.cursor = self.get_top_right(with_margins=with_margins)
+        if column is not None:
+            if column - 1 < self.num_columns:
+                self.cursor = self.column_rects[column - 1].get_top_right()
+        else:
+            self.cursor = self.get_top_right(with_margins=with_margins)
 
-    def _cursor_bottom_left(self, with_margins=True):
+    def cursor_bottom_left(self, with_margins=True, column=None):
         """ Moves document coordinate pointer to bottom left of content region."""
-        self.cursor = self.get_bottom_left(with_margins=with_margins)
+        if column is not None:
+            if column - 1 < self.num_columns:
+                self.cursor = self.column_rects[column - 1].get_bottom_left()
+        else:
+            self.cursor = self.get_bottom_left(with_margins=with_margins)
 
-    def _cursor_bottom_right(self, with_margins=True):
+    def cursor_bottom_right(self, with_margins=True, column=None):
         """ Moves document coordinate pointer to bottom right of content region."""
-        self.cursor = self.get_bottom_right(with_margins=with_margins)
+        if column is not None:
+            if column - 1 < self.num_columns:
+                self.cursor = self.column_rects[column - 1].get_bottom_right()
+        else:
+            self.cursor = self.get_bottom_right(with_margins=with_margins)
 
-    def _cursor_shift_down(self, yoffset):
+    def cursor_shift_down(self, yoffset):
         """ Shifts the global coordinate pointer down. """
         self.cursor = (self.cursor[0], self.cursor[1] - yoffset)
+
+    def cursor_shift_across(self, xoffset):
+        self.cursor = (self.cursor[0] + xoffset, self.cursor[1])
+
+    def cursor_auto_shift(self, offset):
+        if self.is_enough_height(offset):
+            self.cursor_shift_down(offset)
+        else:
+            self.column_break()
 
     def _get_next_section(self):
         if self.section_list is None:
@@ -195,14 +287,31 @@ class Document:
 
     # Document control actions
 
+    def column_break(self):
+        if self.column < self.num_columns:
+            self._process_callbacks(self.column_end_callbacks)
+            self.column += 1
+            self.cursor_top_left(column=self.column)
+            self._process_callbacks(self.column_start_callbacks)
+        else:
+            self.page_break()
+
     def page_break(self, new_page_number=None):
         self._page_end(new_page_number=new_page_number)
         self._page_start()
 
-    def section_break(self, new_section=None, page_break=True, new_page_number=None):
+    def section_break(
+        self,
+        new_section=None,
+        page_break=True,
+        new_page_number=None,
+        column_break=False,
+    ):
         self._process_callbacks(self.section_end_callbacks)
         if page_break:
             self._page_end(new_page_number=new_page_number)
+        elif column_break:
+            self.column_break()
         if new_section is not None:
             self.section = new_section
         else:
@@ -224,7 +333,9 @@ class Document:
 
     def _process_callbacks(self, callbacks):
         def z_order_key(e):
-            return e.z_order
+            if "z_order" in e.__dict__:
+                return e.z_order
+            return 0
 
         all_callbacks = []
         if isinstance(callbacks, list):
@@ -262,7 +373,7 @@ class Document:
             if len(self.section_list) > 0:
                 self.section = self.section_list[0]
         self._process_callbacks([self.doc_start_callbacks, self.page_start_callbacks])
-        self._cursor_top_left()
+        self.cursor_top_left()
 
     def _doc_end(self):
         """ Close document session and save file. """
@@ -279,7 +390,9 @@ class Document:
         if new_page_number is not None:
             self.page_number = new_page_number
         self._process_callbacks(self.page_start_callbacks)
-        self._cursor_top_left()
+        self.column = 1
+        self._process_callbacks(self.column_start_callbacks)
+        self.cursor_top_left()
 
     def _page_end(self, new_page_number=None):
         """ Peform actions to end this page and start a new page."""

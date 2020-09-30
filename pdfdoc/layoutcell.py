@@ -52,8 +52,12 @@ CONSTRAINT_TOKENS = [
     "center",
     "middleof",
     "resize",
+    "between_horz",
+    "between_vert",
+    "between",
 ]
 SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof"]
+BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
 
 
 def extract_labels(constraint):
@@ -65,6 +69,19 @@ def extract_labels(constraint):
         if e not in CONSTRAINT_TOKENS:
             labels.append(e)
     return labels
+
+
+def split_with_token(constraint, token):
+    c = constraint.split()
+    cu = []
+    for e in c:
+        if e.lower() == token.lower():
+            cu.append(token.upper())
+        else:
+            cu.append(e)
+    c = " ".join(cu)
+    c = c.split(token.upper())
+    return c
 
 
 def parse_constraint(constraint):
@@ -79,16 +96,16 @@ def parse_constraint(constraint):
             cdict["dest_pt"] = token
             cdict["dest_labels"] = extract_labels(constraint)
             return cdict
+    for token in BETWEEN_TOKENS:
+        if token in c.split():
+            cb = split_with_token(constraint, "and")
+            if len(cb) == 2:
+                g1 = extract_labels(cb[0])
+                g2 = extract_labels(cb[1])
+                cdict[token] = {"group1": g1, "group2": g2}
+                return cdict
 
-    c = constraint.split()
-    cu = []
-    for e in c:
-        if e.lower() == "to":
-            cu.append("TO")
-        else:
-            cu.append(e)
-    c = " ".join(cu)
-    c = c.split("TO")
+    c = split_with_token(constraint, "to")
     if len(c) == 2:
         other = extract_labels(c[1])
         if len(other) > 0:
@@ -107,6 +124,30 @@ def parse_constraint(constraint):
     return cdict
 
 
+def dummy_rect_from_parent_edge(parent_rect, edges):
+    edges = edges.split("_")
+    x, y = parent_rect.get_centre()
+    valid = False
+    for e in edges:
+        if e == "left":
+            x = parent_rect.left
+            valid = True
+        elif e == "right":
+            x = parent_rect.right
+            valid = True
+        elif e == "top":
+            y = parent_rect.top
+            valid = True
+        elif e == "bottom":
+            y = parent_rect.bottom
+            valid = True
+    if valid:
+        drect = Rect(0, 0)
+        drect.move_to((x, y))
+        return drect
+    return None
+
+
 class LayoutCell(TableVector):
     """ A LayoutCell is a sub-class of TableVector.  It contains one or more TableCells
     (with content as a ContentRect type).  LayoutCell is populated by constraints 
@@ -119,10 +160,11 @@ class LayoutCell(TableVector):
             "bottom right to centre" - bottom right corner aligned to parent's centre
             "below Cell2" - cell rectangle placed below Cell2's rectangle
             "above Cell1 Cell3" - cell rectangle placed above both Cell1 and Cell3
+            "between Cell1 and Cell2 parent_right"
         In general constraints are in the form of:
             <my ref point> TO <parent ref point>
         or  <my ref point> TO <label ref point>
-        or  BELOW, ABOVE, RIGHTOF, LEFTOF <[labels]>
+        or  below, above, rightof, leftof <[labels]>
     """
 
     def __init__(self, w, h, style=None):
@@ -137,6 +179,11 @@ class LayoutCell(TableVector):
         s.append("  Rect: %s" % (str(self.rect)))
         w, h = self.get_content_size()
         s.append("  Content size: %.1f, %.1f" % (w, h))
+        clipped = self.has_clipped_cells()
+        overlapped = self.has_overlapped_cells()
+        ratio = self.get_whitespace_ratio()
+        s.append("  Clipped cells: %s Overlapped cells: %s" % (clipped, overlapped))
+        s.append("  Whitespace ratio: %.1f%%" % (ratio * 100.0))
         s.append("  Overlay content: %r" % (self.overlay_content))
         s.append("  Show debug rects: %s" % (self.show_debug_rects))
         s.append(
@@ -162,13 +209,66 @@ class LayoutCell(TableVector):
         return "\n".join(s)
 
     def layout_cells(self):
+        w = self.fixed_rect.width if self.is_fixed_width else self.rect.width
+        h = self.fixed_rect.height if self.is_fixed_height else self.rect.height
+        self.rect.set_size_anchored(w, h, anchor_pt="top left")
         prect = self.style.get_inset_rect(self.rect)
         for cell in self.iter_cells():
             crect = self.get_cell_rect(cell.label)
             if cell.constraints is not None:
                 for c in cell.constraints:
                     cd = parse_constraint(c)
-                    if len(cd["dest_labels"]) > 0:
+                    if any([x in cd for x in BETWEEN_TOKENS]):
+                        if "between" in cd:
+                            bt = "between"
+                        if "between_horz" in cd:
+                            bt = "between_horz"
+                        if "between_vert" in cd:
+                            bt = "between_vert"
+                        g1r = []
+                        g2r = []
+                        for x in cd[bt]["group1"]:
+                            if self.is_cell_visible(x):
+                                g1r.append(self.get_cell_rect(x))
+                            else:
+                                pr = dummy_rect_from_parent_edge(prect, x)
+                                if pr is not None:
+                                    g1r.append(pr)
+                        for x in cd[bt]["group2"]:
+                            if self.is_cell_visible(x):
+                                g2r.append(self.get_cell_rect(x))
+                            else:
+                                pr = dummy_rect_from_parent_edge(prect, x)
+                                if pr is not None:
+                                    g2r.append(pr)
+                        if len(g1r) > 0 and len(g2r) > 0:
+                            g1_rect = Rect.bounding_rect_from_rects(g1r)
+                            g2_rect = Rect.bounding_rect_from_rects(g2r)
+                            if "between_vert" in cd or "between" in cd:
+                                if g1_rect.bottom > g2_rect.top:
+                                    mid_y = (
+                                        g2_rect.top + (g1_rect.bottom - g2_rect.top) / 2
+                                    )
+                                else:
+                                    mid_y = (
+                                        g1_rect.top + (g2_rect.bottom - g1_rect.top) / 2
+                                    )
+                                crx, cry = crect.get_centre()
+                                crect.move_to((crx, mid_y))
+                            if "between_horz" in cd or "between" in cd:
+                                if g1_rect.right < g2_rect.left:
+                                    mid_x = (
+                                        g1_rect.right
+                                        + (g2_rect.left - g1_rect.right) / 2
+                                    )
+                                else:
+                                    mid_x = (
+                                        g2_rect.right
+                                        + (g1_rect.left - g2_rect.right) / 2
+                                    )
+                                crx, cry = crect.get_centre()
+                                crect.move_to((mid_x, cry))
+                    elif len(cd["dest_labels"]) > 0:
                         others = []
                         for dest in cd["dest_labels"]:
                             if self.is_cell_visible(dest):
@@ -211,6 +311,10 @@ class LayoutCell(TableVector):
         if with_padding:
             self.total_width += self.style.get_width_trim()
             self.total_height += self.style.get_height_trim()
+        if self.is_fixed_width:
+            self.total_width = self.fixed_rect.width
+        if self.is_fixed_height:
+            self.total_height = self.fixed_rect.height
         return self.total_width, self.total_height
 
     def compute_cell_layout(self):

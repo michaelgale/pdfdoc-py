@@ -82,6 +82,6 @@ class TableRow(TableVector):
         if with_padding:
             sw += self.style.get_width_trim()
             sh += self.style.get_height_trim()
-        self.total_width = sw
-        self.total_height = sh
-        return sw, sh
+        self.total_width = self.fixed_rect.width if self.is_fixed_width else sw
+        self.total_height = self.fixed_rect.height if self.is_fixed_height else sh
+        return self.total_width, self.total_height

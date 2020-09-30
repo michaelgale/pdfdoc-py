@@ -153,6 +153,7 @@ class PageBackgroundCallback(DocumentCallback):
         super().__init__()
         self.colour = colour if colour is not None else (1, 1, 1)
         self.style = DocStyle()
+        self.style.set_with_dict(style)
         if style is None:
             style = {"background-fill": True, "background-colour": self.colour}
         self.background = ContentRect(0, 0, style=style)
@@ -207,3 +208,25 @@ class CropMarksCallback(DocumentCallback):
             pts = r.get_pts()
             for pt in pts:
                 self._draw_cross(context, pt)
+
+
+class ColumnLineCallback(DocumentCallback):
+    """ A callback which draws column dividing line in the gutter."""
+
+    def __init__(self, style=None):
+        super().__init__()
+        self.style = DocStyle(style=style)
+
+    def render(self, context):
+        if context["gutter_rect"] is None:
+            return
+        r = context["gutter_rect"]
+        c = context["canvas"]
+        line_colour = self.style.get_attr("line-colour", (0, 0, 0))
+        line_width = self.style.get_attr("line-width", 0.5 * mm)
+        tm = self.style.get_top_trim()
+        bm = self.style.get_bottom_trim()
+        c.setStrokeColor(rl_colour(line_colour))
+        c.setLineWidth(line_width)
+        x = r.left + r.width / 2
+        c.line(x, r.top - tm, x, r.bottom + bm)

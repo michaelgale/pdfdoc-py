@@ -59,11 +59,11 @@ def test_tablegrid_rows():
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.draw_in_canvas(c)
+
     r = ContentRect(5 * inch, 3 * inch)
     r.show_debug_rects = True
     r.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     r.draw_in_canvas(c)
-
     c.showPage()
     c.save()
 
@@ -105,6 +105,5 @@ def test_tablegrid_cols():
     r.show_debug_rects = True
     r.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     r.draw_in_canvas(c)
-
     c.showPage()
     c.save()

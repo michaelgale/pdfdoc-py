@@ -71,6 +71,9 @@ class TableVector:
         self.show_debug_rects = False
         self.total_width = 0
         self.total_height = 0
+        self.is_fixed_width = False
+        self.is_fixed_height = False
+        self.fixed_rect = Rect(w, h)
 
     def __len__(self):
         return len(self.cells)
@@ -82,6 +85,11 @@ class TableVector:
         s.append("  Rect: %s" % (str(self.rect)))
         w, h = self.get_content_size()
         s.append("  Content size: %.1f, %.1f" % (w, h))
+        clipped = self.has_clipped_cells()
+        overlapped = self.has_overlapped_cells()
+        ratio = self.get_whitespace_ratio()
+        s.append("  Clipped cells: %s Overlapped cells: %s" % (clipped, overlapped))
+        s.append("  Whitespace ratio: %.1f%%" % (ratio * 100.0))
         s.append("  Overlay content: %r" % (self.overlay_content))
         s.append("  Show debug rects: %s" % (self.show_debug_rects))
         idx = 1
@@ -105,6 +113,48 @@ class TableVector:
                 if cell_label == cell.label:
                     if not only_visible or cell.visible:
                         yield cell
+
+    def has_overlapped_cells(self):
+        """ Determines if any child cells mutually overlap. """
+        other_cells = []
+        for cell in self.iter_cells():
+            other_cells.append(cell.label)
+        for cell in self.iter_cells():
+            for other in other_cells:
+                r1 = self.get_cell_rect(cell.label)
+                if not other == cell.label:
+                    r2 = self.get_cell_rect(other)
+                    if r1.overlaps(r2):
+                        return True
+        return False
+
+    def has_clipped_cells(self):
+        """ Determines if any child cells extend outside the parent container."""
+        all_rects = self.get_cell_rects()
+        brect = Rect.bounding_rect_from_rects(all_rects)
+        if brect.left < self.rect.left:
+            return True
+        if brect.right > self.rect.right:
+            return True
+        if brect.top > self.rect.top:
+            return True
+        if brect.bottom < self.rect.bottom:
+            return True
+        return False
+
+    def get_whitespace_ratio(self):
+        """ Returns the ratio of whitespace (unoccupied space) to space occupied
+        by cells in the TableVector parent container.  A value of 1.0 indicates
+        a completely blank space and 0.0 indicates a fully occupied space."""
+        w, h = self.get_content_size()
+        total_area = w * h
+        content_area = 0
+        for cell in self.iter_cells():
+            r = self.get_cell_rect(cell.label)
+            content_area += r.width * r.height
+        if total_area > 0:
+            return (total_area - content_area) / total_area
+        return 1.0
 
     def get_cell(self, label):
         for cell in self.cells:
@@ -147,6 +197,10 @@ class TableVector:
     def get_cell_content(self, label):
         cell = self.get_cell(label)
         return cell.content if cell is not None else None
+
+    def set_cell_content(self, label, content):
+        cell = self.get_cell(label)
+        cell.content = content
 
     def is_cell_visible(self, label):
         cell = self.get_cell(label)

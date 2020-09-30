@@ -36,6 +36,7 @@ from .contentrect import ContentRect
 from .textrect import TextRect
 from .imgrect import ImageRect
 from .patternrect import PatternRect
+from .arrowhead import ArrowHead
 from .tablecell import TableCell, TableVector
 from .tablegrid import TableGrid
 from .layoutcell import LayoutCell

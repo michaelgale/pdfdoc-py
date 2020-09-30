@@ -53,6 +53,8 @@ class TableGrid(TableVector):
         self.width_constraint = w
         self.height_constraint = h
         self.auto_adjust = True
+        self.min_width = 0
+        self.min_height = 0
 
     def __str__(self):
         s = []
@@ -61,6 +63,11 @@ class TableGrid(TableVector):
         s.append("  Rect: %s" % (str(self.rect)))
         w, h = self.get_content_size()
         s.append("  Content size: %.1f, %.1f" % (w, h))
+        clipped = self.has_clipped_cells()
+        overlapped = self.has_overlapped_cells()
+        ratio = self.get_whitespace_ratio()
+        s.append("  Clipped cells: %s Overlapped cells: %s" % (clipped, overlapped))
+        s.append("  Whitespace ratio: %.1f%%" % (ratio * 100.0))
         s.append("  Overlay content: %r" % (self.overlay_content))
         s.append("  Show debug rects: %s" % (self.show_debug_rects))
         s.append("  Fill direction: %s" % (self.fill_dir))
@@ -113,10 +120,22 @@ class TableGrid(TableVector):
         if with_padding:
             self.total_width += self.style.get_width_trim()
             self.total_height += self.style.get_height_trim()
+        if self.is_fixed_width:
+            self.total_width = self.fixed_rect.width
+        if self.is_fixed_height:
+            self.total_height = self.fixed_rect.height
+        if self.min_width:
+            self.total_width = max(self.total_width, self.min_width)
+        if self.min_height:
+            self.total_height = max(self.total_height, self.min_height)
         return self.total_width, self.total_height
 
     def compute_cell_sizes(self):
         self.compute_cell_order()
+        if self.is_fixed_width:
+            self.width_constraint = self.fixed_rect.width
+        if self.is_fixed_height:
+            self.height_constraint = self.fixed_rect.height
         rpt = self.rect.get_top_left()
         r = Rect(width=self.width_constraint, height=self.height_constraint)
         cell_rect = self.style.get_inset_rect(r)
@@ -148,6 +167,10 @@ class TableGrid(TableVector):
         bounds = Rect.bounding_rect_from_rects(new_rects)
         self.total_width = bounds.width + self.style.get_width_trim()
         self.total_height = bounds.height + self.style.get_height_trim()
+        if self.min_width:
+            self.total_width = max(self.total_width, self.min_width)
+        if self.min_height:
+            self.total_height = max(self.total_height, self.min_height)
         self.rect.set_size(self.total_width, self.total_height)
         self.rect.move_top_left_to(rpt)
 

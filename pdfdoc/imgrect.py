@@ -58,8 +58,6 @@ class ImageRect(ContentRect):
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
     def get_content_size(self, with_padding=True):
-        if self.is_fixed_size:
-            return self.fixed_rect.width, self.fixed_rect.height
         if self.filename == "":
             return 0, 0
         (iw, ih) = GetImageMetrics(self.filename)
@@ -67,7 +65,9 @@ class ImageRect(ContentRect):
         if with_padding:
             tw += self.style.get_width_trim()
             th += self.style.get_height_trim()
-        return tw, th
+        w = self.fixed_rect.width if self.is_fixed_width else tw
+        h = self.fixed_rect.height if self.is_fixed_height else th
+        return w, h
 
     def draw_image_rect(self, c):
         if self.filename == "":

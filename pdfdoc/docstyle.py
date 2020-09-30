@@ -108,6 +108,7 @@ class DocStyle:
             "overlay-horizontal-align": "centre",
             "overlay-vertical-align": "centre",
             "overlay-size": "auto",
+            "arrow-style": "taper",
         }
         if style is not None:
             self.set_with_dict(style)
@@ -193,12 +194,23 @@ class DocStyle:
             for key, value in style_dict.attr.items():
                 self.set_attr(key, value)
 
-
     def set_all_margins(self, withMargin):
         self.set_attr("left-margin", withMargin)
         self.set_attr("right-margin", withMargin)
         self.set_attr("top-margin", withMargin)
         self.set_attr("bottom-margin", withMargin)
+
+    def set_top_margin(self, withMargin):
+        self.set_attr("top-margin", withMargin)
+
+    def set_bottom_margin(self, withMargin):
+        self.set_attr("bottom-margin", withMargin)
+
+    def set_right_margin(self, withMargin):
+        self.set_attr("right-margin", withMargin)
+
+    def set_left_margin(self, withMargin):
+        self.set_attr("left-margin", withMargin)
 
     def set_lr_margins(self, withMargin):
         self.set_attr("left-margin", withMargin)
@@ -221,6 +233,18 @@ class DocStyle:
     def set_tb_padding(self, withPadding):
         self.set_attr("top-padding", withPadding)
         self.set_attr("bottom-padding", withPadding)
+
+    def set_top_padding(self, withPadding):
+        self.set_attr("top-padding", withPadding)
+
+    def set_bottom_padding(self, withPadding):
+        self.set_attr("bottom-padding", withPadding)
+
+    def set_right_padding(self, withPadding):
+        self.set_attr("right-padding", withPadding)
+
+    def set_left_padding(self, withPadding):
+        self.set_attr("left-padding", withPadding)
 
     def get_width_trim(self):
         return (
@@ -295,7 +319,8 @@ class DocStyle:
         margin_rect.get_size()
         return margin_rect
 
-class DocStyleSheet():
+
+class DocStyleSheet:
     """ Container class for multiple DocStyle instances indexed in a dictionary.
     All the styles can be conveniently loaded from a YAML file.  The format of the
     YAML file must have a top level key called "styles" under which a tree of 
@@ -335,12 +360,13 @@ class DocStyleSheet():
             self.styles[style_name] = style
 
     def load_from_yml(self, filename):
-        sp = Params(yml=filename)
+        sp = Params(yml=filename, baseunit="pt")
         sd = sp.__dict__
         if "styles" in sd:
             for k, v in sd["styles"].items():
                 s = DocStyle(style=v)
                 self.styles[k] = s
+
 
 def roman_number(num):
 

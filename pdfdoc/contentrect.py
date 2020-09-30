@@ -47,7 +47,8 @@ class ContentRect:
             self.style.set_with_dict(style)
         self.show_debug_rects = False
         self.overlay_content = None
-        self.is_fixed_size = False
+        self.is_fixed_width = False
+        self.is_fixed_height = False
         self.fixed_rect = Rect(w, h)
 
     def __str__():
@@ -66,10 +67,15 @@ class ContentRect:
             inset_rect = self.style.get_inset_rect(self.rect)
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
+    def set_fixed_size(self, w, h):
+        self.is_fixed_height = True
+        self.is_fixed_width = True
+        self.fixed_rect = Rect(w, h)
+
     def get_content_size(self):
-        if self.is_fixed_size:
-            return self.fixed_rect.width, self.fixed_rect.height
-        return self.rect.width, self.rect.height
+        w = self.fixed_rect.width if self.is_fixed_width else self.rect.width
+        h = self.fixed_rect.height if self.is_fixed_height else self.rect.height
+        return w, h
 
     def draw_rect(self, c):
         has_background = self.style.get_attr("background-fill", False)

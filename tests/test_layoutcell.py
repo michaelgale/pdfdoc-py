@@ -110,6 +110,8 @@ def test_layoutcell_inside():
     t4.show_debug_rects = True
     t5 = TextRect(0, 0, "Cell5 Text Box", _text_dict)
     t5.show_debug_rects = True
+    t6 = TextRect(0, 0, "Cell6 Text Box", _text_dict)
+    t6.show_debug_rects = True
 
     tl2.add_cell("Cell1", t1, constraints=["top left"])
     tl2.add_cell("Cell2", t2, constraints=["top left to Cell1 top right"])
@@ -124,6 +126,15 @@ def test_layoutcell_inside():
             "right to Cell3 right resize",
         ],
     )
+    tl2.add_cell(
+        "Cell6",
+        t6,
+        constraints=[
+            "between_horz parent_left and parent_right",
+            # "between_horz Cell1 Cell2 and Cell3",
+            "between_vert Cell1 and Cell4 parent_bottom",
+        ],
+    )
     tl2.show_debug_rects = True
 
     tr = TableColumn(6 * inch, 7 * inch)
@@ -135,6 +146,5 @@ def test_layoutcell_inside():
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.draw_in_canvas(c)
-
     c.showPage()
     c.save()

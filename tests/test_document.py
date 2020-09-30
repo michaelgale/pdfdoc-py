@@ -160,3 +160,34 @@ def test_document_sections():
         doc.page_break()
         doc.section_break(new_section="End")
         doc.page_break()
+
+def test_document_columns():
+    doc = Document("./testfiles/test_columns.pdf")
+    doc.set_page_size(PAGE_LETTER)
+    doc.style["gutter-width"] = 0.5 * inch
+    doc.set_columns(2)
+    r1 = doc.column_rects[0]
+    r2 = doc.column_rects[1]
+    g1 = doc.gutter_rects[0]
+    assert len(doc.column_rects) == 2
+    assert len(doc.gutter_rects) == 1
+    assert r1.left == 36
+    assert r1.right == 288
+    assert r2.left == 324
+    assert r2.right == 576
+    assert g1.left == 288
+    assert g1.right == 324
+    p1 = PageNumberCallback(show_in_footer=True)
+    doc.page_end_callbacks = [p1]
+    cl = ColumnLineCallback(style={
+        "top-margin": 0.25 * inch,
+        "bottom-margin": 0.25 * inch,
+        "line-width": 0.05 * inch,
+        "line-colour": (0, 0.4, 0.8),
+    })
+    doc.column_end_callbacks = [cl]
+    doc._doc_start()
+    for x in range(20):
+        doc.cursor_auto_shift(200)
+        # print("Page: %d Column: %d Cursor: %.1f,%.1f" % (doc.page_number, doc.column, doc.cursor[0], doc.cursor[1]))
+    doc.end_document()
