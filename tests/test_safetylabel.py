@@ -8,7 +8,7 @@ import random
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
-from fxgeometry import Point, Rect
+from toolbox import *
 from ldrawpy import LDRColour
 from pdfdoc import *
 

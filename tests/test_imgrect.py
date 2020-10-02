@@ -4,10 +4,12 @@ import os
 import sys
 import pytest
 
-from fxgeometry import Point
-from pdfdoc.imgrect import ImageRect
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
+
+from toolbox import *
+from pdfdoc import *
+
 
 _test_dict = {"left-margin": 2, "right-margin": 3, "horz-align": "left"}
 
@@ -48,7 +50,9 @@ _text_dict = {
 
 
 def test_imgrect_render():
-    c = canvas.Canvas("./testfiles/test_imgrect.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_imgrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
     t1 = ImageRect(1 * inch, 2 * inch, "./testfiles/long.png", _text_dict)
     t1.show_debug_rects = True

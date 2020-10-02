@@ -4,7 +4,7 @@ import os
 import sys
 import pytest
 
-from fxgeometry import Point
+from toolbox import *
 from pdfdoc.patternrect import PatternRect
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch

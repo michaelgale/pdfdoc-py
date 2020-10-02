@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# Copyright (C) 2018  Fx Bricks Inc.
+# Copyright (C) 2020  Michael Gale
 # This file is part of the legocad python module.
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -28,64 +28,12 @@ from pathlib import Path
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
-
-from pdfdoc import DEF_FONT_NAME
-
-try:
-    pdfmetrics.registerFont(TTFont("AvenirNextLight", "Avenir Next.ttc", subfontIndex=7))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
-except:
-    pass
-# pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
-# pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
-# pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
-# pdfmetrics.registerFont(TTFont("FontAwesome", "fontawesome-webfont.ttf"))
-
-try:
-    pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("British-Rail-Light", "britrln_.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("British-Rail-Dark", "britrdn_.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("FontAwesome", "fontawesome-webfont.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("Hazard", "haw_____.ttf"))
-except:
-    print("Cannot load hazard font")
-try:
-    pdfmetrics.registerFont(TTFont("Zapf Dingbats", "ZapfDingbats.ttf"))
-except:
-    print("Cannot load dingbats font")
-
-from fxgeometry import Rect
 
 
 def register_font(font_name, font_filename):

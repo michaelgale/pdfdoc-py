@@ -4,7 +4,7 @@ import os
 import sys
 import pytest
 
-from fxgeometry import Point
+from toolbox import *
 from pdfdoc.textrect import TextRect
 from pdfdoc.tablerow import TableRow
 from reportlab.pdfgen import canvas

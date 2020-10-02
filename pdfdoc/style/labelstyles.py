@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# Copyright (C) 2020  Fx Bricks Inc.
+# Copyright (C) 2020  Michael Gale
 # This file is part of the legocad python module.
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
@@ -23,7 +23,7 @@
 #
 # Pre-defined Label Document Styles
 
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch, mm, cm
 
 # Avery 5260
 # - 30 labels per sheet

@@ -3,7 +3,7 @@
 import os
 
 __project__ = 'pdfdoc'
-__version__ = '0.5.0'
+__version__ = '0.9.0'
 
 VERSION = __project__ + "-" + __version__
 
@@ -31,65 +31,44 @@ from pdfdoc.pdfdoc import (
     hazsymbol,
     set_icon,
 )
-from .docstyle import DocStyle, DocStyleSheet, roman_number
-from .contentrect import ContentRect
-from .textrect import TextRect
-from .imgrect import ImageRect
-from .patternrect import PatternRect
-from .arrowhead import ArrowHead
-from .tablecell import TableCell, TableVector
-from .tablegrid import TableGrid
-from .layoutcell import LayoutCell
-from .tablerow import TableRow
-from .tablecolumn import TableColumn
-from .labeldoc import LabelDoc
-from .labelstyles import *
-from .genericlabel import GenericLabel
-from .safetylabel import SafetyLabel
-from .mechlabel import MechanicalLabel
-from .eleclabel import ElectronicLabel
-from .pagestyles import *
-from .document import Document
-from .doccallbacks import *
+from .style.docstyle import DocStyle, DocStyleSheet, roman_number
+from .style.pagestyles import *
+from .style.labelstyles import *
+from .contentrect.contentrect import ContentRect
+from .contentrect.textrect import TextRect
+from .contentrect.imgrect import ImageRect
+from .contentrect.patternrect import PatternRect
+from .tablecell.tablecell import TableCell, TableVector
+from .tablecell.tablegrid import TableGrid
+from .tablecell.layoutcell import LayoutCell
+from .tablecell.tablerow import TableRow
+from .tablecell.tablecolumn import TableColumn
+from .document.document import Document
+from .document.doccallbacks import *
+from .labeldoc.labeldoc import LabelDoc
+from .labeldoc.genericlabel import GenericLabel
+from .labeldoc.safetylabel import SafetyLabel
+from .labeldoc.mechlabel import MechanicalLabel
+from .labeldoc.eleclabel import ElectronicLabel
+from .graphics.arrowhead import ArrowHead
 
-try:
-    pdfmetrics.registerFont(TTFont("DroidSans", "DroidSans.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("DroidSans-Bold", "DroidSans-Bold.ttf"))
-except:
-    pass
-pdfmetrics.registerFont(TTFont("DIN-Medium", "DIN-Medium.ttf"))
-pdfmetrics.registerFont(TTFont("DIN-Regular", "DIN-Regular.ttf"))
-pdfmetrics.registerFont(TTFont("DIN-Bold", "DIN-Bold.ttf"))
-# pdfmetrics.registerFont(TTFont("FontAwesome", "fontawesome-webfont.ttf"))
+font_dict = {
+    "DroidSans": "DroidSans.ttf",
+    "DroidSans-Bold": "DroidSans-Bold.ttf",
+    "DIN-Medium": "DIN-Medium.ttf",
+    "DIN-Regular": "DIN-Regular.ttf",
+    "DIN-Bold": "DIN-Bold.ttf",
+    "IKEA-Sans-Regular": "IKEA-Sans-Regular.ttf",
+    "IKEA-Sans-Heavy": "IKEA-Sans-Heavy.ttf",
+    "British-Rail-Light": "britrln_.ttf",
+    "British-Rail-Dark": "britrdn_.ttf",
+    "FontAwesome": "fontawesome-webfont.ttf",
+    "Hazard": "haw_____.ttf",
+    "Zapf Dingbats": "ZapfDingbats.ttf",
+}
 
-try:
-    pdfmetrics.registerFont(TTFont("IKEA-Sans-Regular", "IKEA-Sans-Regular.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("IKEA-Sans-Heavy", "IKEA-Sans-Heavy.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("British-Rail-Light", "britrln_.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("British-Rail-Dark", "britrdn_.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("FontAwesome", "fontawesome-webfont.ttf"))
-except:
-    pass
-try:
-    pdfmetrics.registerFont(TTFont("Hazard", "haw_____.ttf"))
-except:
-    print("Cannot load hazard font")
-try:
-    pdfmetrics.registerFont(TTFont("Zapf Dingbats", "ZapfDingbats.ttf"))
-except:
-    print("Cannot load dingbats font")
+for k, v in font_dict.items():
+    try:
+        pdfmetrics.registerFont(TTFont(k, v))
+    except:
+        print("Warning: could not load and register font %s with filename %s" % (k, v))

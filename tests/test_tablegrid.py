@@ -5,10 +5,8 @@ import sys
 import pytest
 import random
 
-from fxgeometry import Point
-from pdfdoc.contentrect import ContentRect
-from pdfdoc.textrect import TextRect
-from pdfdoc.tablegrid import TableGrid
+from toolbox import *
+from pdfdoc import *
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 

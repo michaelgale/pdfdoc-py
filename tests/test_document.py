@@ -7,7 +7,7 @@ import math
 import random
 import pprint
 from reportlab.lib.units import inch, mm
-from fxgeometry import Point
+from toolbox import *
 from ldrawpy import LDRColour
 from pdfdoc import *
 

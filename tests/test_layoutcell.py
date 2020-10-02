@@ -5,7 +5,7 @@ import sys
 import pytest
 import random
 
-from fxgeometry import Point
+from toolbox import *
 from pdfdoc import *
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
