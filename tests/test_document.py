@@ -123,8 +123,8 @@ def test_document_cropmarks():
     crosses = CropMarksCallback(length=3 * mm)
     crosses.show_cross_hairs = True
     crosses.show_as_corners = False
-    crosses.style.set_attr("line-width", 0.25 * mm)
-    crosses.style.set_attr("line-colour", (1, 0, 0))
+    crosses.style["line-width"] = 0.25 * mm
+    crosses.style["line-colour"] = (1, 0, 0)
     doc.page_end_callbacks = [crops, crosses]
     doc.page_start_callbacks = back
     for section, ctx in doc.iter_doc([1, 2, 3]):

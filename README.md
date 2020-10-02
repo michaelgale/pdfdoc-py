@@ -26,6 +26,21 @@ After installation, the package can imported:
     >>> pdfdoc.__version__
 ```
 
+Example of making a label sheet with 25 labels on Avery 5262 self-adhesive label sheets:
+
+```python
+from pdfdoc import *
+
+ld = LabelDoc("my_labels.pdf", style=AVERY_5262_LABEL_DOC_STYLE)
+labels = [i for i in range(25)]
+for label, row, col in ld.iter_label(labels):
+    tr = TextRect(withText="Label %d" % (label))
+    # tr can be any derived ContentRect or TableVector class
+    ld.set_table_cell(tr, row, col)
+```
+
+
+
 ## Requirements
 
 * Python 3.6+

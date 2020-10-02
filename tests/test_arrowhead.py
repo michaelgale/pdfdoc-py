@@ -36,8 +36,8 @@ def test_arrowhead():
     p2 = (7 * inch, 6 * inch)
     p3 = (5 * inch, 3 * inch)
     p4 = (3 * inch, 6 * inch)
-    a1.style.set_attr("arrow-style", "flat")
-    a1.style.set_attr("border-outline", False)
+    a1.style["arrow-style"] = "flat"
+    a1.style["border-outline"] = False
     a1.draw_in_canvas(c, p1, dir=90)
     a1.draw_in_canvas(c, p2, dir=0)
     a1.draw_in_canvas(c, p3, dir=-90)

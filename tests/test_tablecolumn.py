@@ -61,9 +61,9 @@ def test_tablecolumn_row():
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.set_row_height("Row 1", 0.5)
-    tr.style.set_attr("border-line-bottom", True)
-    tr.style.set_attr("border-colour", (0.1, 0.1, 0.1))
-    tr.style.set_attr("border-width", 0.02 * inch)
+    tr.style["border-line-bottom"] = True
+    tr.style["border-colour"] = (0.1, 0.1, 0.1)
+    tr.style["border-width"] = 0.02 * inch
     tr.draw_in_canvas(c)
 
     tr.set_row_order("Row 1", 3)
@@ -108,9 +108,9 @@ def test_tableimbedded():
     c = canvas.Canvas("./testfiles/test_tableimbed.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
-    tr.style.set_attr("border-line-bottom", True)
-    tr.style.set_attr("border-colour", (0.1, 0.1, 0.1))
-    tr.style.set_attr("border-width", 0.02 * inch)
+    tr.style["border-line-bottom"] = True
+    tr.style["border-colour"] = (0.1, 0.1, 0.1)
+    tr.style["border-width"] = 0.02 * inch
     tr.draw_in_canvas(c)
 
     c.showPage()

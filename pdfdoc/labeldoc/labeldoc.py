@@ -32,6 +32,12 @@ from pdfdoc import *
 
 
 class LabelDoc:
+    """ A convenient document class for making labels on typical self-adhesive
+    label sheets.  The contents of each label can be filled sequentially
+    using iter_label generator method.  Each label's content can be any object
+    which supports a draw_in_canvas method, i.e. any ContentRect dervied class
+    or TableVector derived class. """
+
     def __init__(self, filename, style=None):
         self.filename = filename
         self.style = DocStyle()
@@ -49,11 +55,11 @@ class LabelDoc:
         )
         rs.append(
             '  Label size: (%.2f" x %.2f") '
-            % (self.col_width / inch, self.row_height / inch,)
+            % (self.col_width / inch, self.row_height / inch)
         )
         rs.append(
             '  Page size: (%.2f" x %.2f") '
-            % (self.pagerect.width / inch, self.pagerect.height / inch,)
+            % (self.pagerect.width / inch, self.pagerect.height / inch)
         )
         rs.append(
             "  Margins: (Top: %.3f Bottom: %.3f Left: %.3f Right: %.3f)"

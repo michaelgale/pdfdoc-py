@@ -28,8 +28,8 @@ def test_docstyle_setattr():
     assert s1["left-margin"] == 2
     assert s1.get_attr("right-margin") == 3
     assert s1.get_attr("horz-align") == "left"
-    assert s1.get_attr("horizontal-align") == "left"
-    assert s1.get_attr("horizontal_align") == "left"
+    assert s1["horizontal-align"] == "left"
+    assert s1["horizontal_align"] == "left"
     assert s1["horz-align"] == "left"
     assert s1.get_width_trim() == 5
     s1.set_attr("left-padding", 10)
