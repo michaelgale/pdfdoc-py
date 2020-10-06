@@ -42,8 +42,6 @@ class TableGrid(TableVector):
         self.width_constraint = w
         self.height_constraint = h
         self.auto_adjust = True
-        self.min_width = 0
-        self.min_height = 0
 
     def __str__(self):
         s = []

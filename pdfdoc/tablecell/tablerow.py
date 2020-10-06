@@ -73,4 +73,8 @@ class TableRow(TableVector):
             sh += self.style.get_height_trim()
         self.total_width = self.fixed_rect.width if self.is_fixed_width else sw
         self.total_height = self.fixed_rect.height if self.is_fixed_height else sh
+        if self.min_width:
+            self.total_width = max(self.total_width, self.min_width)
+        if self.min_height:
+            self.total_height = max(self.total_height, self.min_height)
         return self.total_width, self.total_height
