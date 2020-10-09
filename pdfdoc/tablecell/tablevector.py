@@ -144,6 +144,20 @@ class TableVector:
         cell = self.get_cell(label)
         return cell.content.rect if cell is not None else None
 
+    def get_cell_inset_rect(self, label):
+        cell = self.get_cell(label)
+        if cell is not None:
+            r = cell.content.style.get_inset_rect(cell.content.rect)
+            return r
+        return None
+
+    def get_cell_margin_rect(self, label):
+        cell = self.get_cell(label)
+        if cell is not None:
+            r = cell.content.style.get_margin_rect(cell.content.rect)
+            return r
+        return None
+
     def set_cell_rect(self, label, rect):
         cell = self.get_cell(label)
         if cell is not None:

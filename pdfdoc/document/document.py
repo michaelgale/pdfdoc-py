@@ -63,6 +63,76 @@ class Document:
         else:
             self.set_page_size(PAGE_LETTER)
         self.section_list = []
+        self.chapter = 1
+
+    def _callbacks_str(self, title, callbacks):
+        s = []
+        s.append(title)
+        if callbacks is not None:
+            for callback in callbacks:
+                s.append("    %r  z-order : %d" % (callback, callback.z_order))
+                if callback.sections_active is not None:
+                    s.append("      Sections Active : %s" % (callback.sections_active))
+                if callback.pages_active is not None:
+                    s.append("      Pages Active    : %s" % (callback.pages_active))
+                if len(callback.section_exclusions) > 0:
+                    s.append(
+                        "      Section Exc     : %s" % (callback.section_exclusions)
+                    )
+                if len(callback.page_exclusions) > 0:
+                    s.append("      Page Exc        : %s" % (callback.page_exclusions))
+        return "\n".join(s)
+
+    def __str__(self):
+        s = []
+        s.append("Document Class : %r" % (self))
+        s.append("  Filename : %-32s Title   : %s" % (self.filename, self.title))
+        s.append("  Author   : %-32s Subject : %s" % (self.author, self.subject))
+        s.append("  Columns  : %d" % (self.num_columns))
+        s.append("  Page Metrics :")
+        s.append("    Bleed  : %s" % (self.bleed_rect))
+        s.append("    Page   : %s" % (self.page_rect))
+        s.append("    Inset  : %s" % (self.inset_rect))
+        s.append("    Header : %s" % (self.header_rect))
+        s.append("    Footer : %s" % (self.footer_rect))
+        for i, col in enumerate(self.column_rects, 1):
+            s.append("    Column %d : %s" % (i, col))
+        s.append("  Section List :")
+        for section in self.section_list:
+            s.append("    %s" % (section))
+        s.append(
+            self._callbacks_str(
+                "  Document Start Callbacks :", self.doc_start_callbacks
+            )
+        )
+        s.append(
+            self._callbacks_str("  Document End Callbacks :", self.doc_end_callbacks)
+        )
+        s.append(
+            self._callbacks_str(
+                "  Section Start Callbacks :", self.section_start_callbacks
+            )
+        )
+        s.append(
+            self._callbacks_str("  Section End Callbacks :", self.section_end_callbacks)
+        )
+        s.append(
+            self._callbacks_str("  Page Start Callbacks :", self.page_start_callbacks)
+        )
+        s.append(self._callbacks_str("  Page End Callbacks :", self.page_end_callbacks))
+        s.append(
+            self._callbacks_str(
+                "  Column Start Callbacks :", self.column_start_callbacks
+            )
+        )
+        s.append(
+            self._callbacks_str("  Column End Callbacks :", self.column_end_callbacks)
+        )
+        s.append(
+            "  Section : %s  Chapter : %d  Page : %d  Column : %d  Cursor : %s"
+            % (self.section, self.chapter, self.page_number, self.column, self.cursor)
+        )
+        return "\n".join(s)
 
     def get_context(self):
         """ Returns a dictionary representing essential document context state."""
@@ -72,6 +142,7 @@ class Document:
             "cursor": self.cursor,
             "section": self.section,
             "column": self.column,
+            "chapter": self.chapter,
             "num_columns": self.num_columns,
             "page_rect": self.page_rect,
             "inset_rect": self.inset_rect,
@@ -82,11 +153,13 @@ class Document:
             "gutter_rect": None
             if self.column >= self.num_columns
             else self.gutter_rects[self.column - 1],
-            "column_rect": self.column_rects[self.column - 1],
+            "column_rect": self.column_rects[
+                min(self.column - 1, self.num_columns - 1)
+            ],
         }
 
     def set_page_size(self, page_style, orientation=None, with_bleed=None):
-        """ Configures size based on supplied page style including
+        """Configures size based on supplied page style including
         reversal for landscape vs. portrait orientation."""
         self.style.set_with_dict(page_style)
         if orientation is not None:
@@ -395,7 +468,7 @@ class Document:
             self.page_number += 1
 
     def iter_doc(self, blocks):
-        """ Generator which yields sequential content generation based on the
+        """Generator which yields sequential content generation based on the
         caller's iteration intervals as arbitrary blocks."""
         self._doc_start()
         for block in blocks:

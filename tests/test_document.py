@@ -148,7 +148,6 @@ def test_document_sections():
     p2.sections_active = ["Title"]
     dc = DocEndCallback()
     dc.section_exclusions = ["Title", "Middle"]
-
     doc.page_start_callbacks = [back1, back2, back3, dc]
     doc.page_end_callbacks = [p1, p2]
     for section, ctx in doc.iter_doc(range(1, 4)):
