@@ -143,7 +143,6 @@ def test_layoutcell_inside():
     tr.show_debug_rects = True
     c = canvas.Canvas("./testfiles/test_layoutcells_inside.pdf", pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
-
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.draw_in_canvas(c)
     c.showPage()

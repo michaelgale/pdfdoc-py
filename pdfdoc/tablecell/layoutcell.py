@@ -47,15 +47,20 @@ CONSTRAINT_TOKENS = [
 ]
 SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof"]
 BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
+OTHER_TOKENS = ["to", "and", "parent_right", "parent_left", "parent_bottom", "parent_top"]
 
 
-def extract_labels(constraint):
+def extract_labels(constraint, token_list=None):
     """ Extracts strings from constraint which are not tokens in CONSTRAINT_TOKENS or
     SINGLE_TOKENS.  These extracted strings are labels of other cells. """
     labels = []
     c = constraint.split()
+    if token_list is not None:
+        tokens = token_list
+    else:
+        tokens = CONSTRAINT_TOKENS
     for e in c:
-        if e not in CONSTRAINT_TOKENS:
+        if e not in tokens:
             labels.append(e)
     return labels
 
@@ -196,6 +201,27 @@ class LayoutCell(TableVector):
                 s.append("      constraints: %s" % (cell.constraints))
             idx += 1
         return "\n".join(s)
+
+    def compute_cell_order(self):
+        """Reorder cells so that cells without sibling dependancies are first
+        followed by cells with mutual dependancies."""
+        peer_labels = []
+        for cell in self.cells:
+            if cell.constraints is not None:
+                elabels = []
+                for c in cell.constraints:
+                    e = extract_labels(c, [*CONSTRAINT_TOKENS, *SINGLE_TOKENS, *OTHER_TOKENS])
+                    elabels.extend(e)
+                peer_labels.append([cell.label, elabels])
+        pn = len(peer_labels)
+        for i in range(0, pn-1):
+            for j in range(i+1, pn):
+                if peer_labels[j][0] in peer_labels[i][1]:
+                    peer_labels[i], peer_labels[j] = peer_labels[j], peer_labels[i]
+        self.cell_order = []
+        for i, cell in enumerate(peer_labels):
+            self.cell_order.append(cell[0])
+            self.set_cell_order(cell[0], i)
 
     def layout_cells(self):
         w = self.fixed_rect.width if self.is_fixed_width else self.rect.width

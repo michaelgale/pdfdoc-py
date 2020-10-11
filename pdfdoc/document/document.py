@@ -247,6 +247,12 @@ class Document:
     def get_current_column_rect(self):
         return self.column_rects[self.column - 1]
 
+    def is_cursor_at_column_start(self):
+        x, y = self.get_top_left(in_column=True)
+        if self.cursor[0] == x and self.cursor[1] == y:
+            return True
+        return False
+
     def get_top_left(self, with_margins=True, in_column=False):
         """ Returns the coordinate of the top left corner of the page or content region."""
         if in_column:
