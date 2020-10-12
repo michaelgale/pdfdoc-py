@@ -87,6 +87,22 @@ class TableVector:
                     if not only_visible or cell.visible:
                         yield cell
 
+    def is_cell_overlapped(self, label):
+        """Determines if cell overlapped any of its peers."""
+        if not self.is_cell_visible(label):
+            return False
+        other_cells = []
+        for cell in self.iter_cells():
+            if not cell.label == label:
+                other_cells.append(cell.label)
+        r1 = self.get_cell_rect(label)
+        if r1 is not None:
+            for other in other_cells:
+                r2 = self.get_cell_rect(other)
+                if r1.overlaps(r2):
+                    return True
+        return False
+
     def has_overlapped_cells(self):
         """ Determines if any child cells mutually overlap. """
         other_cells = []
@@ -101,18 +117,42 @@ class TableVector:
                         return True
         return False
 
-    def has_clipped_cells(self):
+    def is_cell_clipped(self, label, tol=1e-2):
+        """Determines if a cell is clipped by its parent."""
+        if not self.is_cell_visible(label):
+            return False
+        r1 = self.get_cell_rect(label)
+        if r1.left < self.rect.left:
+            if abs(r1.left - self.rect.left) > tol:
+                return True
+        if r1.right > self.rect.right:
+            if abs(r1.right - self.rect.right) > tol:
+                return True
+        if r1.top > self.rect.top:
+            if abs(r1.top - self.rect.top) > tol:
+                return True
+        if r1.bottom < self.rect.bottom:
+            if abs(r1.bottom - self.rect.bottom) > tol:
+                return True
+        return False
+
+
+    def has_clipped_cells(self, tol=1e-2):
         """ Determines if any child cells extend outside the parent container."""
-        all_rects = self.get_cell_rects()
+        all_rects = self.get_cell_rects(as_is=True)
         brect = Rect.bounding_rect_from_rects(all_rects)
         if brect.left < self.rect.left:
-            return True
+            if abs(brect.left - self.rect.left) > tol:
+                return True
         if brect.right > self.rect.right:
-            return True
+            if abs(brect.right - self.rect.right) > tol:
+                return True
         if brect.top > self.rect.top:
-            return True
+            if abs(brect.top - self.rect.top) > tol:
+                return True
         if brect.bottom < self.rect.bottom:
-            return True
+            if abs(brect.bottom - self.rect.bottom) > tol:
+                return True
         return False
 
     def get_whitespace_ratio(self):

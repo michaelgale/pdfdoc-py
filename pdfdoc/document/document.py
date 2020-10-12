@@ -352,8 +352,13 @@ class Document:
                     if i < n_sections - 1:
                         return self.section_list[i + 1]
                     else:
-                        return self.section_list[0]
+                        return self.section_list[i]
         return None
+
+    def is_last_section(self):
+        if self.section_list is None:
+            return False
+        return self.section == self.section_list[-1]
 
     # Document control actions
 
@@ -383,9 +388,13 @@ class Document:
         elif column_break:
             self.column_break()
         if new_section is not None:
-            self.section = new_section
+            ns = new_section
         else:
-            self.section = self._get_next_section()
+            ns = self._get_next_section()
+        if self.section == ns:
+            return
+        else:
+            self.section = ns
         self._section_start()
         if page_break:
             self._page_start(new_page_number=new_page_number)
@@ -398,6 +407,9 @@ class Document:
 
     def end_document(self):
         self._doc_end()
+
+    def start_document(self):
+        self._doc_start()
 
     # Automated document control actions/callbacks
 
@@ -442,7 +454,7 @@ class Document:
         if self.section_list is not None:
             if len(self.section_list) > 0:
                 self.section = self.section_list[0]
-        self._process_callbacks([self.doc_start_callbacks, self.page_start_callbacks])
+        self._process_callbacks([self.doc_start_callbacks, self.section_start_callbacks, self.page_start_callbacks])
         self.cursor_top_left()
 
     def _doc_end(self):

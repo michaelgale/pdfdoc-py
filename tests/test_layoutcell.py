@@ -145,5 +145,11 @@ def test_layoutcell_inside():
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.draw_in_canvas(c)
+    assert tl2.has_overlapped_cells()
+    assert not tl2.has_clipped_cells()
+    # for cell in tl2.iter_cells():
+    #     print(cell.label, tl2.is_cell_clipped(cell.label), tl2.is_cell_overlapped(cell.label))
+    assert not tl2.is_cell_overlapped("Cell1")
+    assert tl2.is_cell_overlapped("Cell5")
     c.showPage()
     c.save()

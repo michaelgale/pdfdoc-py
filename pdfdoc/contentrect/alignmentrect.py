@@ -59,6 +59,7 @@ class AlignmentRect(ContentRect):
 
     def rebound_rect(self):
         w, h = self.content.get_content_size()
+        self.content.rect.set_size(w, h)
         rc = self.style.get_inset_rect(self.fixed_rect)
         nw = max(w, rc.width)
         nh = max(h, rc.height)
