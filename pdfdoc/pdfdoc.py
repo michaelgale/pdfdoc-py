@@ -63,10 +63,11 @@ def GetStringMetrics(c, label, fontname, fontsize, with_descent=True):
     # print(face.ascent, face.descent)
     ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
     height = ascent - descent if with_descent else ascent
-    
+
     height *= fontsize
     width = c.stringWidth(label, fontname_, fontsize)
     return (width, height)
+
 
 def GetStringAscDes(c, label, fontname, fontsize):
     # print("fontname: %s fontsize: %s" % (fontname, fontsize))
@@ -83,6 +84,7 @@ def GetStringAscDes(c, label, fontname, fontsize):
     # print(face.ascent, face.descent)
     ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
     return (ascent * fontsize, descent * fontsize)
+
 
 def GetImageMetrics(filename):
     img_file = Path(filename)
@@ -101,6 +103,7 @@ def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
         sn = sn[:-1]
         sw = canvas.stringWidth(sn, fontname, fontsize)
     return sn
+
 
 def SplitStringToFit(canvas, s, fontname, fontsize, toWidth):
     words = s.split()
@@ -125,6 +128,7 @@ def SplitStringToFit(canvas, s, fontname, fontsize, toWidth):
     lines.append(" ".join(line))
     return lines
 
+
 def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
     try:
         sw = canvas.stringWidth(s, fontname, fontsize)
@@ -144,6 +148,7 @@ def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
         sn = sn[:-1]
         sw = canvas.stringWidth(sn, fontname_, fontsize)
     return sn
+
 
 fa_lookup_dict = {
     "fa-caution": "\uF071",
@@ -251,11 +256,13 @@ fa_lookup_dict = {
     "yes-box": "\uF14A",
 }
 
+
 def fasymbol(x):
     """ Returns a FontAwesome symbol using a descriptive name """
     if x.lower() in fa_lookup_dict:
         return fa_lookup_dict[x.lower()]
     return ""
+
 
 haz_lookup_dict = {
     "caution": "!",
@@ -276,8 +283,8 @@ haz_lookup_dict = {
     "no-people": "b",
     "no-smoking": "d",
     "no-cups": "f",
-    "no-utensils": "g",  
-    "no-food": "=",  
+    "no-utensils": "g",
+    "no-food": "=",
     "exit": "\u005E",
     "first-aid": "Q",
     "left-arrow": "R",
@@ -288,11 +295,13 @@ haz_lookup_dict = {
     "power-off": "u",
 }
 
+
 def hazsymbol(x):
     """ Returns a Hazard symbol using a descriptive name """
     if x.lower() in haz_lookup_dict:
         return haz_lookup_dict[x.lower()]
     return ""
+
 
 def set_icon(x, textrect):
     """ Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts """

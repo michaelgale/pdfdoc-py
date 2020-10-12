@@ -30,8 +30,18 @@ from reportlab.pdfgen import canvas
 from toolbox import *
 from pdfdoc import *
 
+
 class GenericLabel(TableColumn):
-    def __init__(self, title="", subtitle=None, colour=None, pattern=None, symbol=None, image=None, titleimage=None):
+    def __init__(
+        self,
+        title="",
+        subtitle=None,
+        colour=None,
+        pattern=None,
+        symbol=None,
+        image=None,
+        titleimage=None,
+    ):
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         self.titlerow = TableRow(0, 0)
@@ -91,31 +101,26 @@ class GenericLabel(TableColumn):
         self.pattern.pattern_slant = 12
         self.pattern_top.pattern_width = 10
         self.pattern_top.pattern_slant = 12
-    
+
     def set_colour(self, colour):
         from ldrawpy import LDRColour
+
         c = LDRColour(colour)
         self.title.style.set_attr("background-fill", True)
         self.title.style.set_attr("background-colour", c.as_tuple())
         self.title.style.set_attr("border-colour", c.as_tuple())
         self.title.style.set_attr("border-outline", True)
-        self.title.style.set_attr(
-            "font-colour", c.high_contrast_complement()
-        )        
+        self.title.style.set_attr("font-colour", c.high_contrast_complement())
         self.symbol.style.set_attr("background-fill", True)
         self.symbol.style.set_attr("background-colour", c.as_tuple())
         self.symbol.style.set_attr("border-colour", c.as_tuple())
         self.symbol.style.set_attr("border-outline", True)
-        self.symbol.style.set_attr(
-            "font-colour", c.high_contrast_complement()
-        )        
+        self.symbol.style.set_attr("font-colour", c.high_contrast_complement())
         self.symbol2.style.set_attr("background-fill", True)
         self.symbol2.style.set_attr("background-colour", c.as_tuple())
         self.symbol2.style.set_attr("border-colour", c.as_tuple())
         self.symbol2.style.set_attr("border-outline", True)
-        self.symbol2.style.set_attr(
-            "font-colour", c.high_contrast_complement()
-        )        
+        self.symbol2.style.set_attr("font-colour", c.high_contrast_complement())
         self.pattern.foreground_colour = c.as_tuple()
         self.pattern_top.foreground_colour = c.as_tuple()
 

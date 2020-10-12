@@ -28,6 +28,7 @@ from reportlab.pdfgen import canvas
 from toolbox import *
 from pdfdoc import *
 
+
 class TableVector:
     def __init__(self, w=0, h=0, style=None):
         self.rect = Rect()
@@ -135,7 +136,6 @@ class TableVector:
             if abs(r1.bottom - self.rect.bottom) > tol:
                 return True
         return False
-
 
     def has_clipped_cells(self, tol=1e-2):
         """ Determines if any child cells extend outside the parent container."""

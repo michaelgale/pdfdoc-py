@@ -30,10 +30,11 @@ from pdfdoc import *
 
 
 class AlignmentRect(ContentRect):
-    """ A content container which can force the alignment of its 
+    """A content container which can force the alignment of its
     child content cell within its fixed width/height bounds.
     If the child cell's content exceeds this container cell's
-    bounds, then it will expand automatically to accommodate. """
+    bounds, then it will expand automatically to accommodate."""
+
     def __init__(self, w, h, style=None):
         super().__init__(w, h, style)
         self.content = None
@@ -45,7 +46,6 @@ class AlignmentRect(ContentRect):
         s.append("Alignment: %s" % (self.rect))
         s.append("  Content: %r" % (self.content))
         return "\n".join(s)
-
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
@@ -65,11 +65,11 @@ class AlignmentRect(ContentRect):
         nh = max(h, rc.height)
         nw += self.style.get_width_trim()
         nh += self.style.get_height_trim()
-        self.rect.set_size_anchored(nw, nh, "top left")         
+        self.rect.set_size_anchored(nw, nh, "top left")
 
     def get_content_size(self):
         self.rebound_rect()
-        return self.rect.width, self.rect.height       
+        return self.rect.width, self.rect.height
 
     def draw_content_rect(self, c):
         w, h = self.content.get_content_size()
@@ -81,12 +81,12 @@ class AlignmentRect(ContentRect):
         elif ha == "right":
             x = rc.right - w
         else:
-            x = rc.left + rc.width/2 - w/2
+            x = rc.left + rc.width / 2 - w / 2
         if va == "top":
             y = rc.top
         elif va == "bottom":
             y = rc.bottom + h
         else:
-            y = rc.bottom + rc.height/2 + h/2
+            y = rc.bottom + rc.height / 2 + h / 2
         self.content.rect.move_top_left_to((x, y))
         self.content.draw_in_canvas(c)

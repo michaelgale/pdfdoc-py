@@ -30,7 +30,7 @@ from pdfdoc import *
 
 
 class TableGrid(TableVector):
-    """ A TableGrid is a sub-class of TableVector.  It can contain multiple rows and columns of 
+    """A TableGrid is a sub-class of TableVector.  It can contain multiple rows and columns of
     content cells (TableCell objects with a type of ContentRect as actual content).  TableGrid
     is filled either row-wise or column-wise based on the cell order.  When filling row-wise,
     a row is automatically created when the previous row's content size has exceeded

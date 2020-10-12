@@ -32,11 +32,11 @@ from pdfdoc import *
 
 
 class LabelDoc:
-    """ A convenient document class for making labels on typical self-adhesive
+    """A convenient document class for making labels on typical self-adhesive
     label sheets.  The contents of each label can be filled sequentially
     using iter_label generator method.  Each label's content can be any object
     which supports a draw_in_canvas method, i.e. any ContentRect dervied class
-    or TableVector derived class. """
+    or TableVector derived class."""
 
     def __init__(self, filename, style=None):
         self.filename = filename
@@ -106,8 +106,8 @@ class LabelDoc:
         return r, c
 
     def get_table_cell(self, row, col=None):
-        """ Returns the content container at a specified cell in the tablegrid
-        Note that this lookup is designed to return content cells rather than 
+        """Returns the content container at a specified cell in the tablegrid
+        Note that this lookup is designed to return content cells rather than
         placeholder cells used for gutters.  It performs this lookup using the
         labels which are assigned by compute_page_metrics.  If the labels are not
         assigned or have been modified, then this lookup will not work as expected.
@@ -123,7 +123,7 @@ class LabelDoc:
         return None
 
     def set_table_cell(self, content, row, col=None):
-        """ This function will typically be called within the context of a 
+        """This function will typically be called within the context of a
         iter_label generator loop to specify the desired content of
         each individual label cell.
         """
@@ -137,7 +137,7 @@ class LabelDoc:
                     r.content.set_cell_content(title, content)
 
     def compute_page_metrics(self):
-        """ Computes all of the derived page metrics of the label grid sheet.
+        """Computes all of the derived page metrics of the label grid sheet.
         It also prepares the tablegrid content container (a TableVector class)
         with placeholder content for both the actual label content cells and
         dummy cells representing gutter regions between labels.  Although this
@@ -220,7 +220,7 @@ class LabelDoc:
         self.page_number = 1
 
     def _page_end(self):
-        """ Called by iter_label automatically at page boundaries 
+        """Called by iter_label automatically at page boundaries
         A call to compute_page_metrics is performed to clear the tablegrid
         content containers for a new page
         """
@@ -234,7 +234,7 @@ class LabelDoc:
         self.c.save()
 
     def iter_label(self, labels):
-        """ Generator which makes the labels based on provided content list.
+        """Generator which makes the labels based on provided content list.
         It returns the next label data content from the list as well as the row
         and column index of the label.  The caller can then use the row, col index
         to specify the label grid content.  This content can be any derived member

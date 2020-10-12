@@ -46,6 +46,3 @@ class TableCell:
         self.height = height
         self.visible = True
         self.constraints = []
-
-
-    

@@ -32,8 +32,8 @@ from pdfdoc import *
 
 
 class ArrowHead:
-    """ Draws an arrow head with arbitrary style. The arrow can be placed 
-    and rotated in direction 0-360 deg. """
+    """Draws an arrow head with arbitrary style. The arrow can be placed
+    and rotated in direction 0-360 deg."""
 
     def __init__(self, style):
         self.style = DocStyle()

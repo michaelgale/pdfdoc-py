@@ -28,6 +28,7 @@ from reportlab.pdfgen import canvas
 from toolbox import *
 from pdfdoc import *
 
+
 class TableColumn(TableVector):
     def __init__(self, w, h, style=None):
         super().__init__(w, h, style)

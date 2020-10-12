@@ -30,7 +30,7 @@ from pdfdoc import *
 
 
 class DocumentCallback:
-    """ A generic base class which implements behaviour for Document class
+    """A generic base class which implements behaviour for Document class
     callback actions at intervals such as page breaks, sections and document start/end."""
 
     def __init__(self):
@@ -41,7 +41,7 @@ class DocumentCallback:
         self.z_order = 0
 
     def is_enabled(self, context):
-        """ A callback action can be masked or triggered by exclusions/permissions
+        """A callback action can be masked or triggered by exclusions/permissions
         to confine its action to specific pages and/or sections of a document."""
         if context["page_number"] in self.page_exclusions:
             return False
@@ -57,15 +57,15 @@ class DocumentCallback:
         return True
 
     def render(self, context):
-        """ Implemented by instances of this class. The context stores a dictionary
+        """Implemented by instances of this class. The context stores a dictionary
         containing context information for the document such as the current page,
         page coordinate, etc."""
         pass
 
 
 class SimpleHeaderFooterCallback(DocumentCallback):
-    """ A simple header and/or footer callback for generic content. The content is 
-    a ContentRect type and implements the draw_in_canvas method. """
+    """A simple header and/or footer callback for generic content. The content is
+    a ContentRect type and implements the draw_in_canvas method."""
 
     def __init__(
         self,

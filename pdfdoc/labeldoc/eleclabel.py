@@ -30,9 +30,11 @@ from reportlab.pdfgen import canvas
 from toolbox import *
 from pdfdoc import *
 
+
 class ElectronicLabel(TableRow):
     def __init__(self, part="", desc="", package=None, colour=None, symbol=None):
         from ldrawpy import LDRColour
+
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         filename = symbol if symbol is not None else ""
@@ -80,7 +82,6 @@ class ElectronicLabel(TableRow):
             self.add_column("Symbol", self.symbol, width=0.22)
         self.add_column("Text", self.textcol, width=AUTO_SIZE)
         self.compute_cell_sizes("width")
-    
 
     def set_debug_rects(self, show=False):
         self.title.show_debug_rects = show

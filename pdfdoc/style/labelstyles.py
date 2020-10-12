@@ -36,7 +36,7 @@ AVERY_5260_LABEL_DOC_STYLE = {
     "nrows": 10,
     "top-margin": 0.5 * inch,
     "bottom-margin": 0.5 * inch,
-    "left-margin": 3/ 16 * inch,
+    "left-margin": 3 / 16 * inch,
     "right-margin": 3 / 16 * inch,
     "gutter-width": 1 / 8 * inch,
     "gutter-height": 0,

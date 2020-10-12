@@ -47,12 +47,19 @@ CONSTRAINT_TOKENS = [
 ]
 SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof"]
 BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
-OTHER_TOKENS = ["to", "and", "parent_right", "parent_left", "parent_bottom", "parent_top"]
+OTHER_TOKENS = [
+    "to",
+    "and",
+    "parent_right",
+    "parent_left",
+    "parent_bottom",
+    "parent_top",
+]
 
 
 def extract_labels(constraint, token_list=None):
-    """ Extracts strings from constraint which are not tokens in CONSTRAINT_TOKENS or
-    SINGLE_TOKENS.  These extracted strings are labels of other cells. """
+    """Extracts strings from constraint which are not tokens in CONSTRAINT_TOKENS or
+    SINGLE_TOKENS.  These extracted strings are labels of other cells."""
     labels = []
     c = constraint.split()
     if token_list is not None:
@@ -79,10 +86,10 @@ def split_with_token(constraint, token):
 
 
 def parse_constraint(constraint):
-    """ Parses a constraint into a dictionary which describes the source/from
+    """Parses a constraint into a dictionary which describes the source/from
     point (from_pt) and where it should be transformed to (dest_pt).  Optional
     labels describing which cell(s) the destination point is referring to are
-    also extracted. """
+    also extracted."""
     cdict = {"from_pt": None, "dest_pt": None, "dest_labels": []}
     c = constraint.lower()
     for token in SINGLE_TOKENS:
@@ -143,8 +150,8 @@ def dummy_rect_from_parent_edge(parent_rect, edges):
 
 
 class LayoutCell(TableVector):
-    """ A LayoutCell is a sub-class of TableVector.  It contains one or more TableCells
-    (with content as a ContentRect type).  LayoutCell is populated by constraints 
+    """A LayoutCell is a sub-class of TableVector.  It contains one or more TableCells
+    (with content as a ContentRect type).  LayoutCell is populated by constraints
     describing a cell's relationship to the parent container (self) and/or other
     sibling TableCell items.  Each constraint is a string description of how one or
     more anchor points in the cell's rectangle should be placed relative to either
@@ -210,12 +217,14 @@ class LayoutCell(TableVector):
             if cell.constraints is not None:
                 elabels = []
                 for c in cell.constraints:
-                    e = extract_labels(c, [*CONSTRAINT_TOKENS, *SINGLE_TOKENS, *OTHER_TOKENS])
+                    e = extract_labels(
+                        c, [*CONSTRAINT_TOKENS, *SINGLE_TOKENS, *OTHER_TOKENS]
+                    )
                     elabels.extend(e)
                 peer_labels.append([cell.label, elabels])
         pn = len(peer_labels)
-        for i in range(0, pn-1):
-            for j in range(i+1, pn):
+        for i in range(0, pn - 1):
+            for j in range(i + 1, pn):
                 if peer_labels[j][0] in peer_labels[i][1]:
                     peer_labels[i], peer_labels[j] = peer_labels[j], peer_labels[i]
         self.cell_order = []

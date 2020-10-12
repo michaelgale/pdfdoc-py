@@ -47,7 +47,7 @@ attr_aliases = {
 
 
 class DocStyle:
-    """ Container class for storing style information using CSS-like tag/attributes.
+    """Container class for storing style information using CSS-like tag/attributes.
     This class offers the convenience of robust access to styles by name with features
     such default value substitution, aliases for attribute names (e.g. allowing the
     use of "colour" and "color"), and computation of derived values from the
@@ -313,9 +313,9 @@ class DocStyle:
 
 
 class DocStyleSheet:
-    """ Container class for multiple DocStyle instances indexed in a dictionary.
+    """Container class for multiple DocStyle instances indexed in a dictionary.
     All the styles can be conveniently loaded from a YAML file.  The format of the
-    YAML file must have a top level key called "styles" under which a tree of 
+    YAML file must have a top level key called "styles" under which a tree of
     styles can be listed with the name of the style as a child of "styles" and the
     attributes of each style as children of the style name."""
 

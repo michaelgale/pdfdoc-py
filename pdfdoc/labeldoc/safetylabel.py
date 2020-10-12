@@ -41,8 +41,8 @@ class SafetyLabel(TableRow):
         self.icon2 = TextRect(0, 0, "", SAFETY_LABEL_ICON)
         self.icon2.split_lines = False
         self.icon.overlay_content = self.icon2
-        self.spacer = ContentRect(0,0)
-        self.icon_column = TableColumn(0,0)
+        self.spacer = ContentRect(0, 0)
+        self.icon_column = TableColumn(0, 0)
         self.icon_column.add_row("Icon", self.icon)
         self.icon_column.add_row("Spacer", self.spacer)
 
@@ -84,17 +84,21 @@ class SafetyLabel(TableRow):
         fontname = textrect.style.get_attr("font-name")
         fontsize = textrect.style.get_attr("font-size")
         tw, th = GetStringMetrics(
-            c, textrect.text, fontname, fontsize, with_descent=False,
+            c,
+            textrect.text,
+            fontname,
+            fontsize,
+            with_descent=False,
         )
         sa, sd = GetStringAscDes(c, textrect.text, fontname, fontsize)
         return tw, th, sa, sd
 
     def _new_height(self, th, sd, th2, sd2):
         if self.icon.overlay_content is not None:
-            new_height = max(th - 1.28*sd, th2 - 1.28*sd2)
+            new_height = max(th - 1.28 * sd, th2 - 1.28 * sd2)
         else:
             if self.icon.style.get_attr("font-name") == "Hazard":
-                new_height = th - 1.28*sd
+                new_height = th - 1.28 * sd
             else:
                 new_height = th
         return new_height
@@ -121,7 +125,7 @@ class SafetyLabel(TableRow):
         self.title.style.set_attr("left-margin", xw)
         self.desc.style.set_attr("left-margin", xw)
         self.title.style.set_attr("border-radius", 2.5 * bw)
-        
+
         new_width = 1.05 * tw
         xw = tw / 6
         cx, cy = self.rect.get_top_left()
@@ -172,6 +176,7 @@ class SafetyLabel(TableRow):
 
     def set_safety_yellow(self):
         from ldrawpy import LDRColour
+
         yellow = LDRColour.RGBFromHex("#FFED10")
         self.icon.style.set_attr("background-fill", True)
         self.icon.style.set_attr("background-colour", (1, 1, 1))
@@ -204,7 +209,7 @@ class SafetyLabel(TableRow):
         self.icon.style.set_attr("background-fill", False)
         self.icon.style.set_attr("background-colour", (1, 1, 1))
         if self.icon.overlay_content is not None:
-            self.icon.style.set_attr("font-colour", (1,1,1))
+            self.icon.style.set_attr("font-colour", (1, 1, 1))
             self.icon2.style.set_attr("font-colour", colour)
         else:
             self.icon.style.set_attr("font-colour", colour)
@@ -216,16 +221,19 @@ class SafetyLabel(TableRow):
 
     def set_safety_red(self):
         from ldrawpy import LDRColour
+
         red = LDRColour.RGBFromHex("#FB0207")
         self._set_filled_title_rect(red)
 
     def set_safety_blue(self):
         from ldrawpy import LDRColour
+
         blue = LDRColour.RGBFromHex("#0019BD")
         self._set_filled_title_rect(blue)
 
     def set_safety_green(self):
         from ldrawpy import LDRColour
+
         green = LDRColour.RGBFromHex("#148636")
         self._set_filled_title_rect(green)
 

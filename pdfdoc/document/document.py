@@ -454,7 +454,13 @@ class Document:
         if self.section_list is not None:
             if len(self.section_list) > 0:
                 self.section = self.section_list[0]
-        self._process_callbacks([self.doc_start_callbacks, self.section_start_callbacks, self.page_start_callbacks])
+        self._process_callbacks(
+            [
+                self.doc_start_callbacks,
+                self.section_start_callbacks,
+                self.page_start_callbacks,
+            ]
+        )
         self.cursor_top_left()
 
     def _doc_end(self):
