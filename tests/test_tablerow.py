@@ -56,7 +56,9 @@ def test_tablerow_col():
     assert tr.cells[0].label == "Col 1"
     assert tr.cells[1].label == "Col 2"
     assert tr.cells[2].label == "Col 3"
-    c = canvas.Canvas("./testfiles/test_tablerow.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_tablerow.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.set_column_width("Col 1", 0.5)

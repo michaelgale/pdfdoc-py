@@ -57,7 +57,9 @@ def test_tablecolumn_row():
     assert tr.cells[0].label == "Row 1"
     assert tr.cells[1].label == "Row 2"
     assert tr.cells[2].label == "Row 3"
-    c = canvas.Canvas("./testfiles/test_tablecolumn.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_tablecolumn.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.set_row_height("Row 1", 0.5)
@@ -105,7 +107,9 @@ def test_tableimbedded():
     tr.set_row_height("Row 1", 0.5)
     assert len(tr) == 3
 
-    c = canvas.Canvas("./testfiles/test_tableimbed.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_tableimbed.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.style["border-line-bottom"] = True

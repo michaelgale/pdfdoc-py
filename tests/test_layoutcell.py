@@ -52,7 +52,9 @@ def test_layoutcell():
     tl.show_debug_rects = True
 
     assert len(tl) == 4
-    c = canvas.Canvas("./testfiles/test_layoutcells.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_layoutcells.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
 
     tl.rect.move_top_left_to(Point(1 * inch, 9 * inch))
@@ -141,7 +143,9 @@ def test_layoutcell_inside():
     tr.add_row("Row1", tl, height=CONTENT_SIZE)
     tr.add_row("Row2", tl2, height=CONTENT_SIZE)
     tr.show_debug_rects = True
-    c = canvas.Canvas("./testfiles/test_layoutcells_inside.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_layoutcells_inside.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.draw_in_canvas(c)

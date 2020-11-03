@@ -54,7 +54,7 @@ def test_docstylesheet():
     assert s1.get_attr("border-width") == 0
     assert s1.get_attr("vert-align") == "bottom"
     assert s1.get_attr("horz-align") != "top"
-    
+
     styles.set_style("OTHER", _test_dict)
     assert "OTHER" in styles.styles
     s2 = styles.get_style("OTHER")

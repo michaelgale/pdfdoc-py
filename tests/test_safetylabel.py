@@ -12,13 +12,19 @@ from toolbox import *
 from ldrawpy import LDRColour
 from pdfdoc import *
 
+
 def test_safety_init():
-    s = SafetyLabel(icon="caution", title="Danger", desc="Falling Rocks", colour="yellow")
+    s = SafetyLabel(
+        icon="caution", title="Danger", desc="Falling Rocks", colour="yellow"
+    )
     assert s.title.text == "Danger"
     assert s.desc.text == "Falling Rocks"
 
+
 def test_safety_label():
-    c = canvas.Canvas("./testfiles/test_safetylabel.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_safetylabel.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
     s = SafetyLabel(icon="caution", title="Danger", desc="", colour="yellow")
     s.set_overlayed_symbol("caution", shape="triangle")
@@ -62,7 +68,9 @@ def test_safety_label():
     s.set_auto_size(c)
     s.draw_in_canvas(c)
 
-    s = SafetyLabel(icon="caution", title="Danger", desc="High voltage 240 VAC", colour="yellow")
+    s = SafetyLabel(
+        icon="caution", title="Danger", desc="High voltage 240 VAC", colour="yellow"
+    )
     s.set_overlayed_symbol("electrical", shape="triangle")
     s.rect = Rect(7 * inch, 2 * inch)
     s.set_auto_size(c, 128)
@@ -71,7 +79,9 @@ def test_safety_label():
     s.set_auto_size(c)
     s.draw_in_canvas(c)
 
-    s = SafetyLabel(icon="caution", title="Danger", desc="High voltage", colour="yellow")
+    s = SafetyLabel(
+        icon="caution", title="Danger", desc="High voltage", colour="yellow"
+    )
     s.set_overlayed_symbol("fire", shape="triangle")
     s.rect = Rect(3.5 * inch, 1.5 * inch)
     s.set_debug_rects(True)
@@ -87,4 +97,3 @@ def test_safety_label():
 
     c.showPage()
     c.save()
-

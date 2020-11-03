@@ -19,7 +19,7 @@ CONTENT_SIZE = -1
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
-from pdfdoc.pdfdoc import (
+from .helpers import (
     GetImageMetrics,
     GetStringMetrics,
     GetStringAscDes,
@@ -29,9 +29,16 @@ from pdfdoc.pdfdoc import (
     TrimStringWithFunction,
     rl_colour,
     rl_colour_trans,
+)
+from .fonthelpers import (
+    register_font_family,
+    register_font,
     fasymbol,
     hazsymbol,
     set_icon,
+    list_fonts,
+    find_font,
+    create_specimen_pdf,
 )
 from .style.docstyle import DocStyle, DocStyleSheet, roman_number
 from .style.pagestyles import *

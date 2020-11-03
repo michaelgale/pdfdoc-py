@@ -10,7 +10,6 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 
 
-
 def test_alignmentrect_render():
     c = canvas.Canvas(
         "./testfiles/test_alignmentrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)

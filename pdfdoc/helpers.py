@@ -23,6 +23,8 @@
 #
 # PDF document utilities
 
+import os, os.path
+
 from PIL import Image
 from pathlib import Path
 
@@ -35,9 +37,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-
-def register_font(font_name, font_filename):
-    pdfmetrics.registerFont(TTFont(font_name, font_filename))
+from toolbox import *
+from pdfdoc import *
 
 
 def rl_colour(fromColour):
@@ -148,167 +149,3 @@ def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
         sn = sn[:-1]
         sw = canvas.stringWidth(sn, fontname_, fontsize)
     return sn
-
-
-fa_lookup_dict = {
-    "fa-caution": "\uF071",
-    "mandatory": "\uF06A",
-    "power-button": "\uF011",
-    "paper": "\uF016",
-    "paper-solid": "\uF15B",
-    "home": "\uF015",
-    "gear": "\uF013",
-    "gears": "\uF085",
-    "speaker-off": "\uF025",
-    "speaker-min": "\uF026",
-    "speaker-max": "\uF027",
-    "label": "\uF02B",
-    "labels": "\uF02C",
-    "beaker": "\uF0C3",
-    "wrench": "\uF0AD",
-    "lightning": "\uF0E7",
-    "apple": "\uF179",
-    "windows": "\uF17A",
-    "man": "\uF183",
-    "woman": "\uF182",
-    "box": "\uF1B2",
-    "recycle": "\uF1B8",
-    "plug": "\uF1E6",
-    "wifi": "\uF1EB",
-    "syringe": "\uF1FB",
-    "puzzle": "\uF12E",
-    "info": "\uF05A",
-    "desktop-pc": "\uF108",
-    "laptop-pc": "\uF109",
-    "tablet": "\uF10A",
-    "phone": "\uF10B",
-    "cup": "\uF0F4",
-    "lightbulb": "\uF0EB",
-    "truck": "\uF0D1",
-    "list": "\uF0CA",
-    "paperclip": "\uF0C6",
-    "people": "\uF0C0",
-    "link": "\uF0C1",
-    "toolbox": "\uF0B1",
-    "globe": "\uF0AC",
-    "bell": "\uF0A2",
-    "horn": "\uF0A1",
-    "unlock": "\uF09C",
-    "cart": "\uF07A",
-    "magnet": "\uF076",
-    "calendar": "\uF073",
-    "airplane": "\uF072",
-    "gift": "\uF06B",
-    "fa-prohibited": "\uF05E",
-    "question": "\uF059",
-    "crosshair": "\uF05B",
-    "check-yes": "\uF058",
-    "cross-no": "\uF057",
-    "nav-first": "\uF048",
-    "nav-prev": "\uF049",
-    "nav-rew": "\uF04A",
-    "nav-play": "\uF04B",
-    "nav-pause": "\uF04C",
-    "nav-stop": "\uF04D",
-    "nav-fwd": "\uF04E",
-    "nav-next": "\uF050",
-    "nav-last": "\uF051",
-    "nav-eject": "\uF052",
-    "pencil": "\uF040",
-    "camera": "\uF030",
-    "lock": "\uF023",
-    "trash": "\uF014",
-    "person": "\uF007",
-    "star": "\uF005",
-    "envelope": "\uF003",
-    "find": "\uF002",
-    "music": "\uF001",
-    "x": "\uF00D",
-    "check": "\uF00C",
-    "flag": "\uF024",
-    "water": "\uF043",
-    "leaf": "\uF06C",
-    "up-down": "\uF07D",
-    "left-right": "\uF07E",
-    "boxes": "\uF1B3",
-    "shower": "\uF2CC",
-    "chip": "\uF2DB",
-    "snowflake": "\uF2DC",
-    "thermometer": "\uF2C9",
-    "bluetooth": "\uF294",
-    "bluetooth-solid": "\uF293",
-    "batt-full": "\uF240",
-    "batt-3quarter": "\uF241",
-    "batt-half": "\uF242",
-    "batt-quarter": "\uF243",
-    "batt-empty": "\uF244",
-    "train-headlight": "\uF238",
-    "train-twolight": "\uF239",
-    "brush": "\uF1FC",
-    "truck": "\uF0D1",
-    "receipt": "\uF298",
-    "orders": "\uF218",
-    "inbox": "\uF01C",
-    "round-left": "\uF0A8",
-    "round-right": "\uF0A9",
-    "round-up": "\uF0AA",
-    "round-down": "\uF0AB",
-    "yes-box": "\uF14A",
-}
-
-
-def fasymbol(x):
-    """ Returns a FontAwesome symbol using a descriptive name """
-    if x.lower() in fa_lookup_dict:
-        return fa_lookup_dict[x.lower()]
-    return ""
-
-
-haz_lookup_dict = {
-    "caution": "!",
-    "laser": "C",
-    "radiation": "E",
-    "electrical": "F",
-    "fire": "H",
-    "poison": "I",
-    "oxidization": "L",
-    "eye-protection": "l",
-    "boots": "m",
-    "gloves": "n",
-    "hat": "o",
-    "ear-protection": "p",
-    "wash-hands": "w",
-    "face-shield": "x",
-    "face-mask": "y",
-    "no-people": "b",
-    "no-smoking": "d",
-    "no-cups": "f",
-    "no-utensils": "g",
-    "no-food": "=",
-    "exit": "\u005E",
-    "first-aid": "Q",
-    "left-arrow": "R",
-    "right-arrow": "S",
-    "up-arrow": "T",
-    "down-arrow": "U",
-    "prohibited": "1",
-    "power-off": "u",
-}
-
-
-def hazsymbol(x):
-    """ Returns a Hazard symbol using a descriptive name """
-    if x.lower() in haz_lookup_dict:
-        return haz_lookup_dict[x.lower()]
-    return ""
-
-
-def set_icon(x, textrect):
-    """ Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts """
-    xl = x.lower()
-    if xl in haz_lookup_dict:
-        textrect.style.set_attr("font-name", "Hazard")
-        textrect.text = haz_lookup_dict[xl]
-    if xl in fa_lookup_dict:
-        textrect.style.set_attr("font-name", "FontAwesome")
-        textrect.text = fa_lookup_dict[xl]

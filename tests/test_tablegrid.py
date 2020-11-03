@@ -39,7 +39,7 @@ def test_tablegrid_rows():
     tr.style.set_tb_padding(0.1 * inch)
 
     for x in range(15):
-        cl = "TableCell-%d" % (x) if x % 2 == 0 else "%d" % (x) * random.randint(1, 10) 
+        cl = "TableCell-%d" % (x) if x % 2 == 0 else "%d" % (x) * random.randint(1, 10)
         tc = TextRect(0, 0, cl, _text_dict)
         tp = random.randint(1, 10) * 0.025 * inch
         bp = random.randint(1, 10) * 0.025 * inch
@@ -52,7 +52,9 @@ def test_tablegrid_rows():
     # assert tr.cells[0].label == "TableCell-0"
     # assert tr.cells[1].label == "Grid 1"
     # assert tr.cells[2].label == "TableCell-2"
-    c = canvas.Canvas("./testfiles/test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
@@ -64,6 +66,7 @@ def test_tablegrid_rows():
     r.draw_in_canvas(c)
     c.showPage()
     c.save()
+
 
 def test_tablegrid_cols():
     tr = TableGrid(5 * inch, 3 * inch)
@@ -80,7 +83,7 @@ def test_tablegrid_cols():
     tr.style.set_tb_padding(0.1 * inch)
 
     for x in range(15):
-        cl = "TableCell-%d" % (x) if x % 2 == 0 else "%d" % (x) * random.randint(1, 10) 
+        cl = "TableCell-%d" % (x) if x % 2 == 0 else "%d" % (x) * random.randint(1, 10)
         tc = TextRect(0, 0, cl, _text_dict)
         tc.show_debug_rects = True
         tp = random.randint(1, 10) * 0.008 * inch
@@ -93,7 +96,9 @@ def test_tablegrid_cols():
     # assert tr.cells[0].label == "TableCell-0"
     # assert tr.cells[1].label == "Grid 1"
     # assert tr.cells[2].label == "TableCell-2"
-    c = canvas.Canvas("./testfiles/test_tablegrid_cols.pdf", pagesize=(8.5 * inch, 11.0 * inch))
+    c = canvas.Canvas(
+        "./testfiles/test_tablegrid_cols.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
     c.saveState()
 
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))

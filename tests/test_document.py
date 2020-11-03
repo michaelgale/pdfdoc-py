@@ -28,8 +28,8 @@ def test_document_init():
     assert r.top == 210 * mm
     assert r.bottom == 0
 
+
 class DocStartCallback(DocumentCallback):
-    
     def __init__(self):
         super().__init__()
         self.style = {
@@ -37,14 +37,15 @@ class DocStartCallback(DocumentCallback):
             "font-colour": LDRColour.RGBFromHex("#000000"),
             "horz-align": "centre",
             "vert-align": "centre",
-        }        
+        }
 
     def render(self, context):
-        tr = TextRect(5*inch, 1*inch, "Document Start", style=self.style)
+        tr = TextRect(5 * inch, 1 * inch, "Document Start", style=self.style)
         r = context["inset_rect"]
         tr.rect = r
         tr.show_debug_rects = True
         tr.draw_in_canvas(context["canvas"])
+
 
 class PageStartCallback(DocumentCallback):
     def __init__(self):
@@ -77,10 +78,10 @@ class PageEndCallback(DocumentCallback):
         tr = TextRect(r.width, r.height, str(context["page_number"]), style=self.style)
         tr.rect = r
         tr.show_debug_rects = True
-        tr.draw_in_canvas(context["canvas"])        
-      
+        tr.draw_in_canvas(context["canvas"])
+
+
 class DocEndCallback(DocumentCallback):
-    
     def __init__(self):
         super().__init__()
         self.style = {
@@ -96,6 +97,7 @@ class DocEndCallback(DocumentCallback):
         tr.rect.move_top_left_to(r.get_top_left())
         tr.show_debug_rects = True
         tr.draw_in_canvas(context["canvas"])
+
 
 def test_document_callbacks():
     doc = Document("./testfiles/test_document.pdf")
@@ -115,6 +117,7 @@ def test_document_callbacks():
     for section, ctx in doc.iter_doc([1, 2, 3, 4]):
         doc.page_break()
 
+
 def test_document_cropmarks():
     doc = Document("./testfiles/test_cropmarks.pdf")
     doc.set_page_size(PAGE_A5, orientation="landscape", with_bleed=10 * mm)
@@ -129,6 +132,7 @@ def test_document_cropmarks():
     doc.page_start_callbacks = back
     for section, ctx in doc.iter_doc([1, 2, 3]):
         doc.page_break()
+
 
 def test_document_sections():
     doc = Document("./testfiles/test_sections.pdf")
@@ -160,6 +164,7 @@ def test_document_sections():
         doc.section_break(new_section="End")
         doc.page_break()
 
+
 def test_document_columns():
     doc = Document("./testfiles/test_columns.pdf")
     doc.set_page_size(PAGE_LETTER)
@@ -178,12 +183,14 @@ def test_document_columns():
     assert g1.right == 324
     p1 = PageNumberCallback(show_in_footer=True)
     doc.page_end_callbacks = [p1]
-    cl = ColumnLineCallback(style={
-        "top-margin": 0.25 * inch,
-        "bottom-margin": 0.25 * inch,
-        "line-width": 0.05 * inch,
-        "line-colour": (0, 0.4, 0.8),
-    })
+    cl = ColumnLineCallback(
+        style={
+            "top-margin": 0.25 * inch,
+            "bottom-margin": 0.25 * inch,
+            "line-width": 0.05 * inch,
+            "line-colour": (0, 0.4, 0.8),
+        }
+    )
     doc.column_end_callbacks = [cl]
     doc._doc_start()
     for x in range(20):
