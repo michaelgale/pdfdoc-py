@@ -48,7 +48,8 @@ def test_layoutcell():
     tl.add_cell("Cell1", t1, constraints=["top left"])
     tl.add_cell("Cell2", t2, constraints=["top left to Cell1 top right"])
     tl.add_cell("Cell3", t3, constraints=["top right"])
-    tl.add_cell("Cell4", t4, constraints=["left to Cell2 left", "below Cell3"])
+    # tl.add_cell("Cell4", t4, constraints=["left to Cell2 left", "below Cell3"])
+    tl.add_cell("Cell4", t4, constraints=["top left", "horz_pos 100"])
     tl.show_debug_rects = True
 
     assert len(tl) == 4

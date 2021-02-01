@@ -44,8 +44,11 @@ CONSTRAINT_TOKENS = [
     "between_horz",
     "between_vert",
     "between",
+    "horz_pos",
+    "vert_pos",
 ]
 SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof"]
+ABS_TOKENS = ["horz_pos", "vert_pos"]
 BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
 OTHER_TOKENS = [
     "to",
@@ -92,6 +95,11 @@ def parse_constraint(constraint):
     also extracted."""
     cdict = {"from_pt": None, "dest_pt": None, "dest_labels": []}
     c = constraint.lower()
+    for token in ABS_TOKENS:
+        if token in c:
+            cdict["abs_pos"] = token
+            cdict["abs_val"] = extract_labels(constraint)
+            return cdict
     for token in SINGLE_TOKENS:
         if token in c:
             cdict["dest_pt"] = token
@@ -305,6 +313,15 @@ class LayoutCell(TableVector):
                             )
                         else:
                             crect.anchor_with_constraint(other_rect, cd["dest_pt"])
+                    elif "abs_pos" in cd:
+                        if cd["abs_pos"] == "horz_pos":
+                            rect_mid = crect.get_centre()
+                            horz_pos = float(cd["abs_val"][0]) + prect.left
+                            crect.move_to(horz_pos, rect_mid[1])
+                        elif cd["abs_pos"] == "vert_pos":
+                            rect_mid = crect.get_centre()
+                            vert_pos = prect.top - float(cd["abs_val"][0])
+                            crect.move_to(rect_mid[0], vert_pos)
                     else:
                         if cd["from_pt"] is not None:
                             crect.anchor_with_constraint(
