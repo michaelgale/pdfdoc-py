@@ -24,6 +24,7 @@
 # PDF document utilities
 
 import os, os.path
+import string
 
 from PIL import Image
 from pathlib import Path
@@ -42,11 +43,28 @@ from pdfdoc import *
 
 
 def rl_colour(fromColour):
-    return Color(fromColour[0], fromColour[1], fromColour[2], alpha=1.0)
+    if isinstance(fromColour, Color):
+        return fromColour
+    if isinstance(fromColour, (list, tuple)):
+        return Color(fromColour[0], fromColour[1], fromColour[2], alpha=1.0)
+    return None
 
 
 def rl_colour_trans():
     return Color(1, 1, 1, alpha=0.0)
+
+
+def rl_colour_hex(hexstr, alpha=1.0):
+    if len(hexstr) < 6:
+        return 0, 0, 0
+    hs = hexstr.lstrip("#")
+    if not all(c in string.hexdigits for c in hs):
+        return 0, 0, 0
+    [rd, gd, bd] = tuple(int(hs[i : i + 2], 16) for i in (0, 2, 4))
+    r = float(rd) / 255.0
+    g = float(gd) / 255.0
+    b = float(bd) / 255.0
+    return Color(r, g, b, alpha=alpha)
 
 
 def GetStringMetrics(c, label, fontname, fontsize, with_descent=True):

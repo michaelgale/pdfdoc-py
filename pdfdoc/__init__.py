@@ -29,6 +29,7 @@ from .helpers import (
     TrimStringWithFunction,
     rl_colour,
     rl_colour_trans,
+    rl_colour_hex,
 )
 from .fonthelpers import (
     register_font_family,

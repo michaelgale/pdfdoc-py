@@ -8,7 +8,6 @@ import random
 import pprint
 from reportlab.lib.units import inch, mm
 from toolbox import *
-from ldrawpy import LDRColour
 from pdfdoc import *
 
 
@@ -34,7 +33,7 @@ class DocStartCallback(DocumentCallback):
         super().__init__()
         self.style = {
             "font-size": 14,
-            "font-colour": LDRColour.RGBFromHex("#000000"),
+            "font-colour": rl_colour_hex("#000000"),
             "horz-align": "centre",
             "vert-align": "centre",
         }
@@ -52,7 +51,7 @@ class PageStartCallback(DocumentCallback):
         super().__init__()
         self.style = {
             "background-fill": True,
-            "background-colour": LDRColour.RGBFromHex("#FFFFBE"),
+            "background-colour": rl_colour_hex("#FFFFBE"),
         }
 
     def render(self, context):
@@ -68,7 +67,7 @@ class PageEndCallback(DocumentCallback):
         super().__init__()
         self.style = {
             "font-size": 14,
-            "font-colour": LDRColour.RGBFromHex("#000000"),
+            "font-colour": rl_colour_hex("#000000"),
             "horz-align": "right",
             "vert-align": "top",
         }
@@ -86,7 +85,7 @@ class DocEndCallback(DocumentCallback):
         super().__init__()
         self.style = {
             "font-size": 14,
-            "font-colour": LDRColour.RGBFromHex("#000000"),
+            "font-colour": rl_colour_hex("#000000"),
             "horz-align": "centre",
             "vert-align": "centre",
         }

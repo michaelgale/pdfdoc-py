@@ -175,9 +175,7 @@ class SafetyLabel(TableRow):
             set_icon(icon, self.icon)
 
     def set_safety_yellow(self):
-        from ldrawpy import LDRColour
-
-        yellow = LDRColour.RGBFromHex("#FFED10")
+        yellow = rl_colour_hex("#FFED10")
         self.icon.style.set_attr("background-fill", True)
         self.icon.style.set_attr("background-colour", (1, 1, 1))
         self.icon.style.set_attr("font-colour", yellow)
@@ -220,21 +218,15 @@ class SafetyLabel(TableRow):
         self._set_desc_rect()
 
     def set_safety_red(self):
-        from ldrawpy import LDRColour
-
-        red = LDRColour.RGBFromHex("#FB0207")
+        red = rl_colour_hex("#FB0207")
         self._set_filled_title_rect(red)
 
     def set_safety_blue(self):
-        from ldrawpy import LDRColour
-
-        blue = LDRColour.RGBFromHex("#0019BD")
+        blue = rl_colour_hex("#0019BD")
         self._set_filled_title_rect(blue)
 
     def set_safety_green(self):
-        from ldrawpy import LDRColour
-
-        green = LDRColour.RGBFromHex("#148636")
+        green = rl_colour_hex("#148636")
         self._set_filled_title_rect(green)
 
     def set_debug_rects(self, show=False):
