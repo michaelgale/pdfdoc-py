@@ -46,8 +46,9 @@ CONSTRAINT_TOKENS = [
     "between",
     "horz_pos",
     "vert_pos",
+    "left_bound", "right_bound", "top_bound", "bottom_bound",
 ]
-SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof"]
+SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof", "left_bound", "right_bound", "top_bound", "bottom_bound"]
 ABS_TOKENS = ["horz_pos", "vert_pos"]
 BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
 OTHER_TOKENS = [
@@ -306,13 +307,20 @@ class LayoutCell(TableVector):
                             if self.is_cell_visible(dest):
                                 dest_rect = self.get_cell_rect(dest)
                                 others.append(dest_rect)
+                            else:
+                                pr = dummy_rect_from_parent_edge(prect, dest)
+                                if pr is not None:
+                                    others.append(pr)
                         other_rect = Rect.bounding_rect_from_rects(others)
                         if cd["from_pt"] is not None:
                             crect.anchor_with_constraint(
                                 other_rect, cd["from_pt"] + " to " + cd["dest_pt"]
                             )
                         else:
-                            crect.anchor_with_constraint(other_rect, cd["dest_pt"])
+                            if "bound" in cd["dest_pt"].lower().split("_"):
+                                crect.shove_with_constraint(other_rect, cd["dest_pt"])
+                            else:
+                                crect.anchor_with_constraint(other_rect, cd["dest_pt"])
                     elif "abs_pos" in cd:
                         if cd["abs_pos"] == "horz_pos":
                             rect_mid = crect.get_centre()

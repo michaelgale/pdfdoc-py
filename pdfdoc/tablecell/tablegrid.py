@@ -42,6 +42,7 @@ class TableGrid(TableVector):
         self.width_constraint = w
         self.height_constraint = h
         self.auto_adjust = True
+        self.align_cols = False
 
     def __str__(self):
         s = []
@@ -143,6 +144,7 @@ class TableGrid(TableVector):
             vert_align=vert_align,
             horz_align=horz_align,
             auto_adjust=self.auto_adjust,
+            align_cols=self.align_cols,
         )
         idx = 0
         for cell in self.iter_cells():
