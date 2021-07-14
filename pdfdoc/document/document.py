@@ -135,7 +135,7 @@ class Document:
         return "\n".join(s)
 
     def get_context(self):
-        """ Returns a dictionary representing essential document context state."""
+        """Returns a dictionary representing essential document context state."""
         return {
             "canvas": self.c,
             "page_number": self.page_number,
@@ -254,7 +254,7 @@ class Document:
         return False
 
     def get_top_left(self, with_margins=True, in_column=False):
-        """ Returns the coordinate of the top left corner of the page or content region."""
+        """Returns the coordinate of the top left corner of the page or content region."""
         if in_column:
             return self.get_current_column_rect().get_top_left()
         r = (
@@ -265,7 +265,7 @@ class Document:
         return r.left, r.top
 
     def get_bottom_left(self, with_margins=True, in_column=False):
-        """ Returns the coordinate of the bottom left corner of the page or content region."""
+        """Returns the coordinate of the bottom left corner of the page or content region."""
         if in_column:
             return self.get_current_column_rect().get_bottom_left()
         r = (
@@ -276,7 +276,7 @@ class Document:
         return r.left, r.bottom
 
     def get_top_right(self, with_margins=True, in_column=False):
-        """ Returns the coordinate of the top right corner of the page or content region."""
+        """Returns the coordinate of the top right corner of the page or content region."""
         if in_column:
             return self.get_current_column_rect().get_top_right()
         r = (
@@ -287,7 +287,7 @@ class Document:
         return r.right, r.top
 
     def get_bottom_right(self, with_margins=True, in_column=False):
-        """ Returns the coordinate of the bottom right corner of the page or content region."""
+        """Returns the coordinate of the bottom right corner of the page or content region."""
         if in_column:
             return self.get_current_column_rect().get_bottom_right()
         r = (
@@ -298,7 +298,7 @@ class Document:
         return r.right, r.bottom
 
     def cursor_top_left(self, with_margins=True, column=None):
-        """ Moves document coordinate pointer to top left of content region."""
+        """Moves document coordinate pointer to top left of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
                 self.cursor = self.column_rects[column - 1].get_top_left()
@@ -306,7 +306,7 @@ class Document:
             self.cursor = self.get_top_left(with_margins=with_margins)
 
     def cursor_top_right(self, with_margins=True, column=None):
-        """ Moves document coordinate pointer to top right of content region."""
+        """Moves document coordinate pointer to top right of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
                 self.cursor = self.column_rects[column - 1].get_top_right()
@@ -314,7 +314,7 @@ class Document:
             self.cursor = self.get_top_right(with_margins=with_margins)
 
     def cursor_bottom_left(self, with_margins=True, column=None):
-        """ Moves document coordinate pointer to bottom left of content region."""
+        """Moves document coordinate pointer to bottom left of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
                 self.cursor = self.column_rects[column - 1].get_bottom_left()
@@ -322,7 +322,7 @@ class Document:
             self.cursor = self.get_bottom_left(with_margins=with_margins)
 
     def cursor_bottom_right(self, with_margins=True, column=None):
-        """ Moves document coordinate pointer to bottom right of content region."""
+        """Moves document coordinate pointer to bottom right of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
                 self.cursor = self.column_rects[column - 1].get_bottom_right()
@@ -330,7 +330,7 @@ class Document:
             self.cursor = self.get_bottom_right(with_margins=with_margins)
 
     def cursor_shift_down(self, yoffset):
-        """ Shifts the global coordinate pointer down. """
+        """Shifts the global coordinate pointer down."""
         self.cursor = (self.cursor[0], self.cursor[1] - yoffset)
 
     def cursor_shift_across(self, xoffset):
@@ -439,7 +439,7 @@ class Document:
                 callback()
 
     def _doc_start(self):
-        """ Initialize state for document creation start. """
+        """Initialize state for document creation start."""
         self.c = canvas.Canvas(
             self.filename, pagesize=(self.bleed_rect.width, self.bleed_rect.height)
         )
@@ -464,7 +464,7 @@ class Document:
         self.cursor_top_left()
 
     def _doc_end(self):
-        """ Close document session and save file. """
+        """Close document session and save file."""
         self._process_callbacks([self.page_end_callbacks, self.doc_end_callbacks])
         self.c.showPage()
         self.c.save()
@@ -474,7 +474,7 @@ class Document:
         self._process_callbacks(self.section_start_callbacks)
 
     def _page_start(self, new_page_number=None):
-        """ Configure state for the start of a new page. """
+        """Configure state for the start of a new page."""
         if new_page_number is not None:
             self.page_number = new_page_number
         self._process_callbacks(self.page_start_callbacks)
@@ -483,7 +483,7 @@ class Document:
         self.cursor_top_left()
 
     def _page_end(self, new_page_number=None):
-        """ Peform actions to end this page and start a new page."""
+        """Peform actions to end this page and start a new page."""
         self._process_callbacks(self.page_end_callbacks)
         self.c.showPage()
         if new_page_number is not None:

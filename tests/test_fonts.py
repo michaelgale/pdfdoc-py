@@ -34,7 +34,9 @@ _font_dict = {
 
 
 def test_register_font():
-    valid_fonts = register_font_family("/System/Library/Fonts/Avenir Next Condensed.ttc")
+    valid_fonts = register_font_family(
+        "/System/Library/Fonts/Avenir Next Condensed.ttc"
+    )
     c = canvas.Canvas(
         "./testfiles/test_fontnames.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )

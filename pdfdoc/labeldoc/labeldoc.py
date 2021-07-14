@@ -100,7 +100,7 @@ class LabelDoc:
         return "\n".join(rs)
 
     def get_row_col(self, idx):
-        """ Helper method to return row, col index computed from a linear index """
+        """Helper method to return row, col index computed from a linear index"""
         r = math.floor(idx / self.ncolumns) % self.nrows
         c = idx % self.ncolumns
         return r, c
@@ -210,7 +210,7 @@ class LabelDoc:
         self.tablegrid.compute_cell_sizes("height")
 
     def _doc_start(self):
-        """ Called by iter_label automatically at document start """
+        """Called by iter_label automatically at document start"""
         self.compute_page_metrics()
         self.c = canvas.Canvas(
             self.filename,
@@ -229,7 +229,7 @@ class LabelDoc:
         self.compute_page_metrics()
 
     def _doc_end(self):
-        """ Called by iter_label automatically at the end of label document """
+        """Called by iter_label automatically at the end of label document"""
         self.c.showPage()
         self.c.save()
 

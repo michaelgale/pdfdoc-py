@@ -100,7 +100,7 @@ class SimpleHeaderFooterCallback(DocumentCallback):
 
 
 class PageNumberCallback(SimpleHeaderFooterCallback):
-    """ A flexible and simple page numbering callback. """
+    """A flexible and simple page numbering callback."""
 
     def __init__(
         self,
@@ -138,7 +138,7 @@ class PageNumberCallback(SimpleHeaderFooterCallback):
 
 
 class PageBackgroundCallback(DocumentCallback):
-    """ Simple solid coloured page background callback."""
+    """Simple solid coloured page background callback."""
 
     def __init__(self, colour=None, style=None):
         super().__init__()
@@ -156,7 +156,7 @@ class PageBackgroundCallback(DocumentCallback):
 
 
 class CropMarksCallback(DocumentCallback):
-    """ A callback which draws crop marks in the bleed area of the page."""
+    """A callback which draws crop marks in the bleed area of the page."""
 
     def __init__(self, length, style=None):
         super().__init__()
@@ -202,7 +202,7 @@ class CropMarksCallback(DocumentCallback):
 
 
 class ColumnLineCallback(DocumentCallback):
-    """ A callback which draws column dividing line in the gutter."""
+    """A callback which draws column dividing line in the gutter."""
 
     def __init__(self, style=None):
         super().__init__()

@@ -105,7 +105,7 @@ class TableVector:
         return False
 
     def has_overlapped_cells(self):
-        """ Determines if any child cells mutually overlap. """
+        """Determines if any child cells mutually overlap."""
         other_cells = []
         for cell in self.iter_cells():
             other_cells.append(cell.label)
@@ -138,7 +138,7 @@ class TableVector:
         return False
 
     def has_clipped_cells(self, tol=1e-2):
-        """ Determines if any child cells extend outside the parent container."""
+        """Determines if any child cells extend outside the parent container."""
         all_rects = self.get_cell_rects(as_is=True)
         brect = Rect.bounding_rect_from_rects(all_rects)
         if brect.left < self.rect.left:

@@ -46,9 +46,22 @@ CONSTRAINT_TOKENS = [
     "between",
     "horz_pos",
     "vert_pos",
-    "left_bound", "right_bound", "top_bound", "bottom_bound",
+    "left_bound",
+    "right_bound",
+    "top_bound",
+    "bottom_bound",
 ]
-SINGLE_TOKENS = ["above", "below", "rightof", "leftof", "middleof", "left_bound", "right_bound", "top_bound", "bottom_bound"]
+SINGLE_TOKENS = [
+    "above",
+    "below",
+    "rightof",
+    "leftof",
+    "middleof",
+    "left_bound",
+    "right_bound",
+    "top_bound",
+    "bottom_bound",
+]
 ABS_TOKENS = ["horz_pos", "vert_pos"]
 BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
 OTHER_TOKENS = [

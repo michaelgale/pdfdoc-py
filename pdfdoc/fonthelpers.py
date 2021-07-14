@@ -251,7 +251,7 @@ fa_lookup_dict = {
 
 
 def fasymbol(x):
-    """ Returns a FontAwesome symbol using a descriptive name """
+    """Returns a FontAwesome symbol using a descriptive name"""
     if x.lower() in fa_lookup_dict:
         return fa_lookup_dict[x.lower()]
     return ""
@@ -290,14 +290,14 @@ haz_lookup_dict = {
 
 
 def hazsymbol(x):
-    """ Returns a Hazard symbol using a descriptive name """
+    """Returns a Hazard symbol using a descriptive name"""
     if x.lower() in haz_lookup_dict:
         return haz_lookup_dict[x.lower()]
     return ""
 
 
 def set_icon(x, textrect):
-    """ Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts """
+    """Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts"""
     xl = x.lower()
     if xl in haz_lookup_dict:
         textrect.style.set_attr("font-name", "Hazard")
