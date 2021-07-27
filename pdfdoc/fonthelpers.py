@@ -37,41 +37,58 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.lib.colors import Color
 
-from toolbox import *
+from toolbox import full_path, split_path, split_filename, Point
+from pdfdoc import FONT_PATHS
 
-font_paths = ["/System/Library/Fonts/", "~/Library/Fonts/"]
+
+def _clean_name(name):
+    return name.replace(" ", "").replace("-", "").replace("_", "")
 
 
-def list_fonts(spec="*"):
-    for font_path in font_paths:
+def get_system_font_list(spec="*"):
+    font_list = []
+    for font_path in FONT_PATHS:
         dirname = full_path(font_path)
         if os.path.isdir(dirname):
             files = Path(dirname).rglob(spec)
             for f in list(files):
-                print(f)
+                if not os.path.isdir(f):
+                    font_list.append(f)
+    return font_list
+
+
+def print_system_fonts(spec="*"):
+    fonts = get_system_font_list(spec)
+    for font in fonts:
+        print(font)
 
 
 def find_font(font):
-    font = font.replace(" ", "").replace("-", "").replace("_", "")
-    for font_path in font_paths:
-        dirname = full_path(font_path)
-        if os.path.isdir(dirname):
-            files = Path(dirname).rglob("*")
-            for ffile in list(files):
-                if not os.path.isdir(ffile):
-                    fp, fn = split_path(ffile)
-                    f, e = split_filename(fn)
-                    fname = f.replace(" ", "").replace("-", "").replace("_", "")
-                    if fname.lower() == font.lower():
-                        name = f.replace(" ", "-")
-                        return name, ffile
-    return None
+    font = _clean_name(font)
+    font_list = get_system_font_list("*")
+    for f in font_list:
+        _, fn = split_path(f)
+        fp, _ = split_filename(fn)
+        fname = _clean_name(fp)
+        if fname.lower() == font.lower():
+            name = fp.replace(" ", "-")
+            return name, f
+        elif font.lower().endswith(".ttc") or font.lower().endswith(".ttf"):
+            fe = font.lower().replace(".ttc", "").replace(".ttf", "")
+            if fname.lower() == fe:
+                name = fp.replace(" ", "-")
+                return name, f
+    return None, None
 
 
 def register_font_family(font_path):
     if not os.path.isfile(full_path(font_path)):
-        print("Font file %s does not exist" % (font_path))
-
+        fname, ffile = find_font(font_path)
+        if fname is None or ffile is None:
+            print(fname, ffile)
+            print("Font family %s cannot be found" % (font_path))
+            return None
+        font_path = ffile
     fp, fn = split_path(font_path)
     ff, fe = split_filename(fn)
     fname = ff.replace(" ", "-")
@@ -97,7 +114,6 @@ def register_font(font_name, font_filename=None):
     if fname is not None:
         try:
             pdfmetrics.registerFont(TTFont(fname, ffile))
-            print("Registered font %s (%s)" % (fname, ffile))
         except:
             print("Unable to register font %s (%s)" % (fname, ffile))
 

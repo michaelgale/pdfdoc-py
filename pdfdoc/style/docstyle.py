@@ -43,6 +43,11 @@ attr_aliases = {
     "font": "font-name",
     "overlay-horz-align": "overlay-horizontal-align",
     "overlay-vert-align": "overlay-vertical-align",
+    "columns": "ncolumns",
+    "cols": "ncolumns",
+    "rows": "nrows",
+    "n-columns": "ncolumns",
+    "n-rows": "nrows",
 }
 
 
@@ -145,37 +150,35 @@ class DocStyle:
         b = float(bd) / 255.0
         return r, g, b
 
+    def _set_colour_attr(self, key, val):
+        if "colour" in key or "color" in key:
+            if isinstance(val, str):
+                if val[0] == "#":
+                    self.attr[key] = self.rgb_from_hex(val)
+                    return True
+        return False
+
     def add_attr(self, attr_name, attr_value=None):
         self.attr[attr_name] = attr_value
 
-    def set_attr(self, attr_key, attr_value):
-        attr_name = attr_key.replace("_", "-")
-        if attr_name in self.attr:
-            if "colour" in attr_name or "color" in attr_name:
-                if isinstance(attr_value, str):
-                    if attr_value[0] == "#":
-                        self.attr[attr_name] = self.rgb_from_hex(attr_value)
-                        return
-            self.attr[attr_name] = attr_value
-        else:
-            if attr_name in attr_aliases:
-                alias = attr_aliases[attr_name]
-                if alias in self.attr:
-                    if "colour" in alias or "color" in alias:
-                        if isinstance(attr_value, str):
-                            if attr_value[0] == "#":
-                                self.attr[alias] = self.rgb_from_hex(attr_value)
-                                return
-                    self.attr[alias] = attr_value
-
-    def get_attr(self, attr_key, def_value=None):
-        attr_name = attr_key.replace("_", "-")
-        if attr_name in self.attr:
-            return self.attr[attr_name]
+    def _attr_key(self, key):
+        attr_name = key.replace("_", "-")
+        attr_name = attr_name.lower()
         if attr_name in attr_aliases:
             alias = attr_aliases[attr_name]
             if alias in self.attr:
-                return self.attr[alias]
+                return alias
+        return attr_name
+
+    def set_attr(self, attr_key, attr_value):
+        key = self._attr_key(attr_key)
+        if not self._set_colour_attr(key, attr_value):
+            self.attr[key] = attr_value
+
+    def get_attr(self, attr_key, def_value=None):
+        key = self._attr_key(attr_key)
+        if key in self.attr:
+            return self.attr[key]
         return def_value
 
     def set_with_dict(self, style_dict):

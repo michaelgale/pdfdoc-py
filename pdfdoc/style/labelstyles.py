@@ -25,6 +25,10 @@
 
 from reportlab.lib.units import inch, mm, cm
 
+#
+# Lable Document Styles
+#
+
 # Avery 5260
 # - 30 labels per sheet
 # - 1" x 2-5/8" label size
@@ -109,6 +113,10 @@ AVERY_5164_LABEL_DOC_STYLE = {
     "gutter-width": 3 / 16 * inch,
     "gutter-height": 0,
 }
+
+#
+# Lable Cell Styles
+#
 
 GENERIC_LABEL_TITLE = {
     "font": "IKEA-Sans-Heavy",

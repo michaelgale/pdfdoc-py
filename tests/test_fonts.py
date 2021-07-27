@@ -11,8 +11,8 @@ from pdfdoc import *
 
 
 def test_listfiles():
-    # list_fonts("*.ttf")
-    # list_fonts("*.otf")
+    # print_system_fonts("*.ttf")
+    # print_system_fonts("*.otf")
 
     find_font("freesans")
     find_font("FuturaStd-Medium.otf")
@@ -34,9 +34,10 @@ _font_dict = {
 
 
 def test_register_font():
-    valid_fonts = register_font_family(
-        "/System/Library/Fonts/Avenir Next Condensed.ttc"
-    )
+    valid_fonts = register_font_family("Avenir Next Condensed.ttc")
+    # valid_fonts = register_font_family(
+    #     "/System/Library/Fonts/Avenir Next Condensed.ttc"
+    # )
     c = canvas.Canvas(
         "./testfiles/test_fontnames.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
@@ -44,7 +45,7 @@ def test_register_font():
     for i, font in enumerate(valid_fonts):
         _font_dict["font-name"] = font
         t1 = TextRect(
-            4 * inch, 0.5 * inch, "%s Font Speciment" % (font), style=_font_dict
+            7 * inch, 0.5 * inch, "%s Font Specimen" % (font), style=_font_dict
         )
         t1.rect.move_top_left_to(Point(1 * inch, 10 * inch - i * 0.5 * inch))
         t1.draw_in_canvas(c)

@@ -16,6 +16,8 @@ DEF_FONT_SIZE = 15
 AUTO_SIZE = 0
 CONTENT_SIZE = -1
 
+FONT_PATHS = ["/System/Library/Fonts/", "~/Library/Fonts/"]
+
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
@@ -37,7 +39,8 @@ from .fonthelpers import (
     fasymbol,
     hazsymbol,
     set_icon,
-    list_fonts,
+    get_system_font_list,
+    print_system_fonts,
     find_font,
     create_specimen_pdf,
 )
@@ -64,7 +67,7 @@ from .labeldoc.mechlabel import MechanicalLabel
 from .labeldoc.eleclabel import ElectronicLabel
 from .graphics.arrowhead import ArrowHead
 
-font_dict = {
+_font_dict = {
     "DroidSans": "DroidSans.ttf",
     "DroidSans-Bold": "DroidSans-Bold.ttf",
     "DIN-Medium": "DIN-Medium.ttf",
@@ -79,8 +82,12 @@ font_dict = {
     "Zapf Dingbats": "ZapfDingbats.ttf",
 }
 
-for k, v in font_dict.items():
-    try:
-        pdfmetrics.registerFont(TTFont(k, v))
-    except:
-        print("Warning: could not load and register font %s with filename %s" % (k, v))
+for k, v in _font_dict.items():
+    register_font(k, v)
+
+_font_families = ["Avenir Next Condensed"]
+
+for f in _font_families:
+    _valid_fonts = register_font_family(f)
+    if len(_valid_fonts) == 0:
+        print("Cannot register font family %s" % (f))
