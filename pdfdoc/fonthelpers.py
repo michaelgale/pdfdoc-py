@@ -118,7 +118,7 @@ def register_font(font_name, font_filename=None):
             print("Unable to register font %s (%s)" % (fname, ffile))
 
 
-def create_specimen_pdf(font, filename):
+def create_specimen_pdf(font, filename, size=28):
     from pdfdoc.contentrect.textrect import TextRect
 
     fname, ffile = find_font(font)
@@ -135,7 +135,7 @@ def create_specimen_pdf(font, filename):
     t1.draw_in_canvas(c)
     _font_dict = {
         "font-name": fname,
-        "font-size": 28,
+        "font-size": size,
         "horz-align": "left",
     }
     char_list = [
@@ -155,6 +155,28 @@ def create_specimen_pdf(font, filename):
                 Point(1 * inch + j * 0.3 * inch, 9.5 * inch - i * 0.75 * inch)
             )
             t1.draw_in_canvas(c)
+    c.showPage()
+    c.save()
+
+
+def create_font_family_pdf(fontname, pdffile):
+    from pdfdoc.contentrect.textrect import TextRect
+
+    _font_dict = {
+        "font-name": "Avenir-0",
+        "font-size": 18,
+        "horz-align": "left",
+    }
+    valid_fonts = register_font_family(fontname)
+    c = canvas.Canvas(pdffile, pagesize=(8.5 * inch, 11.0 * inch))
+    c.saveState()
+    for i, font in enumerate(valid_fonts):
+        _font_dict["font-name"] = font
+        t1 = TextRect(
+            7 * inch, 0.5 * inch, "%s Font Specimen" % (font), style=_font_dict
+        )
+        t1.rect.move_top_left_to(Point(1 * inch, 10 * inch - i * 0.5 * inch))
+        t1.draw_in_canvas(c)
     c.showPage()
     c.save()
 

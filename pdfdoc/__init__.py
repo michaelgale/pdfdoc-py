@@ -43,6 +43,7 @@ from .fonthelpers import (
     print_system_fonts,
     find_font,
     create_specimen_pdf,
+    create_font_family_pdf,
 )
 from .style.docstyle import DocStyle, DocStyleSheet, roman_number
 from .style.pagestyles import *
