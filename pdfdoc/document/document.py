@@ -191,7 +191,7 @@ class Document:
 
     def set_columns(self, num_columns):
         self.num_columns = num_columns
-        num_gutters = num_columns - 1
+        self.column = 1
         self.gutter_rects = []
         self.column_rects = []
         gw = self.style.get_attr("gutter-width")
