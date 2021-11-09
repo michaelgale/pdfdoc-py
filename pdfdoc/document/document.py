@@ -177,9 +177,10 @@ class Document:
         self.page_rect.move_bottom_left_to((0, 0))
         self.bleed_rect = self.page_rect.copy()
         if with_bleed is not None:
-            self.bleed_rect = self.bleed_rect.expanded_by(with_bleed)
+            bleed = float(with_bleed)
+            self.bleed_rect = self.bleed_rect.expanded_by(bleed)
             self.bleed_rect.move_bottom_left_to((0, 0))
-            self.page_rect.move_bottom_left_to((with_bleed, with_bleed))
+            self.page_rect.move_bottom_left_to((bleed, bleed))
         self.inset_rect = self.style.get_inset_rect(self.page_rect)
         r = self.page_rect
         ri = self.inset_rect

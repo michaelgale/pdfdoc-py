@@ -32,6 +32,10 @@ from .helpers import (
     rl_colour,
     rl_colour_trans,
     rl_colour_hex,
+    MM2PTS,
+    IN2PTS,
+    PTS2IN,
+    PTS2MM,
 )
 from .fonthelpers import (
     register_font_family,
@@ -76,6 +80,9 @@ _font_dict = {
     "DIN-Bold": "DIN-Bold.ttf",
     "IKEA-Sans-Regular": "IKEA-Sans-Regular.ttf",
     "IKEA-Sans-Heavy": "IKEA-Sans-Heavy.ttf",
+    "IKEA-Sans-Regular": "IKEA-Sans-Regular.ttf",
+    "IKEA-Sans-Heavy": "IKEA-Sans-Heavy.ttf",
+    "IKEA-Sans-Bold-Italic": "IKEA-Sans-Bold-Italic.ttf",
     "British-Rail-Light": "britrln_.ttf",
     "British-Rail-Dark": "britrdn_.ttf",
     "FontAwesome": "fontawesome-webfont.ttf",

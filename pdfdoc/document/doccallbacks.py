@@ -140,7 +140,7 @@ class PageNumberCallback(SimpleHeaderFooterCallback):
 class PageBackgroundCallback(DocumentCallback):
     """Simple solid coloured page background callback."""
 
-    def __init__(self, colour=None, style=None):
+    def __init__(self, colour=None, style=None, draw_in_bleed=None):
         super().__init__()
         self.colour = colour if colour is not None else (1, 1, 1)
         self.style = DocStyle()
@@ -149,9 +149,16 @@ class PageBackgroundCallback(DocumentCallback):
             style = {"background-fill": True, "background-colour": self.colour}
         self.background = ContentRect(0, 0, style=style)
         self.z_order = -1
+        if draw_in_bleed is not None:
+            self.draw_in_bleed = draw_in_bleed
+        else:
+            self.draw_in_bleed = False
 
     def render(self, context):
-        self.background.rect = context["page_rect"]
+        if self.draw_in_bleed:
+            self.background.rect = context["bleed_rect"]
+        else:
+            self.background.rect = context["page_rect"]
         self.background.draw_in_canvas(context["canvas"])
 
 

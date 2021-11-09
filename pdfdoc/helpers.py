@@ -167,3 +167,19 @@ def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
         sn = sn[:-1]
         sw = canvas.stringWidth(sn, fontname_, fontsize)
     return sn
+
+
+def PTS2MM(pts):
+    return pts / 72 * 25.4
+
+
+def PTS2IN(pts):
+    return pts / 72
+
+
+def IN2PTS(inch):
+    return inch * 72
+
+
+def MM2PTS(mm):
+    return mm / 25.4 * 72
