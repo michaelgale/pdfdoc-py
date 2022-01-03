@@ -139,6 +139,8 @@ class Document:
         return {
             "canvas": self.c,
             "page_number": self.page_number,
+            "is_even": int(self.page_number) % 2 == 0,
+            "is_odd": not int(self.page_number) % 2 == 0,
             "cursor": self.cursor,
             "section": self.section,
             "column": self.column,
@@ -157,6 +159,9 @@ class Document:
                 min(self.column - 1, self.num_columns - 1)
             ],
         }
+
+    def set_alternating_margins(self, alternating=False):
+        self.style["alternating-margins"] = alternating
 
     def set_page_size(self, page_style, orientation=None, with_bleed=None):
         """Configures size based on supplied page style including
@@ -181,23 +186,36 @@ class Document:
             self.bleed_rect = self.bleed_rect.expanded_by(bleed)
             self.bleed_rect.move_bottom_left_to((0, 0))
             self.page_rect.move_bottom_left_to((bleed, bleed))
-        self.inset_rect = self.style.get_inset_rect(self.page_rect)
+        self.compute_inset_rects()
+        self.set_columns(self.num_columns)
+
+    def compute_inset_rects(self):
+        """Recomputes the extents of the inset rectangle. Useful for alternating
+        margins or other dynamic layout changes."""
+        self.inset_rect = self.style.get_inset_rect(
+            self.page_rect, odd_even_page_no=self.page_number
+        )
         r = self.page_rect
         ri = self.inset_rect
         self.header_rect = Rect()
         self.header_rect.set_points((ri.left, r.top), (ri.right, ri.top))
         self.footer_rect = Rect()
         self.footer_rect.set_points((ri.left, ri.bottom), (ri.right, r.bottom))
-        self.set_columns(self.num_columns)
 
     def set_columns(self, num_columns):
         self.num_columns = num_columns
         self.column = 1
+        self.compute_columns()
+
+    def compute_columns(self):
+        """Recomputes the rectangular extents of columns. Useful if using
+        alternating page margins or other dynamic layout changes."""
         self.gutter_rects = []
         self.column_rects = []
+        self.compute_inset_rects()
         gw = self.style.get_attr("gutter-width")
-        cw = (self.inset_rect.width - (num_columns - 1) * gw) / num_columns
-        for column in range(num_columns):
+        cw = (self.inset_rect.width - (self.num_columns - 1) * gw) / self.num_columns
+        for column in range(self.num_columns):
             cx = self.inset_rect.left + column * (cw + gw)
             crect = Rect(cw, self.inset_rect.height)
             crect.move_top_left_to((cx, self.inset_rect.top))
@@ -225,12 +243,14 @@ class Document:
     # Convenience accessors for page geometry
 
     def get_column_width(self):
+        self.compute_columns()
         return self.column_rects[self.column - 1].width
 
     def get_remaining_height(self):
         return self.cursor[1] - self.inset_rect.bottom
 
     def get_remaining_width(self):
+        self.compute_columns()
         return self.inset_rect.right - self.cursor[0]
 
     def is_enough_height(self, for_height):
@@ -246,6 +266,7 @@ class Document:
             return self.is_enough_width(for_space)
 
     def get_current_column_rect(self):
+        self.compute_columns()
         return self.column_rects[self.column - 1]
 
     def is_cursor_at_column_start(self):
@@ -259,7 +280,7 @@ class Document:
         if in_column:
             return self.get_current_column_rect().get_top_left()
         r = (
-            self.style.get_inset_rect(self.page_rect)
+            self.style.get_inset_rect(self.page_rect, odd_even_page_no=self.page_number)
             if with_margins
             else self.page_rect
         )
@@ -270,7 +291,7 @@ class Document:
         if in_column:
             return self.get_current_column_rect().get_bottom_left()
         r = (
-            self.style.get_inset_rect(self.page_rect)
+            self.style.get_inset_rect(self.page_rect, odd_even_page_no=self.page_number)
             if with_margins
             else self.page_rect
         )
@@ -281,7 +302,7 @@ class Document:
         if in_column:
             return self.get_current_column_rect().get_top_right()
         r = (
-            self.style.get_inset_rect(self.page_rect)
+            self.style.get_inset_rect(self.page_rect, odd_even_page_no=self.page_number)
             if with_margins
             else self.page_rect
         )
@@ -292,7 +313,7 @@ class Document:
         if in_column:
             return self.get_current_column_rect().get_bottom_right()
         r = (
-            self.style.get_inset_rect(self.page_rect)
+            self.style.get_inset_rect(self.page_rect, odd_even_page_no=self.page_number)
             if with_margins
             else self.page_rect
         )
@@ -302,6 +323,7 @@ class Document:
         """Moves document coordinate pointer to top left of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
+                self.compute_columns()
                 self.cursor = self.column_rects[column - 1].get_top_left()
         else:
             self.cursor = self.get_top_left(with_margins=with_margins)
@@ -310,6 +332,7 @@ class Document:
         """Moves document coordinate pointer to top right of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
+                self.compute_columns()
                 self.cursor = self.column_rects[column - 1].get_top_right()
         else:
             self.cursor = self.get_top_right(with_margins=with_margins)
@@ -318,6 +341,7 @@ class Document:
         """Moves document coordinate pointer to bottom left of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
+                self.compute_columns()
                 self.cursor = self.column_rects[column - 1].get_bottom_left()
         else:
             self.cursor = self.get_bottom_left(with_margins=with_margins)
@@ -326,6 +350,7 @@ class Document:
         """Moves document coordinate pointer to bottom right of content region."""
         if column is not None:
             if column - 1 < self.num_columns:
+                self.compute_columns()
                 self.cursor = self.column_rects[column - 1].get_bottom_right()
         else:
             self.cursor = self.get_bottom_right(with_margins=with_margins)
@@ -476,6 +501,7 @@ class Document:
 
     def _page_start(self, new_page_number=None):
         """Configure state for the start of a new page."""
+        self.compute_columns()
         if new_page_number is not None:
             self.page_number = new_page_number
         self._process_callbacks(self.page_start_callbacks)

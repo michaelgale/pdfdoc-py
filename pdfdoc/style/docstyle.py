@@ -68,6 +68,7 @@ class DocStyle:
             "right-margin": 0,
             "top-margin": 0,
             "bottom-margin": 0,
+            "alternating-margins": False,
             "ncolumns": 0,
             "nrows": 0,
             "top-padding": 0,
@@ -293,22 +294,42 @@ class DocStyle:
     def get_bottom_padding(self):
         return self.get_attr("bottom-padding", 0)
 
-    def get_inset_rect(self, fromRect):
+    def get_inset_rect(self, fromRect, odd_even_page_no=None):
         inset_rect = copy.copy(fromRect)
-        inset_rect.left += self.get_left_trim()
-        inset_rect.right -= self.get_right_trim()
+        if odd_even_page_no is not None and self.get_attr("alternating-margins", False):
+            # odd page, swap left/right margin values
+            # even page, use as is
+            if int(odd_even_page_no) % 2 == 0:
+                inset_rect.left += self.get_left_trim()
+                inset_rect.right -= self.get_right_trim()
+            else:
+                inset_rect.left += self.get_right_trim()
+                inset_rect.right -= self.get_left_trim()
+        else:
+            inset_rect.left += self.get_left_trim()
+            inset_rect.right -= self.get_right_trim()
         inset_rect.top -= self.get_top_trim()
         inset_rect.bottom += self.get_bottom_trim()
         inset_rect.get_size()
         return inset_rect
 
-    def get_margin_rect(self, fromRect=None):
+    def get_margin_rect(self, fromRect=None, odd_even_page_no=None):
         if fromRect is not None:
             margin_rect = copy.copy(fromRect)
         else:
             margin_rect = Rect(self.get_attr("width", 0), self.get_attr("height", 0))
-        margin_rect.left += self.get_left_margin()
-        margin_rect.right -= self.get_right_margin()
+        if odd_even_page_no is not None and self.get_attr("alternating-margins", False):
+            # odd page, swap left/right margin values
+            # even page, use as is
+            if int(odd_even_page_no) % 2 == 0:
+                margin_rect.left += self.get_left_margin()
+                margin_rect.right -= self.get_right_margin()
+            else:
+                margin_rect.left += self.get_right_margin()
+                margin_rect.right -= self.get_left_margin()
+        else:
+            margin_rect.left += self.get_left_margin()
+            margin_rect.right -= self.get_right_margin()
         margin_rect.top -= self.get_top_margin()
         margin_rect.bottom += self.get_bottom_margin()
         margin_rect.get_size()
