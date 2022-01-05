@@ -60,5 +60,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
     ],
     install_requires=["reportlab"],
-    scripts=['pdfdoc/scripts/fourup.py'],
+    scripts=['pdfdoc/scripts/fourup.py', 'pdfdoc/scripts/fullbleed.py'],
 )

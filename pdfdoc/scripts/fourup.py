@@ -25,16 +25,10 @@
 
 import argparse
 import math
-import sys
-import os
 
-import fitz
 import crayons
-from pdfdoc.style.pagestyles import PAGE_TABLOID
-from reportlab.pdfgen.canvas import Canvas
 
-from pdfrw import PdfReader, PageMerge, PdfDict
-from pdfrw.pagemerge import RectXObj
+from pdfrw import PdfReader, PageMerge
 from pdfrw.buildxobj import pagexobj
 from pdfrw.toreportlab import makerl
 
@@ -48,62 +42,6 @@ def four_up_index(idx, num_pages):
     if (idx & 0x03) == 0x01 or (idx & 0x03) == 0x02:
         return ridx
     return num_pages - 1 - ridx
-
-
-def get_edge_colours(fn, pageno, scale=1.0):
-    """returns a dictionary containing a list of colour boundary
-    regions for each each of the page.
-    """
-    PIX_SCALE = 2
-
-    def _rgb_at_xy(pixmap, x, y):
-        idx = int(y * pixmap.width + x) * 3
-        pix = pixmap.samples
-        r, g, b = pix[idx], pix[idx + 1], pix[idx + 2]
-        return r / 255, g / 255, b / 255
-
-    def _diff_rgb(p0, p1):
-        diff = (p0[0] - p1[0]) * (p0[0] - p1[0])
-        diff += (p0[1] - p1[1]) * (p0[1] - p1[1])
-        diff += (p0[2] - p1[2]) * (p0[2] - p1[2])
-        return math.sqrt(diff)
-
-    def _sum_rgb(p0, p1):
-        return (p0[0] + p1[0], p0[1] + p1[1], p0[2] + p1[2])
-
-    def _diff_strip(pix, plen):
-        edges = []
-        acc_diff = 0
-        acc_avg = 0, 0, 0
-        acc_cnt = 0
-        for p in range(1, plen):
-            p0 = pix[p - 1]
-            p1 = pix[p]
-            acc_cnt += 1
-            acc_avg = _sum_rgb(acc_avg, p0)
-            acc_diff += _diff_rgb(p0, p1)
-            if acc_diff > 0.01:
-                acc_avg = tuple([x / acc_cnt for x in acc_avg])
-                edges.append((p * scale * 1 / PIX_SCALE, acc_avg))
-                acc_diff = 0
-                acc_avg = 0, 0, 0
-                acc_cnt = 0
-        edges.append((plen * scale * 1 / PIX_SCALE, p1))
-        return edges
-
-    mudoc = fitz.open(fn)
-    pmh = mudoc[pageno].get_pixmap(matrix=fitz.Matrix(PIX_SCALE, 0.5), alpha=False)
-    pmv = mudoc[pageno].get_pixmap(matrix=fitz.Matrix(0.5, PIX_SCALE), alpha=False)
-    hstrip = [_rgb_at_xy(pmh, x, 0) for x in range(0, pmh.width)]
-    vstrip = [_rgb_at_xy(pmv, 0, y) for y in range(0, pmv.height)]
-    hstrip2 = [_rgb_at_xy(pmh, x, pmh.height - 1) for x in range(0, pmh.width)]
-    vstrip2 = [_rgb_at_xy(pmv, pmv.width - 1, y) for y in range(0, pmv.height)]
-    edge_dict = {}
-    edge_dict["top"] = _diff_strip(hstrip, pmh.width)
-    edge_dict["left"] = _diff_strip(vstrip, pmv.height)
-    edge_dict["bottom"] = _diff_strip(hstrip2, pmh.width)
-    edge_dict["right"] = _diff_strip(vstrip2, pmv.height)
-    return edge_dict
 
 
 def get_page_size(pages):
@@ -194,13 +132,33 @@ def make_four_up(fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None):
 
     doc_style = {"width": w, "height": h}
     doc = Document(ofn)
+
     total_bleed = 0
     if bleed is not None:
-        toolboxprint("Bleed size  : %4.0f" % (float(bleed)))
+        bleed = float(bleed)
+        toolboxprint(
+            "Bleed size  : %4.0f pts (%4.0f mm) ( %5.3f in)"
+            % (float(bleed), PTS2MM(bleed), PTS2IN(bleed))
+        )
         total_bleed += float(bleed)
     if margin is not None:
-        toolboxprint("Margin size : %4.0f" % (float(margin)))
+        margin = float(margin)
+        toolboxprint(
+            "Margin size : %4.0f pts (%4.0f mm) ( %5.3f in)"
+            % (float(margin), PTS2MM(margin), PTS2IN(margin))
+        )
         total_bleed += float(margin)
+    doc.page_end_callbacks = []
+    if crop_marks is not None:
+        crop_marks = float(crop_marks)
+        crop_callback = CropMarksCallback(length=crop_marks)
+        crop_callback.style["line-colour"] = (0.5, 0.5, 0.5)
+        doc.page_end_callbacks.append(crop_callback)
+        toolboxprint(
+            "Adding crop marks : %4.0f pts (%4.0f mm) ( %5.3f in)"
+            % (crop_marks, PTS2MM(crop_marks), PTS2IN(crop_marks))
+        )
+
     doc.set_page_size(doc_style, with_bleed=total_bleed)
     if total_bleed > 0:
         wb, hb = doc.bleed_rect.width, doc.bleed_rect.height
@@ -208,11 +166,6 @@ def make_four_up(fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None):
             "4-up with bleed    : %4.0f x %4.0f pts ( %4.0f x %4.0f mm) ( %5.2f x %5.2f in)"
             % (wb, hb, PTS2MM(wb), PTS2MM(hb), PTS2IN(wb), PTS2IN(hb))
         )
-    doc.page_end_callbacks = []
-    if crop_marks is not None:
-        crop_callback = CropMarksCallback(length=float(crop_marks))
-        crop_callback.style["line-colour"] = (0.5, 0.5, 0.5)
-        doc.page_end_callbacks.append(crop_callback)
     doc._doc_start()
     for idx, page in enumerate(pages):
         ridx = four_up_index(idx, num_pages)
