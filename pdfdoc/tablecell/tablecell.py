@@ -23,8 +23,6 @@
 #
 # TableCell and TableVector container classes
 
-from reportlab.pdfgen import canvas
-
 from toolbox import *
 from pdfdoc import *
 

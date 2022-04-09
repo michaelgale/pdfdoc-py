@@ -24,9 +24,6 @@
 # Add full bleed features to PDF
 
 import argparse
-import math
-import sys
-import os
 
 import crayons
 
@@ -163,7 +160,7 @@ def add_bleed(fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None):
     doc._doc_end()
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="Add full bleed printing features to PDF."
     )
@@ -221,3 +218,7 @@ if __name__ == "__main__":
         ofn = argsd["output"]
     toolboxprint("Output file : %s" % (colour_path_str(ofn)))
     add_bleed(fn, ofn, argsd["bleed"], argsd["scale"], argsd["crop"], argsd["margin"])
+
+
+if __name__ == "__main__":
+    main()

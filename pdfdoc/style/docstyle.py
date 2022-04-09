@@ -26,7 +26,6 @@
 import copy
 from collections import OrderedDict
 import string
-from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch, mm, cm
 
 from toolbox import Params

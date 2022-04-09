@@ -202,7 +202,7 @@ def make_four_up(fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None):
     doc._doc_end()
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="Reassemble document into a 4-up print layout"
     )
@@ -267,3 +267,7 @@ if __name__ == "__main__":
     make_four_up(
         fn, ofn, argsd["bleed"], argsd["scale"], argsd["crop"], argsd["margin"]
     )
+
+
+if __name__ == "__main__":
+    main()

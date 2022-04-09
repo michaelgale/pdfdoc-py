@@ -23,8 +23,6 @@
 #
 # ImageRect image cell container class derived from ContentRect
 
-from reportlab.pdfgen import canvas
-
 from toolbox import *
 from pdfdoc import *
 

@@ -30,14 +30,10 @@ from pathlib import Path
 
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
-from reportlab.rl_config import defaultPageSize
 from reportlab.lib.units import inch
-from reportlab.lib import colors
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab.lib.colors import Color
 
-from toolbox import full_path, split_path, split_filename, Point
+from toolbox import full_path, split_path, split_filename, Point, colour_path_str
 from pdfdoc import FONT_PATHS
 
 
@@ -53,14 +49,14 @@ def get_system_font_list(spec="*"):
             files = Path(dirname).rglob(spec)
             for f in list(files):
                 if not os.path.isdir(f):
-                    font_list.append(f)
+                    font_list.append(str(f))
     return font_list
 
 
 def print_system_fonts(spec="*"):
-    fonts = get_system_font_list(spec)
+    fonts = sorted(get_system_font_list(spec))
     for font in fonts:
-        print(font)
+        print(colour_path_str(font))
 
 
 def find_font(font):

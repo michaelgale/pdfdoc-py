@@ -23,8 +23,6 @@
 #
 # TableGrid class
 
-from reportlab.pdfgen import canvas
-
 from toolbox import *
 from pdfdoc import *
 
@@ -36,7 +34,7 @@ class TableGrid(TableVector):
     a row is automatically created when the previous row's content size has exceeded
     width_constraint.  Similarly, a new column is created when height_constraint to exceeded."""
 
-    def __init__(self, w, h, style=None):
+    def __init__(self, w=0, h=0, style=None):
         super().__init__(w, h, style)
         self.fill_dir = "row-wise"
         self.width_constraint = w

@@ -189,7 +189,7 @@ def MM2PTS(mm):
 
 def get_edge_colours(fn, pageno, scale=1.0):
     """returns a dictionary containing a list of colour boundary
-    regions for each each of the page.
+    regions for each edge of the page.
     """
     PIX_SCALE = 2
 

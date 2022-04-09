@@ -23,8 +23,6 @@
 #
 # LayoutCell class
 
-from reportlab.pdfgen import canvas
-
 from toolbox import *
 from pdfdoc import *
 
@@ -196,7 +194,7 @@ class LayoutCell(TableVector):
         or  below, above, rightof, leftof <[labels]>
     """
 
-    def __init__(self, w, h, style=None):
+    def __init__(self, w=0, h=0, style=None):
         super().__init__(w, h, style)
         self.width_constraint = w
         self.height_constraint = h

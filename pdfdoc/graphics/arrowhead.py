@@ -23,10 +23,6 @@
 #
 # ImageRect image cell container class derived from ContentRect
 
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.lib.units import inch
-
 from toolbox import *
 from pdfdoc import *
 

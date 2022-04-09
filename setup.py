@@ -52,13 +52,18 @@ setuptools.setup(
     long_description=build_description(),
     license="MIT",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Natural Language :: English",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.6",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
     ],
-    install_requires=["reportlab"],
-    scripts=['pdfdoc/scripts/fourup.py', 'pdfdoc/scripts/fullbleed.py'],
+    install_requires=["reportlab", "pdfrw"],
+    entry_points={
+        "console_scripts": [
+            "fourup=pdfdoc.scripts.fourup:main",
+            "fullbleed=pdfdoc.scripts.fullbleed:main",
+        ]
+    }
 )

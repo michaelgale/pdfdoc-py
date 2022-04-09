@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__
@@ -17,9 +17,6 @@ AUTO_SIZE = 0
 CONTENT_SIZE = -1
 
 FONT_PATHS = ["/System/Library/Fonts/", "~/Library/Fonts/"]
-
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
 
 from .helpers import (
     GetImageMetrics,

@@ -23,8 +23,6 @@
 #
 # Centred container content rect
 
-from reportlab.pdfgen import canvas
-
 from toolbox import *
 from pdfdoc import *
 

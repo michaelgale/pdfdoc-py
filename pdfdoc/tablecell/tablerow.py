@@ -23,14 +23,12 @@
 #
 # TableRow class derived from TableVector
 
-from reportlab.pdfgen import canvas
-
 from toolbox import *
 from pdfdoc import *
 
 
 class TableRow(TableVector):
-    def __init__(self, w, h, style=None):
+    def __init__(self, w=0, h=0, style=None):
         super().__init__(w, h, style)
 
     def add_column(self, label, content, order=None, width=0):
