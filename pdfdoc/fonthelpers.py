@@ -25,7 +25,6 @@
 
 import os, os.path
 
-from PIL import Image
 from pathlib import Path
 
 from reportlab.pdfgen import canvas
@@ -34,7 +33,7 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase.ttfonts import TTFont
 
 from toolbox import full_path, split_path, split_filename, Point, colour_path_str
-from pdfdoc import FONT_PATHS
+from pdfdoc import FONT_PATHS, REGISTERED_FONTS
 
 
 def _clean_name(name):
@@ -64,9 +63,9 @@ def find_font(font):
     font_list = get_system_font_list("*")
     for f in font_list:
         _, fn = split_path(f)
-        fp, _ = split_filename(fn)
+        fp, fext = split_filename(fn)
         fname = _clean_name(fp)
-        if fname.lower() == font.lower():
+        if fname.lower() == font.lower() and not fext.lower().endswith("otf"):
             name = fp.replace(" ", "-")
             return name, f
         elif font.lower().endswith(".ttc") or font.lower().endswith(".ttf"):
@@ -81,12 +80,11 @@ def register_font_family(font_path):
     if not os.path.isfile(full_path(font_path)):
         fname, ffile = find_font(font_path)
         if fname is None or ffile is None:
-            print(fname, ffile)
             print("Font family %s cannot be found" % (font_path))
             return None
         font_path = ffile
-    fp, fn = split_path(font_path)
-    ff, fe = split_filename(fn)
+    _, fn = split_path(font_path)
+    ff, _ = split_filename(fn)
     fname = ff.replace(" ", "-")
     valid_subfonts = []
     for i in range(20):
@@ -100,25 +98,32 @@ def register_font_family(font_path):
 
 
 def register_font(font_name, font_filename=None):
+    if font_name in REGISTERED_FONTS:
+        return font_name, font_filename
     if font_filename is not None:
         try:
             pdfmetrics.registerFont(TTFont(font_name, font_filename))
-            return
+            return font_name, font_filename
         except:
             pass
     fname, ffile = find_font(font_name)
     if fname is not None:
         try:
             pdfmetrics.registerFont(TTFont(fname, ffile))
+            return fname, ffile
         except:
             print("Unable to register font %s (%s)" % (fname, ffile))
+    return None, None
+
+
+def get_registered_fonts():
+    return REGISTERED_FONTS
 
 
 def create_specimen_pdf(font, filename, size=28):
     from pdfdoc.contentrect.textrect import TextRect
 
-    fname, ffile = find_font(font)
-    register_font(fname, ffile)
+    fname, _ = register_font(font)
     _font_dict = {
         "font-name": fname,
         "font-size": 18,
@@ -132,12 +137,13 @@ def create_specimen_pdf(font, filename, size=28):
     _font_dict = {
         "font-name": fname,
         "font-size": size,
-        "horz-align": "left",
+        "horz-align": "centre",
     }
     char_list = [
-        "0 1 2 3 4 5 6 7 8 9 0",
+        "0 1 2 3 4 5 6 7 8 9 _",
         "! @ # $ % & * ( ) { }",
-        ": ; < > , . ? / ~",
+        ": ; < > , . ? / ~ [ ]",
+        "= + - £ € µ ¥ © ® ß ™",
         "A B C D E F G H I J K",
         "L M N O P Q R S T U V",
         "W X Y Z a b c d e f g",
@@ -146,7 +152,7 @@ def create_specimen_pdf(font, filename, size=28):
     ]
     for i, line in enumerate(char_list):
         for j, ch in enumerate(line):
-            t1 = TextRect(7 * inch, 0.5 * inch, ch, style=_font_dict)
+            t1 = TextRect(0.65 * inch, 0.5 * inch, ch, style=_font_dict)
             t1.rect.move_top_left_to(
                 Point(1 * inch + j * 0.3 * inch, 9.5 * inch - i * 0.75 * inch)
             )

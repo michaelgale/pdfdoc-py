@@ -1,8 +1,6 @@
 # Sample Test passing with nose and pytest
 
-import os
-import sys
-import pytest
+import crayons as cr
 
 from toolbox import *
 from reportlab.pdfgen import canvas
@@ -20,10 +18,23 @@ def test_listfiles():
     find_font("uknumberplate")
     find_font("Transport Heavy")
     find_font("IKEA Sans Regular")
+    find_font("IKEA-Sans-Regular")
+
+    # all_fonts = get_registered_fonts()
+    # for k, v in all_fonts.items():
+    #     print(cr.white(k), cr.cyan(v))
 
 
 def test_font_specimen():
-    create_specimen_pdf("DIN-Regular", "./testfiles/test_specimen.pdf")
+    FONT_LIST = [
+        "DIN-Regular",
+        "DroidSans",
+        "IKEA-Sans-Regular",
+        "Hazard",
+    ]
+    for f in FONT_LIST:
+        fn = f.replace(" ", "").replace("-", "").replace("_", "")
+        create_specimen_pdf(f, "./testfiles/test_specimen_%s.pdf" % (fn))
 
 
 _font_dict = {

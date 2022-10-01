@@ -101,7 +101,7 @@ class TextRect(ContentRect):
             lines = SplitStringToFit(c, textLabel, font_name, font_size, text_width)
         else:
             lines = [textLabel]
-        ls = 1 + self.style.get_attr("line-spacing", 1.1)
+        ls = 1.0 + self.style.get_attr("line-spacing", 1.1)
         cy = (len(lines) - 1) * (th / 2) * ls
         for i, line in enumerate(lines):
             if vert_align == "centre":

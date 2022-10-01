@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__
@@ -17,6 +17,7 @@ AUTO_SIZE = 0
 CONTENT_SIZE = -1
 
 FONT_PATHS = ["/System/Library/Fonts/", "~/Library/Fonts/"]
+REGISTERED_FONTS = {}
 
 from .helpers import (
     GetImageMetrics,
@@ -38,6 +39,7 @@ from .helpers import (
 from .fonthelpers import (
     register_font_family,
     register_font,
+    get_registered_fonts,
     fasymbol,
     hazsymbol,
     set_icon,
@@ -89,7 +91,9 @@ _font_dict = {
 }
 
 for k, v in _font_dict.items():
-    register_font(k, v)
+    reg_font, font_file = register_font(k, v)
+    if reg_font is not None:
+        REGISTERED_FONTS[reg_font] = font_file
 
 _font_families = ["Avenir Next Condensed"]
 
