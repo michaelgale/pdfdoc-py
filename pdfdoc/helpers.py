@@ -69,7 +69,7 @@ def rl_colour_hex(hexstr, alpha=1.0):
     return Color(r, g, b, alpha=alpha)
 
 
-def GetStringMetrics(c, label, fontname, fontsize, with_descent=True):
+def get_string_metrics(c, label, fontname, fontsize, with_descent=True):
     # print("fontname: %s fontsize: %s" % (fontname, fontsize))
     if fontsize is None or fontname is None:
         return (0, 0)
@@ -90,7 +90,7 @@ def GetStringMetrics(c, label, fontname, fontsize, with_descent=True):
     return (width, height)
 
 
-def GetStringAscDes(c, label, fontname, fontsize):
+def get_string_asc_des(c, label, fontname, fontsize):
     # print("fontname: %s fontsize: %s" % (fontname, fontsize))
     if fontsize is None or fontname is None:
         return (0, 0)
@@ -107,7 +107,7 @@ def GetStringAscDes(c, label, fontname, fontsize):
     return (ascent * fontsize, descent * fontsize)
 
 
-def GetImageMetrics(filename):
+def get_image_metrics(filename):
     img_file = Path(filename)
     if img_file.is_file():
         im = Image.open(filename)
@@ -117,7 +117,7 @@ def GetImageMetrics(filename):
     return (0, 0)
 
 
-def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
+def trim_string_to_fit(canvas, s, fontname, fontsize, toWidth):
     sn = s
     sw = canvas.stringWidth(sn, fontname, fontsize)
     while sw > toWidth:
@@ -126,7 +126,7 @@ def TrimStringToFit(canvas, s, fontname, fontsize, toWidth):
     return sn
 
 
-def SplitStringToFit(canvas, s, fontname, fontsize, toWidth):
+def split_string_to_fit(canvas, s, fontname, fontsize, toWidth):
     words = s.split()
     lines = []
     line = []
@@ -150,7 +150,7 @@ def SplitStringToFit(canvas, s, fontname, fontsize, toWidth):
     return lines
 
 
-def TrimStringWithFunction(canvas, s, fontname, fontsize, toWidth, func):
+def trim_string_function(canvas, s, fontname, fontsize, toWidth, func):
     try:
         sw = canvas.stringWidth(s, fontname, fontsize)
         fontname_ = fontname

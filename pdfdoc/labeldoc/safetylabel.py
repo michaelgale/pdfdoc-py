@@ -83,14 +83,14 @@ class SafetyLabel(TableRow):
     def _get_metrics(self, textrect, c):
         fontname = textrect.style.get_attr("font-name")
         fontsize = textrect.style.get_attr("font-size")
-        tw, th = GetStringMetrics(
+        tw, th = get_string_metrics(
             c,
             textrect.text,
             fontname,
             fontsize,
             with_descent=False,
         )
-        sa, sd = GetStringAscDes(c, textrect.text, fontname, fontsize)
+        sa, sd = get_string_asc_des(c, textrect.text, fontname, fontsize)
         return tw, th, sa, sd
 
     def _new_height(self, th, sd, th2, sd2):

@@ -20,13 +20,12 @@ FONT_PATHS = ["/System/Library/Fonts/", "~/Library/Fonts/"]
 REGISTERED_FONTS = {}
 
 from .helpers import (
-    GetImageMetrics,
-    GetStringMetrics,
-    GetStringAscDes,
-    GetImageMetrics,
-    TrimStringToFit,
-    SplitStringToFit,
-    TrimStringWithFunction,
+    get_string_metrics,
+    get_string_asc_des,
+    get_image_metrics,
+    trim_string_to_fit,
+    split_string_to_fit,
+    trim_string_function,
     rl_colour,
     rl_colour_trans,
     rl_colour_hex,

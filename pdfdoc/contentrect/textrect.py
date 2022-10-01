@@ -53,8 +53,8 @@ class TextRect(ContentRect):
             c.setFont(font_name, font_size)
         except:
             c.setFont(DEF_FONT_NAME, font_size)
-        tw, th = GetStringMetrics(c, self.text, font_name, font_size)
-        ta, td = GetStringAscDes(c, self.text, font_name, font_size)
+        tw, th = get_string_metrics(c, self.text, font_name, font_size)
+        ta, td = get_string_asc_des(c, self.text, font_name, font_size)
         th += ta
         tw += self.style.get_width_trim()
         tw *= 1.05
@@ -82,8 +82,8 @@ class TextRect(ContentRect):
             c.setFont(font_name, font_size)
         except:
             c.setFont(DEF_FONT_NAME, font_size)
-        tw, th = GetStringMetrics(c, self.text, font_name, font_size)
-        _, td = GetStringAscDes(c, self.text, font_name, font_size)
+        tw, th = get_string_metrics(c, self.text, font_name, font_size)
+        _, td = get_string_asc_des(c, self.text, font_name, font_size)
         tx = self.rect.left
         font_colour = rl_colour(self.style.get_attr("font-colour", (0, 0, 0)))
         c.setFillColor(font_colour)
@@ -92,13 +92,13 @@ class TextRect(ContentRect):
         if self.trim_callback is not None:
             textLabel = self.trim_callback(c, self.text, self)
         elif self.clip_text:
-            textLabel = TrimStringToFit(c, self.text, font_name, font_size, text_width)
+            textLabel = trim_string_to_fit(c, self.text, font_name, font_size, text_width)
         else:
             textLabel = self.text
         inset_rect = self.style.get_inset_rect(self.rect)
         vert_align = self.style.get_attr("vert-align", "centre")
         if self.split_lines:
-            lines = SplitStringToFit(c, textLabel, font_name, font_size, text_width)
+            lines = split_string_to_fit(c, textLabel, font_name, font_size, text_width)
         else:
             lines = [textLabel]
         ls = 1.0 + self.style.get_attr("line-spacing", 1.1)

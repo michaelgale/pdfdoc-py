@@ -47,7 +47,7 @@ class ImageRect(ContentRect):
     def get_content_size(self, with_padding=True):
         if self.filename == "":
             return 0, 0
-        (iw, ih) = GetImageMetrics(self.filename)
+        (iw, ih) = get_image_metrics(self.filename)
         tw, th = iw / self.dpi * 72, ih / self.dpi * 72
         if with_padding:
             tw += self.style.get_width_trim()
@@ -59,7 +59,7 @@ class ImageRect(ContentRect):
     def draw_image_rect(self, c):
         if self.filename == "":
             return
-        (iw, ih) = GetImageMetrics(self.filename)
+        (iw, ih) = get_image_metrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
             tw, th = self.GetBestRectMetrics(
