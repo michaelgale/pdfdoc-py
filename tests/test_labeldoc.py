@@ -40,6 +40,15 @@ def test_labeldoc_iter():
         ld.set_table_cell(tr, row, col)
 
 
+def test_simple_label():
+    ld = LabelDoc("./testfiles/test_simplelabel.pdf", style=AVERY_5267_LABEL_DOC_STYLE)
+    labels = [i for i in range(25)]
+    for label, row, col in ld.iter_label(labels):
+        sl = SimpleLabel(line1="Title", line2="subtitle", line3="subtitle")
+        sl.show_debug_rects = True
+        ld.set_table_cell(sl, row, col)
+
+
 def test_generic_labeldoc():
     ld = LabelDoc(
         "./testfiles/test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE

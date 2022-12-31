@@ -69,6 +69,7 @@ from .labeldoc.genericlabel import GenericLabel
 from .labeldoc.safetylabel import SafetyLabel
 from .labeldoc.mechlabel import MechanicalLabel
 from .labeldoc.eleclabel import ElectronicLabel
+from .labeldoc.simplelabel import SimpleLabel
 from .graphics.arrowhead import ArrowHead
 
 _font_dict = {

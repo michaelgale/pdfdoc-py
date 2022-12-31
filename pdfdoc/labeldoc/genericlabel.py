@@ -41,6 +41,7 @@ class GenericLabel(TableColumn):
         symbol=None,
         image=None,
         titleimage=None,
+        bottom_pattern=True,
     ):
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
@@ -71,19 +72,22 @@ class GenericLabel(TableColumn):
         self.add_row("Title", self.titlerow)
         self.add_row("PatternTop", self.pattern_top)
         self.add_row("Subtitle", self.subtitle)
-        self.add_row("Pattern", self.pattern)
+        if bottom_pattern:
+            self.add_row("Pattern", self.pattern)
         self.set_row_height("PatternTop", hp)
         self.set_row_height("Title", ht)
         self.set_row_height("Subtitle", AUTO_SIZE)
-        self.set_row_height("Pattern", hp2)
+        if bottom_pattern:
+            self.set_row_height("Pattern", hp2)
         if colour is not None:
             self.set_colour(colour)
         else:
             self.set_colour(0)
         if pattern is not None:
-            self.set_cell_visible("Pattern", True)
+            if bottom_pattern:
+                self.set_cell_visible("Pattern", True)
+                self.pattern.pattern = pattern
             self.set_cell_visible("PatternTop", True)
-            self.pattern.pattern = pattern
             self.pattern_top.pattern = pattern
         else:
             # self.set_cell_visible("Pattern", False)

@@ -92,7 +92,9 @@ class TextRect(ContentRect):
         if self.trim_callback is not None:
             textLabel = self.trim_callback(c, self.text, self)
         elif self.clip_text:
-            textLabel = trim_string_to_fit(c, self.text, font_name, font_size, text_width)
+            textLabel = trim_string_to_fit(
+                c, self.text, font_name, font_size, text_width
+            )
         else:
             textLabel = self.text
         inset_rect = self.style.get_inset_rect(self.rect)

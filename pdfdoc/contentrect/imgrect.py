@@ -62,7 +62,7 @@ class ImageRect(ContentRect):
         (iw, ih) = get_image_metrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
-            tw, th = self.GetBestRectMetrics(
+            tw, th = self.get_best_rect_metrics(
                 iw, ih, inset_rect.width, inset_rect.height
             )
         else:
@@ -89,7 +89,7 @@ class ImageRect(ContentRect):
         c.drawImage(self.filename, tx, ty, tw, th, mask="auto")
 
     @staticmethod
-    def GetBestRectMetrics(fromWidth, fromHeight, inWidth, inHeight):
+    def get_best_rect_metrics(fromWidth, fromHeight, inWidth, inHeight):
         if fromWidth < 1e-3 or fromHeight < 1e-3:
             return 0, 0
         if fromWidth > fromHeight:
