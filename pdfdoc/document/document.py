@@ -170,15 +170,11 @@ class Document:
         if orientation is not None:
             o = orientation
         else:
-            o = self.style.get_attr("orientation")
+            o = self.style["orientation"]
         if o == "landscape":
-            self.page_rect.set_size(
-                self.style.get_attr("height"), self.style.get_attr("width")
-            )
+            self.page_rect.set_size(self.style["height"], self.style["width"])
         else:
-            self.page_rect.set_size(
-                self.style.get_attr("width"), self.style.get_attr("height")
-            )
+            self.page_rect.set_size(self.style["width"], self.style["height"])
         self.page_rect.move_bottom_left_to((0, 0))
         self.bleed_rect = self.page_rect.copy()
         if with_bleed is not None:
@@ -213,7 +209,7 @@ class Document:
         self.gutter_rects = []
         self.column_rects = []
         self.compute_inset_rects()
-        gw = self.style.get_attr("gutter-width")
+        gw = self.style["gutter-width"]
         cw = (self.inset_rect.width - (self.num_columns - 1) * gw) / self.num_columns
         for column in range(self.num_columns):
             cx = self.inset_rect.left + column * (cw + gw)

@@ -47,14 +47,14 @@ class TextRect(ContentRect):
     def get_content_size(self, with_padding=True):
         c = canvas.Canvas("tmp.pdf")
         c.saveState()
-        font_name = self.style.get_attr("font-name", DEF_FONT_NAME)
-        font_size = self.style.get_attr("font-size", DEF_FONT_SIZE)
+        font_name = self.style["font-name"]
+        font_size = self.style["font-size"]
         try:
             c.setFont(font_name, font_size)
         except:
             c.setFont(DEF_FONT_NAME, font_size)
         tw, th = get_string_metrics(c, self.text, font_name, font_size)
-        ta, td = get_string_asc_des(c, self.text, font_name, font_size)
+        ta, _ = get_string_asc_des(c, self.text, font_name, font_size)
         th += ta
         tw += self.style.get_width_trim()
         tw *= 1.05
@@ -76,8 +76,8 @@ class TextRect(ContentRect):
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
     def draw_text(self, c):
-        font_name = self.style.get_attr("font-name", DEF_FONT_NAME)
-        font_size = self.style.get_attr("font-size", DEF_FONT_SIZE)
+        font_name = self.style["font-name"]
+        font_size = self.style["font-size"]
         try:
             c.setFont(font_name, font_size)
         except:
@@ -85,7 +85,7 @@ class TextRect(ContentRect):
         tw, th = get_string_metrics(c, self.text, font_name, font_size)
         _, td = get_string_asc_des(c, self.text, font_name, font_size)
         tx = self.rect.left
-        font_colour = rl_colour(self.style.get_attr("font-colour", (0, 0, 0)))
+        font_colour = rl_colour(self.style["font-colour"])
         c.setFillColor(font_colour)
         c.setStrokeColor(font_colour)
         text_width = self.rect.width - self.style.get_width_trim()
@@ -98,16 +98,16 @@ class TextRect(ContentRect):
         else:
             textLabel = self.text
         inset_rect = self.style.get_inset_rect(self.rect)
-        vert_align = self.style.get_attr("vert-align", "centre")
+        vert_align = self.style["vert-align"]
         if self.split_lines:
             lines = split_string_to_fit(c, textLabel, font_name, font_size, text_width)
         else:
             lines = [textLabel]
-        ls = 1.0 + self.style.get_attr("line-spacing", 1.1)
+        ls = 1.0 + self.style["line-spacing"]
         cy = (len(lines) - 1) * (th / 2) * ls
         for i, line in enumerate(lines):
             if vert_align == "centre":
-                tmp, ty = inset_rect.get_centre()
+                _, ty = inset_rect.get_centre()
                 if len(lines) == 1:
                     ty -= th / 2
                 else:
@@ -120,9 +120,9 @@ class TextRect(ContentRect):
                 else:
                     ty = inset_rect.bottom + cy - ((i - 1) * th * ls)
 
-            horz_align = self.style.get_attr("horz-align", "centre")
+            horz_align = self.style["horz-align"]
             if horz_align == "centre":
-                tx, tmp = inset_rect.get_centre()
+                tx, _ = inset_rect.get_centre()
                 c.drawCentredString(tx, ty, line)
             elif horz_align == "right":
                 tx = inset_rect.right

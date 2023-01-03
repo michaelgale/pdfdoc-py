@@ -67,18 +67,18 @@ class ImageRect(ContentRect):
             )
         else:
             tw, th = iw / self.dpi * 72, ih / self.dpi * 72
-        vert_align = self.style.get_attr("vert-align", "centre")
+        vert_align = self.style["vert-align"]
         if vert_align == "centre":
-            tmp, ty = inset_rect.get_centre()
+            _, ty = inset_rect.get_centre()
             ty -= th / 2.0
         elif vert_align == "top":
             ty = inset_rect.top - th
         else:
             ty = inset_rect.bottom
 
-        horz_align = self.style.get_attr("horz-align", "centre")
+        horz_align = self.style["horz-align"]
         if horz_align == "centre":
-            tx, tmp = inset_rect.get_centre()
+            tx, _ = inset_rect.get_centre()
             tx -= tw / 2.0
         elif horz_align == "right":
             tx = inset_rect.right

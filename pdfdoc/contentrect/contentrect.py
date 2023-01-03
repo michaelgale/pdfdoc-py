@@ -66,22 +66,22 @@ class ContentRect:
         return w, h
 
     def draw_rect(self, c):
-        has_background = self.style.get_attr("background-fill", False)
-        background_colour = self.style.get_attr("background-colour", (1, 1, 1))
+        has_background = self.style["background-fill"]
+        background_colour = self.style["background-colour"]
         if has_background:
             fc = rl_colour(background_colour)
             c.setFillColor(fc)
         else:
             fc = rl_colour_trans()
-        has_border = self.style.get_attr("border-outline", False)
+        has_border = self.style["border-outline"]
         if has_border:
-            border_colour = self.style.get_attr("border-colour", (1, 1, 1))
-            border_width = self.style.get_attr("border-width", 0)
+            border_colour = self.style["border-colour"]
+            border_width = self.style["border-width"]
             rc = rl_colour(border_colour)
             c.setStrokeColor(rc)
             c.setLineWidth(border_width)
         mrect = self.style.get_margin_rect(self.rect)
-        border_radius = self.style.get_attr("border-radius", 0)
+        border_radius = self.style["border-radius"]
         if border_radius > 0:
             c.roundRect(
                 mrect.left,

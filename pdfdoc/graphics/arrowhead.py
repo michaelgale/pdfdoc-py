@@ -37,20 +37,20 @@ class ArrowHead:
         self.taper = 0.15
 
     def draw_in_canvas(self, c, pt, dir=0):
-        al2 = self.style.get_attr("length") / 2
-        aw2 = self.style.get_attr("width") / 2
-        fc = self.style.get_attr("border-colour")
-        bc = self.style.get_attr("line-colour")
+        al2 = self.style["length"] / 2
+        aw2 = self.style["width"] / 2
+        fc = self.style["border-colour"]
+        bc = self.style["line-colour"]
         tl = 0
-        if self.style.get_attr("arrow-style") == "taper":
+        if self.style["arrow-style"] == "taper":
             tl = self.taper * al2
-        if self.style.get_attr("arrow-style") == "flat":
+        if self.style["arrow-style"] == "flat":
             tl = 0
-        st = 1 if self.style.get_attr("border-outline") else 0
+        st = 1 if self.style["border-outline"] else 0
         c.saveState()
         c.translate(pt[0], pt[1])
         c.rotate(dir)
-        c.setLineWidth(self.style.get_attr("border-width"))
+        c.setLineWidth(self.style["border-width"])
         c.setFillColor(bc)
         c.setStrokeColor(fc)
         c.setLineCap(0)
