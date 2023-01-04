@@ -81,12 +81,9 @@ OTHER_TOKENS = [
 def extract_labels(constraint, token_list=None):
     """Extracts strings from constraint which are not tokens in CONSTRAINT_TOKENS or
     SINGLE_TOKENS.  These extracted strings are labels of other cells."""
-    labels = []
+    tokens = token_list if token_list is not None else CONSTRAINT_TOKENS
     c = constraint.split()
-    if token_list is not None:
-        tokens = token_list
-    else:
-        tokens = CONSTRAINT_TOKENS
+    labels = []
     for e in c:
         if e not in tokens:
             labels.append(e)
@@ -240,14 +237,15 @@ class LayoutCell(TableVector):
         followed by cells with mutual dependancies."""
         peer_labels = []
         for cell in self.cells:
-            if cell.constraints is not None:
-                elabels = []
-                for c in cell.constraints:
-                    e = extract_labels(
-                        c, [*CONSTRAINT_TOKENS, *SINGLE_TOKENS, *OTHER_TOKENS]
-                    )
-                    elabels.extend(e)
-                peer_labels.append([cell.label, elabels])
+            if cell.constraints is None:
+                continue
+            elabels = []
+            for c in cell.constraints:
+                e = extract_labels(
+                    c, [*CONSTRAINT_TOKENS, *SINGLE_TOKENS, *OTHER_TOKENS]
+                )
+                elabels.extend(e)
+            peer_labels.append([cell.label, elabels])
         pn = len(peer_labels)
         for i in range(0, pn - 1):
             for j in range(i + 1, pn):
@@ -265,99 +263,90 @@ class LayoutCell(TableVector):
         prect = self.style.get_inset_rect(self.rect)
         for cell in self.iter_cells():
             crect = self.get_cell_rect(cell.label)
-            if cell.constraints is not None:
-                for c in cell.constraints:
-                    cd = parse_constraint(c)
-                    if any([x in cd for x in BETWEEN_TOKENS]):
-                        if "between" in cd:
-                            bt = "between"
-                        if "between_horz" in cd:
-                            bt = "between_horz"
-                        if "between_vert" in cd:
-                            bt = "between_vert"
-                        g1r = []
-                        g2r = []
-                        for x in cd[bt]["group1"]:
-                            if self.is_cell_visible(x):
-                                g1r.append(self.get_cell_rect(x))
-                            else:
-                                pr = dummy_rect_from_parent_edge(prect, x)
-                                if pr is not None:
-                                    g1r.append(pr)
-                        for x in cd[bt]["group2"]:
-                            if self.is_cell_visible(x):
-                                g2r.append(self.get_cell_rect(x))
-                            else:
-                                pr = dummy_rect_from_parent_edge(prect, x)
-                                if pr is not None:
-                                    g2r.append(pr)
-                        if len(g1r) > 0 and len(g2r) > 0:
-                            g1_rect = Rect.bounding_rect_from_rects(g1r)
-                            g2_rect = Rect.bounding_rect_from_rects(g2r)
-                            if "between_vert" in cd or "between" in cd:
-                                if g1_rect.bottom > g2_rect.top:
-                                    mid_y = (
-                                        g2_rect.top + (g1_rect.bottom - g2_rect.top) / 2
-                                    )
-                                else:
-                                    mid_y = (
-                                        g1_rect.top + (g2_rect.bottom - g1_rect.top) / 2
-                                    )
-                                crx, cry = crect.get_centre()
-                                crect.move_to((crx, mid_y))
-                            if "between_horz" in cd or "between" in cd:
-                                if g1_rect.right < g2_rect.left:
-                                    mid_x = (
-                                        g1_rect.right
-                                        + (g2_rect.left - g1_rect.right) / 2
-                                    )
-                                else:
-                                    mid_x = (
-                                        g2_rect.right
-                                        + (g1_rect.left - g2_rect.right) / 2
-                                    )
-                                crx, cry = crect.get_centre()
-                                crect.move_to((mid_x, cry))
-                    elif len(cd["dest_labels"]) > 0:
-                        others = []
-                        for dest in cd["dest_labels"]:
-                            if self.is_cell_visible(dest):
-                                dest_rect = self.get_cell_rect(dest)
-                                others.append(dest_rect)
-                            else:
-                                pr = dummy_rect_from_parent_edge(prect, dest)
-                                if pr is not None:
-                                    others.append(pr)
-                        other_rect = Rect.bounding_rect_from_rects(others)
-                        if cd["from_pt"] is not None:
-                            crect.anchor_with_constraint(
-                                other_rect, cd["from_pt"] + " to " + cd["dest_pt"]
-                            )
-                        else:
-                            if "bound" in cd["dest_pt"].lower().split("_"):
-                                crect.shove_with_constraint(other_rect, cd["dest_pt"])
-                            else:
-                                crect.anchor_with_constraint(other_rect, cd["dest_pt"])
-                    elif "abs_pos" in cd:
-                        if cd["abs_pos"] == "horz_pos":
-                            rect_mid = crect.get_centre()
-                            horz_pos = float(cd["abs_val"][0]) + prect.left
-                            crect.move_to(horz_pos, rect_mid[1])
-                        elif cd["abs_pos"] == "vert_pos":
-                            rect_mid = crect.get_centre()
-                            vert_pos = prect.top - float(cd["abs_val"][0])
-                            crect.move_to(rect_mid[0], vert_pos)
-                    else:
-                        if cd["from_pt"] is not None:
-                            crect.anchor_with_constraint(
-                                prect, cd["from_pt"] + " to " + cd["dest_pt"]
-                            )
-                        else:
-                            crect.anchor_with_constraint(prect, cd["dest_pt"])
-            else:
+            if cell.constraints is None:
                 # default to top left of parent container if no constraints are specified
                 crect = self.get_cell_rect(cell.label)
                 crect.anchor_with_constraint(prect, "top left to top left")
+                self.set_cell_rect(cell.label, crect)
+                continue
+            for c in cell.constraints:
+                cd = parse_constraint(c)
+                if any([token in cd for token in BETWEEN_TOKENS]):
+                    bt = "between" if "between" in cd else ""
+                    bt = "between_horz" if "between_horz" in cd else bt
+                    bt = "between_vert" if "between_vert" in cd else bt
+                    g1r, g2r = [], []
+                    for x in cd[bt]["group1"]:
+                        if self.is_cell_visible(x):
+                            g1r.append(self.get_cell_rect(x))
+                        else:
+                            pr = dummy_rect_from_parent_edge(prect, x)
+                            if pr is not None:
+                                g1r.append(pr)
+                    for x in cd[bt]["group2"]:
+                        if self.is_cell_visible(x):
+                            g2r.append(self.get_cell_rect(x))
+                        else:
+                            pr = dummy_rect_from_parent_edge(prect, x)
+                            if pr is not None:
+                                g2r.append(pr)
+                    if len(g1r) > 0 and len(g2r) > 0:
+                        g1_rect = Rect.bounding_rect_from_rects(g1r)
+                        g2_rect = Rect.bounding_rect_from_rects(g2r)
+                        if "between_vert" in cd or "between" in cd:
+                            if g1_rect.bottom > g2_rect.top:
+                                mid_y = g2_rect.top + (g1_rect.bottom - g2_rect.top) / 2
+                            else:
+                                mid_y = g1_rect.top + (g2_rect.bottom - g1_rect.top) / 2
+                            crx, cry = crect.get_centre()
+                            crect.move_to((crx, mid_y))
+                        if "between_horz" in cd or "between" in cd:
+                            if g1_rect.right < g2_rect.left:
+                                mid_x = (
+                                    g1_rect.right + (g2_rect.left - g1_rect.right) / 2
+                                )
+                            else:
+                                mid_x = (
+                                    g2_rect.right + (g1_rect.left - g2_rect.right) / 2
+                                )
+                            crx, cry = crect.get_centre()
+                            crect.move_to((mid_x, cry))
+                elif len(cd["dest_labels"]) > 0:
+                    others = []
+                    for dest in cd["dest_labels"]:
+                        if self.is_cell_visible(dest):
+                            dest_rect = self.get_cell_rect(dest)
+                            others.append(dest_rect)
+                        else:
+                            pr = dummy_rect_from_parent_edge(prect, dest)
+                            if pr is not None:
+                                others.append(pr)
+                    other_rect = Rect.bounding_rect_from_rects(others)
+                    if cd["from_pt"] is not None:
+                        crect.anchor_with_constraint(
+                            other_rect, cd["from_pt"] + " to " + cd["dest_pt"]
+                        )
+                    else:
+                        if "bound" in cd["dest_pt"].lower().split("_"):
+                            crect.shove_with_constraint(other_rect, cd["dest_pt"])
+                        else:
+                            crect.anchor_with_constraint(other_rect, cd["dest_pt"])
+                elif "abs_pos" in cd:
+                    if cd["abs_pos"] == "horz_pos":
+                        rect_mid = crect.get_centre()
+                        horz_pos = float(cd["abs_val"][0]) + prect.left
+                        crect.move_to(horz_pos, rect_mid[1])
+                    elif cd["abs_pos"] == "vert_pos":
+                        rect_mid = crect.get_centre()
+                        vert_pos = prect.top - float(cd["abs_val"][0])
+                        crect.move_to(rect_mid[0], vert_pos)
+                else:
+                    if cd["from_pt"] is not None:
+                        crect.anchor_with_constraint(
+                            prect, cd["from_pt"] + " to " + cd["dest_pt"]
+                        )
+                    else:
+                        crect.anchor_with_constraint(prect, cd["dest_pt"])
             self.set_cell_rect(cell.label, crect)
 
     def add_cell(self, label, content, order=None, constraints=None):
@@ -386,13 +375,9 @@ class LayoutCell(TableVector):
     def compute_cell_layout(self):
         self.compute_cell_order()
         rpt = self.rect.get_top_left()
-        rects = []
         for cell in self.iter_cells():
-            cw, ch = cell.content.get_content_size()
-            r = Rect(cw, ch)
-            self.set_cell_rect(cell.label, r)
+            self.set_cell_rect(cell.label, Rect(*cell.content.get_content_size()))
         self.layout_cells()
-        all_rects = self.get_cell_rects(as_is=True)
         bounds = Rect.bounding_rect_from_rects(self.get_cell_rects(as_is=True))
         self.total_width = bounds.width + self.style.get_width_trim()
         self.total_height = bounds.height + self.style.get_height_trim()

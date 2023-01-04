@@ -82,38 +82,33 @@ class TableVector:
         self.compute_cell_order()
         for cell_label in self.cell_order:
             for cell in self.cells:
-                if cell_label == cell.label:
-                    if not only_visible or cell.visible:
-                        yield cell
+                if not cell_label == cell.label:
+                    continue
+                if not only_visible or cell.visible:
+                    yield cell
 
     def is_cell_overlapped(self, label):
         """Determines if cell overlapped any of its peers."""
         if not self.is_cell_visible(label):
             return False
-        other_cells = []
-        for cell in self.iter_cells():
-            if not cell.label == label:
-                other_cells.append(cell.label)
+        other_cells = [c.label for c in self.iter_cells() if not c.label == label]
         r1 = self.get_cell_rect(label)
         if r1 is not None:
             for other in other_cells:
-                r2 = self.get_cell_rect(other)
-                if r1.overlaps(r2):
+                if r1.overlaps(self.get_cell_rect(other)):
                     return True
         return False
 
     def has_overlapped_cells(self):
         """Determines if any child cells mutually overlap."""
-        other_cells = []
-        for cell in self.iter_cells():
-            other_cells.append(cell.label)
+        other_cells = [cell.label for cell in self.iter_cells()]
         for cell in self.iter_cells():
             for other in other_cells:
+                if other == cell.label:
+                    continue
                 r1 = self.get_cell_rect(cell.label)
-                if not other == cell.label:
-                    r2 = self.get_cell_rect(other)
-                    if r1.overlaps(r2):
-                        return True
+                if r1.overlaps(self.get_cell_rect(other)):
+                    return True
         return False
 
     def is_cell_clipped(self, label, tol=1e-2):
@@ -121,18 +116,14 @@ class TableVector:
         if not self.is_cell_visible(label):
             return False
         r1 = self.get_cell_rect(label)
-        if r1.left < self.rect.left:
-            if abs(r1.left - self.rect.left) > tol:
-                return True
-        if r1.right > self.rect.right:
-            if abs(r1.right - self.rect.right) > tol:
-                return True
-        if r1.top > self.rect.top:
-            if abs(r1.top - self.rect.top) > tol:
-                return True
-        if r1.bottom < self.rect.bottom:
-            if abs(r1.bottom - self.rect.bottom) > tol:
-                return True
+        if r1.left < self.rect.left and abs(r1.left - self.rect.left) > tol:
+            return True
+        if r1.right > self.rect.right and abs(r1.right - self.rect.right) > tol:
+            return True
+        if r1.top > self.rect.top and abs(r1.top - self.rect.top) > tol:
+            return True
+        if r1.bottom < self.rect.bottom and abs(r1.bottom - self.rect.bottom) > tol:
+            return True
         return False
 
     def has_clipped_cells(self, tol=1e-2):
@@ -159,13 +150,15 @@ class TableVector:
         a completely blank space and 0.0 indicates a fully occupied space."""
         w, h = self.get_content_size()
         total_area = w * h
-        content_area = 0
-        for cell in self.iter_cells():
-            r = self.get_cell_rect(cell.label)
-            content_area += r.width * r.height
+        content_area = sum(
+            [self.get_cell_rect(c.label).area for c in self.iter_cells()]
+        )
         if total_area > 0:
             return (total_area - content_area) / total_area
         return 1.0
+
+    def __getitem__(self, key):
+        return self.get_cell(key)
 
     def get_cell(self, label):
         for cell in self.cells:
@@ -179,25 +172,23 @@ class TableVector:
         self.overlay_content = None
 
     def get_cell_rect(self, label):
-        cell = self.get_cell(label)
+        cell = self[label]
         return cell.content.rect if cell is not None else None
 
     def get_cell_inset_rect(self, label):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
-            r = cell.content.style.get_inset_rect(cell.content.rect)
-            return r
+            return cell.content.style.get_inset_rect(cell.content.rect)
         return None
 
     def get_cell_margin_rect(self, label):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
-            r = cell.content.style.get_margin_rect(cell.content.rect)
-            return r
+            return cell.content.style.get_margin_rect(cell.content.rect)
         return None
 
     def set_cell_rect(self, label, rect):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.content.rect = rect
 
@@ -207,63 +198,51 @@ class TableVector:
             if as_is:
                 rects.append(cell.content.rect)
             else:
-                cw, ch = cell.content.get_content_size()
-                r = Rect(cw, ch)
-                rects.append(r)
+                rects.append(Rect(*cell.content.get_content_size()))
         return rects
 
     def get_cell_constraints(self, label):
-        cell = self.get_cell(label)
-        return cell.constraints
+        return self[label].constraints
 
     def set_cell_constraints(self, label, constraints, order=None):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.constraints = constraints
         if order is not None:
             cell.order = order
 
     def get_cell_content(self, label):
-        cell = self.get_cell(label)
+        cell = self[label]
         return cell.content if cell is not None else None
 
     def set_cell_content(self, label, content):
-        cell = self.get_cell(label)
-        cell.content = content
+        self[label].content = content
 
     def is_cell_visible(self, label):
-        cell = self.get_cell(label)
+        cell = self[label]
         return cell.visible if cell is not None else False
 
     def set_cell_visible(self, label, is_visible=True):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.visible = is_visible
 
     def set_cell_order(self, label, order):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.order = order
 
     def compute_cell_order(self):
-        order = []
-        labels = []
-        for cell in self.cells:
-            order.append(cell.order)
-            labels.append(cell.label)
+        order = [cell.order for cell in self.cells]
+        labels = [cell.label for cell in self.cells]
         cells = zip(order, labels)
         ocells = sorted(cells, key=lambda x: x[0])
-        self.cell_order = []
-        for cell in ocells:
-            self.cell_order.append(cell[1])
+        self.cell_order = [cell[1] for cell in ocells]
 
     def compute_cell_sizes(self, axis="width"):
         self.compute_cell_order()
         cell_rect = self.style.get_inset_rect(self.rect)
-        if axis == "width":
-            total_limit = cell_rect.width
-        else:
-            total_limit = cell_rect.height
+        total_limit = cell_rect.width if axis == "width" else cell_rect.height
         acc_size = 0
         unassigned = []
 
@@ -298,29 +277,19 @@ class TableVector:
         # based on the remaining space in the table vector
         rem_size = total_limit - acc_size
         for ucell in unassigned:
-            if rem_size > 0:
-                csize = rem_size / len(unassigned)
-            else:
-                csize = 0
+            csize = rem_size / len(unassigned) if rem_size > 0 else 0
             for cell in self.cells:
-                if cell.label == ucell and cell.visible:
-                    if axis == "width":
-                        cell.content.rect.set_size(csize, cell_rect.height)
-                    else:
-                        cell.content.rect.set_size(cell_rect.width, csize)
-                    acc_size += csize
+                if not (cell.label == ucell and cell.visible):
+                    continue
+                if axis == "width":
+                    cell.content.rect.set_size(csize, cell_rect.height)
+                else:
+                    cell.content.rect.set_size(cell_rect.width, csize)
+                acc_size += csize
 
         # move each cells's origin based on the cell order
-        inv_valign = (
-            True
-            if axis == "height" and self.style.get_attr("vert-align") == "bottom"
-            else False
-        )
-        inv_halign = (
-            True
-            if axis == "width" and self.style.get_attr("horz-align") == "right"
-            else False
-        )
+        inv_valign = axis == "height" and self.style["vert-align"] == "bottom"
+        inv_halign = axis == "width" and self.style["horz-align"] == "right"
         cy = cell_rect.bottom if inv_valign else cell_rect.top
         cx = cell_rect.right if inv_halign else cell_rect.left
         ordered = (
@@ -330,31 +299,32 @@ class TableVector:
         )
         for cell_label in ordered:
             for cell in self.cells:
-                if cell_label == cell.label and cell.visible:
-                    if inv_valign:
-                        cy += cell.content.rect.height
-                    if inv_halign:
-                        cx -= cell.content.rect.width
-                    cell.content.rect.move_top_left_to(Point(cx, cy))
-                    if axis == "width" and not inv_halign:
-                        cx += cell.content.rect.width
-                    if axis == "height" and not inv_valign:
-                        cy -= cell.content.rect.height
+                if not (cell_label == cell.label and cell.visible):
+                    continue
+                if inv_valign:
+                    cy += cell.content.rect.height
+                if inv_halign:
+                    cx -= cell.content.rect.width
+                cell.content.rect.move_top_left_to(Point(cx, cy))
+                if axis == "width" and not inv_halign:
+                    cx += cell.content.rect.width
+                if axis == "height" and not inv_valign:
+                    cy -= cell.content.rect.height
         self.assign_cell_overlay_content_rects()
 
     def draw_border_lines(self, c):
-        border_colour = self.style.get_attr("border-colour", (1, 1, 1))
-        border_width = self.style.get_attr("border-width", 0)
+        border_colour = self.style["border-colour"]
+        border_width = self.style["border-width"]
         c.setStrokeColor(rl_colour(border_colour))
         c.setLineWidth(border_width)
         mrect = self.style.get_margin_rect(self.rect)
-        if self.style.get_attr("border-line-left", False):
+        if self.style["border-line-left"]:
             c.line(mrect.left, mrect.top, mrect.left, mrect.bottom)
-        if self.style.get_attr("border-line-right", False):
+        if self.style["border-line-right"]:
             c.line(mrect.right, mrect.top, mrect.right, mrect.bottom)
-        if self.style.get_attr("border-line-top", False):
+        if self.style["border-line-top"]:
             c.line(mrect.left, mrect.top, mrect.right, mrect.top)
-        if self.style.get_attr("border-line-bottom", False):
+        if self.style["border-line-bottom"]:
             c.line(mrect.left, mrect.bottom, mrect.right, mrect.bottom)
 
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
@@ -364,22 +334,22 @@ class TableVector:
         c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
 
     def draw_background(self, c):
-        has_background = self.style.get_attr("background-fill", False)
-        background_colour = self.style.get_attr("background-colour", (1, 1, 1))
+        has_background = self.style["background-fill"]
+        background_colour = self.style["background-colour"]
         if has_background:
             fc = rl_colour(background_colour)
             c.setFillColor(fc)
         else:
             fc = rl_colour_trans()
-        has_border = self.style.get_attr("border-outline", False)
+        has_border = self.style["border-outline"]
         if has_border:
-            border_colour = self.style.get_attr("border-colour", (1, 1, 1))
-            border_width = self.style.get_attr("border-width", 0)
+            border_colour = self.style["border-colour"]
+            border_width = self.style["border-width"]
             rc = rl_colour(border_colour)
             c.setStrokeColor(rc)
             c.setLineWidth(border_width)
         mrect = self.style.get_margin_rect(self.rect)
-        border_radius = self.style.get_attr("border-radius", 0)
+        border_radius = self.style["border-radius"]
         if border_radius > 0:
             c.roundRect(
                 mrect.left,
@@ -404,22 +374,22 @@ class TableVector:
         for cell in self.iter_cells():
             # assign each cell's overlay content if applicable
             if cell.content.overlay_content is not None:
-                if cell.content.style.get_attr("overlay-size") == "auto":
+                if cell.content.style["overlay-size"] == "auto":
                     cell.content.overlay_content.rect = cell.content.rect
                 else:
                     cw = cell.content.rect.width
                     ch = cell.content.rect.height
                     ow = cell.content.overlay_content.rect.width
                     oh = cell.content.overlay_content.rect.height
-                    if cell.content.style.get_attr("overlay-horz-align") == "left":
+                    if cell.content.style["overlay-horz-align"] == "left":
                         ox = cell.content.rect.left
-                    elif cell.content.style.get_attr("overlay-horz-align") == "right":
+                    elif cell.content.style["overlay-horz-align"] == "right":
                         ox = cell.content.rect.right - ow
                     else:
                         ox = cell.content.rect.left + cw / 2 - ow / 2
-                    if cell.content.style.get_attr("overlay-vert-align") == "top":
+                    if cell.content.style["overlay-vert-align"] == "top":
                         oy = cell.content.rect.top
-                    elif cell.content.style.get_attr("overlay-vert-align") == "bottom":
+                    elif cell.content.style["overlay-vert-align"] == "bottom":
                         oy = cell.content.rect.bottom
                     else:
                         oy = cell.content.rect.top + ch / 2 - oh / 2

@@ -42,7 +42,7 @@ class TableColumn(TableVector):
         self.set_cell_order(label, order)
 
     def set_row_height(self, label, height):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.height = height
 
@@ -54,7 +54,7 @@ class TableColumn(TableVector):
         self.draw_cells_in_canvas(canvas, "height")
 
     def set_cell_content(self, label, content):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.content = content
             self.compute_cell_sizes("height")

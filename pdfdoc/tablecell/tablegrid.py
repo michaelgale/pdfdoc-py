@@ -90,7 +90,7 @@ class TableGrid(TableVector):
         self.set_cell_order(label, order)
 
     def set_cell_content(self, label, content):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.content = content
 
@@ -127,14 +127,10 @@ class TableGrid(TableVector):
         cell_rect = self.style.get_inset_rect(r)
         inrect = self.style.get_inset_rect(self.rect)
         cell_rect.move_top_left_to(inrect.get_top_left())
-        rects = []
-        for cell in self.iter_cells():
-            cw, ch = cell.content.get_content_size()
-            r = Rect(cw, ch)
-            rects.append(r)
+        rects = [Rect(*cell.content.get_content_size()) for cell in self.iter_cells()]
         row_wise = True if self.fill_dir == "row-wise" else False
-        vert_align = self.style.get_attr("vert-align")
-        horz_align = self.style.get_attr("horz-align")
+        vert_align = self.style["vert-align"]
+        horz_align = self.style["horz-align"]
         new_rects = Rect.layout_rects(
             rects,
             cell_rect,

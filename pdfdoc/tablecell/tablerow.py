@@ -42,7 +42,7 @@ class TableRow(TableVector):
         self.set_cell_order(label, order)
 
     def set_column_width(self, label, width):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.width = width
 
@@ -54,7 +54,7 @@ class TableRow(TableVector):
         self.draw_cells_in_canvas(canvas, "width")
 
     def set_cell_content(self, label, content):
-        cell = self.get_cell(label)
+        cell = self[label]
         if cell is not None:
             cell.content = content
             self.compute_cell_sizes("width")

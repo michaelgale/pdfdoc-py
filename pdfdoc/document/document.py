@@ -167,10 +167,7 @@ class Document:
         """Configures size based on supplied page style including
         reversal for landscape vs. portrait orientation."""
         self.style.set_with_dict(page_style)
-        if orientation is not None:
-            o = orientation
-        else:
-            o = self.style["orientation"]
+        o = orientation if orientation is not None else self.style["orientation"]
         if o == "landscape":
             self.page_rect.set_size(self.style["height"], self.style["width"])
         else:
@@ -221,9 +218,11 @@ class Document:
                 grect.move_top_left_to((cx - gw, self.inset_rect.top))
                 self.gutter_rects.append(grect)
 
+    @property
     def is_portrait(self):
         return True if self.page_rect.height > self.page_rect.width else False
 
+    @property
     def is_landscape(self):
         return True if self.page_rect.height < self.page_rect.width else False
 
@@ -256,7 +255,7 @@ class Document:
         return for_width < self.get_remaining_width()
 
     def is_enough_space(self, for_space):
-        if self.is_portrait():
+        if self.is_portrait:
             return self.is_enough_height(for_space)
         else:
             return self.is_enough_width(for_space)
@@ -444,11 +443,12 @@ class Document:
         all_callbacks = []
         if isinstance(callbacks, list):
             for callback in callbacks:
-                if callback is not None:
-                    if isinstance(callback, list):
-                        all_callbacks.extend(callback)
-                    else:
-                        all_callbacks.append(callback)
+                if callback is None:
+                    continue
+                if isinstance(callback, list):
+                    all_callbacks.extend(callback)
+                else:
+                    all_callbacks.append(callback)
         else:
             if callbacks is not None:
                 all_callbacks = [callbacks]

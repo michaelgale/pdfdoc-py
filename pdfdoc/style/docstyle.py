@@ -402,7 +402,7 @@ def roman_number(num):
 
     def roman_num(num):
         for r in roman.keys():
-            x, y = divmod(num, r)
+            x, _ = divmod(num, r)
             yield roman[r] * x
             num -= r * x
             if num <= 0:

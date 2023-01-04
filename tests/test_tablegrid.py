@@ -100,7 +100,6 @@ def test_tablegrid_cols():
         "./testfiles/test_tablegrid_cols.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
-
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.draw_in_canvas(c)
 
