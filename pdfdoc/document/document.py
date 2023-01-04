@@ -218,11 +218,9 @@ class Document:
                 grect.move_top_left_to((cx - gw, self.inset_rect.top))
                 self.gutter_rects.append(grect)
 
-    @property
     def is_portrait(self):
         return True if self.page_rect.height > self.page_rect.width else False
 
-    @property
     def is_landscape(self):
         return True if self.page_rect.height < self.page_rect.width else False
 
@@ -255,7 +253,7 @@ class Document:
         return for_width < self.get_remaining_width()
 
     def is_enough_space(self, for_space):
-        if self.is_portrait:
+        if self.is_portrait():
             return self.is_enough_height(for_space)
         else:
             return self.is_enough_width(for_space)

@@ -121,9 +121,9 @@ class PageNumberCallback(SimpleHeaderFooterCallback):
     def render(self, context):
         if self.alternate_odd_even:
             if int(context["page_number"]) % 2 == 0:
-                self.content.style["horz-align"]
+                self.content.style.set_attr("horz-align", "left")
             else:
-                self.content.style["horz-align"]
+                self.content.style.set_attr("horz-align", "right")
         if self.number_format.lower() == "roman":
             num_text = roman_number(context["page_number"])
         elif self.number_format.lower() == "roman-lowercase":
