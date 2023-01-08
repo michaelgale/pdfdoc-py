@@ -80,13 +80,6 @@ class TableGrid(TableVector):
             idx += 1
         return "\n".join(s)
 
-    def add_cell(self, label, content, order=None):
-        if order is not None:
-            cell = TableCell(label, content, order, 0, 0)
-        else:
-            cell = TableCell(label, content, len(self.cells), 0, 0)
-        self.cells.append(cell)
-
     def set_cell_order(self, label, order):
         self.set_cell_order(label, order)
 

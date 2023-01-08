@@ -166,6 +166,13 @@ class TableVector:
                 return cell
         return None
 
+    def add_cell(self, label, content, order=None, height=None, width=None):
+        order = order if order is not None else len(self.cells)
+        width = width if width is not None else AUTO_SIZE
+        height = height if height is not None else AUTO_SIZE
+        cell = TableCell(label, content, order, width=width, height=height)
+        self.cells.append(cell)
+
     def clear(self):
         self.cells = []
         self.cell_order = []

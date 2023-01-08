@@ -32,11 +32,7 @@ class TableRow(TableVector):
         super().__init__(w, h, style)
 
     def add_column(self, label, content, order=None, width=0):
-        if order is not None:
-            column = TableCell(label, content, order, width)
-        else:
-            column = TableCell(label, content, len(self.cells), width)
-        self.cells.append(column)
+        self.add_cell(label, content, order=order, width=width)
 
     def set_column_order(self, label, order):
         self.set_cell_order(label, order)
