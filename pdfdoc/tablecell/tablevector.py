@@ -50,6 +50,13 @@ class TableVector:
     def __len__(self):
         return len(self.cells)
 
+    def __repr__(self):
+        return "%s(%.2f, %.2f)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+        )
+
     def __str__(self):
         s = []
         s.append("TableVector: %r" % (self))
@@ -78,6 +85,22 @@ class TableVector:
             idx += 1
         return "\n".join(s)
 
+    @property
+    def top_left(self):
+        return self.rect.get_top_left()
+
+    @top_left.setter
+    def top_left(self, pos):
+        self.rect.move_top_left_to(Point(*pos))
+
+    @property
+    def size(self):
+        return self.rect.get_size()
+
+    @size.setter
+    def size(self, new_size):
+        self.rect.set_size(*new_size)
+
     def iter_cells(self, only_visible=True):
         self.compute_cell_order()
         for cell_label in self.cell_order:
@@ -93,10 +116,11 @@ class TableVector:
             return False
         other_cells = [c.label for c in self.iter_cells() if not c.label == label]
         r1 = self.get_cell_rect(label)
-        if r1 is not None:
-            for other in other_cells:
-                if r1.overlaps(self.get_cell_rect(other)):
-                    return True
+        if r1 is None:
+            return False
+        for other in other_cells:
+            if r1.overlaps(self.get_cell_rect(other)):
+                return True
         return False
 
     def has_overlapped_cells(self):
@@ -258,24 +282,24 @@ class TableVector:
             if axis == "width":
                 if cell.width > 0:
                     cwidth = cell.width * total_limit
-                    cell.content.rect.set_size(cwidth, cell_rect.height)
+                    cell.content.size = (cwidth, cell_rect.height)
                     acc_size += cwidth
                 elif cell.width == CONTENT_SIZE:
                     cw, ch = cell.content.get_content_size()
                     # cw += cell.content.style.get_width_trim()
-                    cell.content.rect.set_size(cw, cell_rect.height)
+                    cell.content.size = (cw, cell_rect.height)
                     acc_size += cw
                 else:
                     unassigned.append(cell.label)
             else:
                 if cell.height > 0:
                     cheight = cell.height * total_limit
-                    cell.content.rect.set_size(cell_rect.width, cheight)
+                    cell.content.size = (cell_rect.width, cheight)
                     acc_size += cheight
                 elif cell.height == CONTENT_SIZE:
                     cw, ch = cell.content.get_content_size()
                     # ch += cell.content.style.get_height_trim()
-                    cell.content.rect.set_size(cell_rect.width, ch)
+                    cell.content.size = (cell_rect.width, ch)
                     acc_size += ch
                 else:
                     unassigned.append(cell.label)
@@ -289,9 +313,9 @@ class TableVector:
                 if not (cell.label == ucell and cell.visible):
                     continue
                 if axis == "width":
-                    cell.content.rect.set_size(csize, cell_rect.height)
+                    cell.content.size = (csize, cell_rect.height)
                 else:
-                    cell.content.rect.set_size(cell_rect.width, csize)
+                    cell.content.size = (cell_rect.width, csize)
                 acc_size += csize
 
         # move each cells's origin based on the cell order
@@ -312,7 +336,7 @@ class TableVector:
                     cy += cell.content.rect.height
                 if inv_halign:
                     cx -= cell.content.rect.width
-                cell.content.rect.move_top_left_to(Point(cx, cy))
+                cell.content.top_left = (cx, cy)
                 if axis == "width" and not inv_halign:
                     cx += cell.content.rect.width
                 if axis == "height" and not inv_valign:
@@ -348,23 +372,16 @@ class TableVector:
             c.setFillColor(fc)
         else:
             fc = rl_colour_trans()
-        has_border = self.style["border-outline"]
-        if has_border:
-            border_colour = self.style["border-colour"]
-            border_width = self.style["border-width"]
-            rc = rl_colour(border_colour)
-            c.setStrokeColor(rc)
-            c.setLineWidth(border_width)
+        rl_set_border_stroke(c, self.style)
         mrect = self.style.get_margin_rect(self.rect)
-        border_radius = self.style["border-radius"]
-        if border_radius > 0:
+        if self.style["border-radius"] > 0:
             c.roundRect(
                 mrect.left,
                 mrect.bottom,
                 mrect.width,
                 mrect.height,
-                radius=border_radius,
-                stroke=has_border,
+                radius=self.style["border-radius"],
+                stroke=self.style["border-outline"],
                 fill=has_background,
             )
         else:
@@ -373,7 +390,7 @@ class TableVector:
                 mrect.bottom,
                 mrect.width,
                 mrect.height,
-                stroke=has_border,
+                stroke=self.style["border-outline"],
                 fill=has_background,
             )
 
@@ -400,7 +417,7 @@ class TableVector:
                         oy = cell.content.rect.bottom
                     else:
                         oy = cell.content.rect.top + ch / 2 - oh / 2
-                    cell.content.overlay_content.rect.move_top_left_to(Point(ox, oy))
+                    cell.content.overlay_content.top_left = (ox, oy)
         # finally assign overlay content rect
         if self.overlay_content is not None:
             self.overlay_content.rect = self.style.get_inset_rect(self.rect)

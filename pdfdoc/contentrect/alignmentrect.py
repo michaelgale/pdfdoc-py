@@ -39,6 +39,13 @@ class AlignmentRect(ContentRect):
         self.is_fixed_height = True
         self.is_fixed_width = True
 
+    def __repr__(self):
+        return "%s(%.2f, %.2f)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+        )
+
     def __str__():
         s = []
         s.append("Alignment: %s" % (self.rect))
@@ -61,8 +68,8 @@ class AlignmentRect(ContentRect):
         rc = self.style.get_inset_rect(self.fixed_rect)
         nw = max(w, rc.width)
         nh = max(h, rc.height)
-        nw += self.style.get_width_trim()
-        nh += self.style.get_height_trim()
+        nw += self.style.width_pad_margin
+        nh += self.style.height_pad_margin
         self.rect.set_size_anchored(nw, nh, "top left")
 
     def get_content_size(self):

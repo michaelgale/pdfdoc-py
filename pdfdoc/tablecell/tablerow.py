@@ -63,8 +63,8 @@ class TableRow(TableVector):
                 sh = max(sh, ch)
             sw += cw
         if with_padding:
-            sw += self.style.get_width_trim()
-            sh += self.style.get_height_trim()
+            sw += self.style.width_pad_margin
+            sh += self.style.height_pad_margin
         self.total_width = self.fixed_rect.width if self.is_fixed_width else sw
         self.total_height = self.fixed_rect.height if self.is_fixed_height else sh
         if self.min_width:

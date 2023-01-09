@@ -28,11 +28,25 @@ from pdfdoc import *
 
 
 class ImageRect(ContentRect):
-    def __init__(self, w=1, h=1, filename="", style=None, dpi=None, auto_size=None):
+    def __init__(self, w=1, h=1, filename=None, style=None, dpi=None, auto_size=None):
         super().__init__(w, h, style)
         self.filename = filename
         self.auto_size = auto_size if auto_size is not None else True
         self.dpi = dpi if dpi is not None else 300
+
+    def __repr__(self):
+        return "%s(%.2f, %.2f, %r)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+            self.filename,
+        )
+
+    def __str__(self):
+        s = []
+        s.append("ImageRect: %s" % (self.rect))
+        s.append("  filename: %s" % (self.filename))
+        return "\n".join(s)
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
@@ -45,19 +59,19 @@ class ImageRect(ContentRect):
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
 
     def get_content_size(self, with_padding=True):
-        if self.filename == "":
+        if self.filename is None:
             return 0, 0
         (iw, ih) = get_image_metrics(self.filename)
         tw, th = iw / self.dpi * 72, ih / self.dpi * 72
         if with_padding:
-            tw += self.style.get_width_trim()
-            th += self.style.get_height_trim()
+            tw += self.style.width_pad_margin
+            th += self.style.height_pad_margin
         w = self.fixed_rect.width if self.is_fixed_width else tw
         h = self.fixed_rect.height if self.is_fixed_height else th
         return w, h
 
     def draw_image_rect(self, c):
-        if self.filename == "":
+        if self.filename is None:
             return
         (iw, ih) = get_image_metrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
@@ -89,21 +103,21 @@ class ImageRect(ContentRect):
         c.drawImage(self.filename, tx, ty, tw, th, mask="auto")
 
     @staticmethod
-    def get_best_rect_metrics(fromWidth, fromHeight, inWidth, inHeight):
-        if fromWidth < 1e-3 or fromHeight < 1e-3:
+    def get_best_rect_metrics(from_width, from_height, in_width, in_height):
+        if from_width < 1e-3 or from_height < 1e-3:
             return 0, 0
-        if fromWidth > fromHeight:
-            bestHeight = inHeight
-            bestWidth = (inHeight / fromHeight) * fromWidth
+        if from_width > from_height:
+            best_height = in_height
+            best_width = (in_height / from_height) * from_width
         else:
-            bestWidth = inWidth
-            bestHeight = (inWidth / fromWidth) * fromHeight
-        if bestHeight > inHeight:
-            scale = inHeight / bestHeight
-            bestHeight *= scale
-            bestWidth *= scale
-        if bestWidth > inWidth:
-            scale = inWidth / bestWidth
-            bestHeight *= scale
-            bestWidth *= scale
-        return bestWidth, bestHeight
+            best_width = in_width
+            best_height = (in_width / from_width) * from_height
+        if best_height > in_height:
+            scale = in_height / best_height
+            best_height *= scale
+            best_width *= scale
+        if best_width > in_width:
+            scale = in_width / best_width
+            best_height *= scale
+            best_width *= scale
+        return best_width, best_height

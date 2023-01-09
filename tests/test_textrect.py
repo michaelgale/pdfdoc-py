@@ -19,6 +19,10 @@ def test_textrect_init():
     assert t1.rect.top == 1
     assert t1.rect.bottom == -1
 
+    assert t1.size == (10, 2)
+    t1.size = (20, 3)
+    assert t1.size == (20, 3)
+
 
 def test_textrect_pos():
     t1 = TextRect(10, 2, "MyText", _test_dict)
@@ -30,6 +34,12 @@ def test_textrect_pos():
     assert r1.right == 25
     assert r1.top == 50
     assert r1.bottom == 48
+
+    assert t1.top_left == (-5, 1)
+    t1.top_left = (3, 20)
+    assert t1.top_left == (3, 20)
+    t1.top_left = (-5, 1)
+
     t1.style.set_all_margins(0.1)
     r2 = t1.style.get_margin_rect(t1.rect)
     assert r2.left == -4.9

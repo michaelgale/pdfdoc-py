@@ -31,15 +31,28 @@ from pdfdoc import *
 
 class PatternRect(ContentRect):
     def __init__(self, w=1, h=1, pattern=None, style=None):
-        super().__init__(w, h, style)
+        super().__init__(w, h, style=style)
+        self.pattern = "slant-line"
         if pattern is not None:
             self.pattern = pattern
-        else:
-            self.pattern = "slant-line"
         self.pattern_width = 18.0
         self.pattern_slant = 18.0
         self.background_colour = (1, 1, 1)
         self.foreground_colour = (1, 0, 0)
+
+    def __repr__(self):
+        return "%s(%.2f, %.2f, %r)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+            self.pattern,
+        )
+
+    def __str__(self):
+        s = []
+        s.append("PatternRect: %s" % (self.rect))
+        s.append("  pattern: %s" % (self.pattern))
+        return "\n".join(s)
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)

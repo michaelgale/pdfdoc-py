@@ -65,6 +65,13 @@ class Document:
         self.section_list = []
         self.chapter = 1
 
+    def __repr__(self):
+        return "%s(%r, %r)" % (
+            self.__class__.__name__,
+            self.filename,
+            self.style,
+        )
+
     def _callbacks_str(self, title, callbacks):
         s = []
         s.append(title)

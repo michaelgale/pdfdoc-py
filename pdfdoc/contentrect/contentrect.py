@@ -39,8 +39,31 @@ class ContentRect:
         self.is_fixed_height = False
         self.fixed_rect = Rect(w, h)
 
+    def __repr__(self):
+        return "%s(%.2f, %.2f)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+        )
+
     def __str__():
         return "Content Rect: %s" % (self.rect)
+
+    @property
+    def top_left(self):
+        return self.rect.get_top_left()
+
+    @top_left.setter
+    def top_left(self, pos):
+        self.rect.move_top_left_to(Point(*pos))
+
+    @property
+    def size(self):
+        return self.rect.get_size()
+
+    @size.setter
+    def size(self, new_size):
+        self.rect.set_size(*new_size)
 
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
         c.setFillColor(rl_colour_trans())
@@ -73,13 +96,7 @@ class ContentRect:
             c.setFillColor(fc)
         else:
             fc = rl_colour_trans()
-        has_border = self.style["border-outline"]
-        if has_border:
-            border_colour = self.style["border-colour"]
-            border_width = self.style["border-width"]
-            rc = rl_colour(border_colour)
-            c.setStrokeColor(rc)
-            c.setLineWidth(border_width)
+        rl_set_border_stroke(c, self.style)
         mrect = self.style.get_margin_rect(self.rect)
         border_radius = self.style["border-radius"]
         if border_radius > 0:
@@ -89,7 +106,7 @@ class ContentRect:
                 mrect.width,
                 mrect.height,
                 radius=border_radius,
-                stroke=has_border,
+                stroke=self.style["border-outline"],
                 fill=has_background,
             )
         else:
@@ -98,6 +115,6 @@ class ContentRect:
                 mrect.bottom,
                 mrect.width,
                 mrect.height,
-                stroke=has_border,
+                stroke=self.style["border-outline"],
                 fill=has_background,
             )

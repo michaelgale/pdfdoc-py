@@ -28,7 +28,15 @@ from pdfdoc import *
 
 
 class TableCell:
-    def __init__(self, label, content=None, order=0, width=AUTO_SIZE, height=AUTO_SIZE):
+    def __init__(
+        self,
+        label,
+        content=None,
+        order=0,
+        width=AUTO_SIZE,
+        height=AUTO_SIZE,
+        constraints=None,
+    ):
         self.label = label
         # If no content is provided, create a placeholder ContentRect
         if content is not None:
@@ -44,3 +52,15 @@ class TableCell:
         self.height = height
         self.visible = True
         self.constraints = []
+        if constraints is not None:
+            self.constraints = constraints
+
+    def __repr__(self):
+        return "%s(%r, %r, %.2f, %.2f, %r)" % (
+            self.__class__.__name__,
+            self.label,
+            self.order,
+            self.width,
+            self.height,
+            self.constraints,
+        )

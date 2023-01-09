@@ -80,14 +80,6 @@ class TableGrid(TableVector):
             idx += 1
         return "\n".join(s)
 
-    def set_cell_order(self, label, order):
-        self.set_cell_order(label, order)
-
-    def set_cell_content(self, label, content):
-        cell = self[label]
-        if cell is not None:
-            cell.content = content
-
     def get_content_size(self, with_padding=True):
         self.compute_cell_sizes()
         r = self.get_cell_rects(as_is=True)
@@ -98,8 +90,8 @@ class TableGrid(TableVector):
         self.total_width = rb.width
         self.total_height = rb.height
         if with_padding:
-            self.total_width += self.style.get_width_trim()
-            self.total_height += self.style.get_height_trim()
+            self.total_width += self.style.width_pad_margin
+            self.total_height += self.style.height_pad_margin
         if self.is_fixed_width:
             self.total_width = self.fixed_rect.width
         if self.is_fixed_height:
@@ -137,21 +129,18 @@ class TableGrid(TableVector):
         )
         idx = 0
         for cell in self.iter_cells():
-            cell.content.rect.set_size(new_rects[idx].width, new_rects[idx].height)
-            cell.content.rect.move_top_left_to(
-                (new_rects[idx].left, new_rects[idx].top)
-            )
+            cell.content.size = (new_rects[idx].width, new_rects[idx].height)
+            cell.content.top_left = (new_rects[idx].left, new_rects[idx].top)
             idx += 1
         bounds = Rect.bounding_rect_from_rects(new_rects)
-        self.total_width = bounds.width + self.style.get_width_trim()
-        self.total_height = bounds.height + self.style.get_height_trim()
+        self.total_width = bounds.width + self.style.width_pad_margin
+        self.total_height = bounds.height + self.style.height_pad_margin
         if self.min_width:
             self.total_width = max(self.total_width, self.min_width)
         if self.min_height:
             self.total_height = max(self.total_height, self.min_height)
         self.rect.set_size(self.total_width, self.total_height)
-        self.rect.move_top_left_to(rpt)
-
+        self.top_left = rpt
         self.assign_cell_overlay_content_rects()
 
     def draw_in_canvas(self, canvas):

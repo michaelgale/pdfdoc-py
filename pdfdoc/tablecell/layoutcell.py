@@ -364,8 +364,8 @@ class LayoutCell(TableVector):
         self.total_width = rb.width
         self.total_height = rb.height
         if with_padding:
-            self.total_width += self.style.get_width_trim()
-            self.total_height += self.style.get_height_trim()
+            self.total_width += self.style.width_pad_margin
+            self.total_height += self.style.height_pad_margin
         if self.is_fixed_width:
             self.total_width = self.fixed_rect.width
         if self.is_fixed_height:
@@ -374,15 +374,15 @@ class LayoutCell(TableVector):
 
     def compute_cell_layout(self):
         self.compute_cell_order()
-        rpt = self.rect.get_top_left()
+        rpt = self.top_left
         for cell in self.iter_cells():
             self.set_cell_rect(cell.label, Rect(*cell.content.get_content_size()))
         self.layout_cells()
         bounds = Rect.bounding_rect_from_rects(self.get_cell_rects(as_is=True))
-        self.total_width = bounds.width + self.style.get_width_trim()
-        self.total_height = bounds.height + self.style.get_height_trim()
-        self.rect.set_size(self.total_width, self.total_height)
-        self.rect.move_top_left_to(rpt)
+        self.total_width = bounds.width + self.style.width_pad_margin
+        self.total_height = bounds.height + self.style.height_pad_margin
+        self.size = (self.total_width, self.total_height)
+        self.top_left = rpt
         self.assign_cell_overlay_content_rects()
 
     def draw_in_canvas(self, canvas):

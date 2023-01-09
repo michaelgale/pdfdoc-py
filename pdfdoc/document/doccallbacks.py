@@ -38,6 +38,9 @@ class DocumentCallback:
         self.sections_active = None
         self.z_order = 0
 
+    def __repr__(self):
+        return "%s()" % (self.__class__.__name__,)
+
     def is_enabled(self, context):
         """A callback action can be masked or triggered by exclusions/permissions
         to confine its action to specific pages and/or sections of a document."""
@@ -121,9 +124,9 @@ class PageNumberCallback(SimpleHeaderFooterCallback):
     def render(self, context):
         if self.alternate_odd_even:
             if int(context["page_number"]) % 2 == 0:
-                self.content.style.set_attr("horz-align", "left")
+                self.content.style["horz-align"] = "left"
             else:
-                self.content.style.set_attr("horz-align", "right")
+                self.content.style["horz-align"] = "right"
         if self.number_format.lower() == "roman":
             num_text = roman_number(context["page_number"])
         elif self.number_format.lower() == "roman-lowercase":
@@ -220,8 +223,8 @@ class ColumnLineCallback(DocumentCallback):
         c = context["canvas"]
         line_colour = self.style.get_attr("line-colour", (0, 0, 0))
         line_width = self.style.get_attr("line-width", 0.5 * mm)
-        tm = self.style.get_top_trim()
-        bm = self.style.get_bottom_trim()
+        tm = self.style.top_pad_margin
+        bm = self.style.bottom_pad_margin
         c.setStrokeColor(rl_colour(line_colour))
         c.setLineWidth(line_width)
         x = r.left + r.width / 2

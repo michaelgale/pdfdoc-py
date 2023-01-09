@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.4'
+__version__ = '0.9.5'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__
@@ -29,6 +29,7 @@ from .helpers import (
     rl_colour,
     rl_colour_trans,
     rl_colour_hex,
+    rl_set_border_stroke,
     MM2PTS,
     IN2PTS,
     PTS2IN,

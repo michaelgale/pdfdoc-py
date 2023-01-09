@@ -44,11 +44,11 @@ from toolbox import *
 from pdfdoc import *
 
 
-def rl_colour(fromColour):
-    if isinstance(fromColour, Color):
-        return fromColour
-    if isinstance(fromColour, (list, tuple)):
-        return Color(fromColour[0], fromColour[1], fromColour[2], alpha=1.0)
+def rl_colour(from_colour):
+    if isinstance(from_colour, Color):
+        return from_colour
+    if isinstance(from_colour, (list, tuple)):
+        return Color(from_colour[0], from_colour[1], from_colour[2], alpha=1.0)
     return None
 
 
@@ -69,8 +69,13 @@ def rl_colour_hex(hexstr, alpha=1.0):
     return Color(r, g, b, alpha=alpha)
 
 
+def rl_set_border_stroke(c, style):
+    if style["border-outline"]:
+        c.setStrokeColor(rl_colour(style["border-colour"]))
+        c.setLineWidth(style["border-width"])
+
+
 def get_string_metrics(c, label, fontname, fontsize, with_descent=True):
-    # print("fontname: %s fontsize: %s" % (fontname, fontsize))
     if fontsize is None or fontname is None:
         return (0, 0)
     if fontsize == 0 or fontname == "":
@@ -84,14 +89,12 @@ def get_string_metrics(c, label, fontname, fontsize, with_descent=True):
     # print(face.ascent, face.descent)
     ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
     height = ascent - descent if with_descent else ascent
-
     height *= fontsize
     width = c.stringWidth(label, fontname_, fontsize)
     return (width, height)
 
 
 def get_string_asc_des(c, label, fontname, fontsize):
-    # print("fontname: %s fontsize: %s" % (fontname, fontsize))
     if fontsize is None or fontname is None:
         return (0, 0)
     if fontsize == 0 or fontname == "":

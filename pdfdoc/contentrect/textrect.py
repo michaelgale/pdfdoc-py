@@ -38,6 +38,14 @@ class TextRect(ContentRect):
         self.split_lines = True
         self.detect_fractions = True
 
+    def __repr__(self):
+        return "%s(%.2f, %.2f, %r)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+            self.text,
+        )
+
     def __str__(self):
         s = []
         s.append("TextRect: %s" % (self.rect))
@@ -56,13 +64,14 @@ class TextRect(ContentRect):
         tw, th = get_string_metrics(c, self.text, font_name, font_size)
         ta, _ = get_string_asc_des(c, self.text, font_name, font_size)
         th += ta
-        tw += self.style.get_width_trim()
+        tw += self.style.width_pad_margin
         tw *= 1.05
         if with_padding:
-            tw += self.style.get_width_trim()
-            th += self.style.get_height_trim()
+            tw += self.style.width_pad_margin
+            th += self.style.height_pad_margin
         w = self.fixed_rect.width if self.is_fixed_width else tw
         h = self.fixed_rect.height if self.is_fixed_height else th
+        c.restoreState()
         return w, h
 
     def draw_in_canvas(self, c):
@@ -88,7 +97,7 @@ class TextRect(ContentRect):
         font_colour = rl_colour(self.style["font-colour"])
         c.setFillColor(font_colour)
         c.setStrokeColor(font_colour)
-        text_width = self.rect.width - self.style.get_width_trim()
+        text_width = self.rect.width - self.style.width_pad_margin
         if self.trim_callback is not None:
             textLabel = self.trim_callback(c, self.text, self)
         elif self.clip_text:

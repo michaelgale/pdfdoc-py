@@ -116,6 +116,9 @@ class DocStyle:
     def __setitem__(self, key, value):
         self.set_attr(key, value)
 
+    def __repr__(self):
+        return "%s()" % (self.__class__.__name__,)
+
     def __str__(self):
         s = []
         k1 = []
@@ -241,6 +244,10 @@ class DocStyle:
     def set_left_padding(self, withPadding):
         self.set_attr("left-padding", withPadding)
 
+    @property
+    def width_pad_margin(self):
+        return self.get_width_trim()
+
     def get_width_trim(self):
         return (
             self.get_attr("left-margin", 0)
@@ -248,6 +255,10 @@ class DocStyle:
             + self.get_attr("left-padding", 0)
             + self.get_attr("right-padding", 0)
         )
+
+    @property
+    def height_pad_margin(self):
+        return self.get_height_trim()
 
     def get_height_trim(self):
         return (
@@ -257,38 +268,86 @@ class DocStyle:
             + self.get_attr("bottom-padding", 0)
         )
 
+    @property
+    def right_pad_margin(self):
+        return self.get_right_trim()
+
     def get_right_trim(self):
         return self.get_attr("right-margin", 0) + self.get_attr("right-padding", 0)
+
+    @property
+    def right_margin(self):
+        return self["right-margin"]
 
     def get_right_margin(self):
         return self.get_attr("right-margin", 0)
 
+    @property
+    def right_padding(self):
+        return self["right-padding"]
+
     def get_right_padding(self):
         return self.get_attr("right-padding", 0)
+
+    @property
+    def left_pad_margin(self):
+        return self.get_left_trim()
 
     def get_left_trim(self):
         return self.get_attr("left-margin", 0) + self.get_attr("left-padding", 0)
 
+    @property
+    def left_margin(self):
+        return self["left-margin"]
+
     def get_left_margin(self):
         return self.get_attr("left-margin", 0)
+
+    @property
+    def left_padding(self):
+        return self["left-padding"]
 
     def get_left_padding(self):
         return self.get_attr("left-padding", 0)
 
+    @property
+    def top_pad_margin(self):
+        return self.get_top_trim()
+
     def get_top_trim(self):
         return self.get_attr("top-margin", 0) + self.get_attr("top-padding", 0)
+
+    @property
+    def top_margin(self):
+        return self["top-margin"]
 
     def get_top_margin(self):
         return self.get_attr("top-margin", 0)
 
+    @property
+    def top_padding(self):
+        return self["top-padding"]
+
     def get_top_padding(self):
         return self.get_attr("top-padding", 0)
+
+    @property
+    def bottom_pad_margin(self):
+        return self.get_bottom_trim()
 
     def get_bottom_trim(self):
         return self.get_attr("bottom-margin", 0) + self.get_attr("bottom-padding", 0)
 
+    @property
+    def bottom_margin(self):
+        return self["bottom-margin"]
+
     def get_bottom_margin(self):
         return self.get_attr("bottom-margin", 0)
+
+    @property
+    def bottom_padding(self):
+        return self["bottom-padding"]
 
     def get_bottom_padding(self):
         return self.get_attr("bottom-padding", 0)
@@ -299,16 +358,16 @@ class DocStyle:
             # odd page, swap left/right margin values
             # even page, use as is
             if int(odd_even_page_no) % 2 == 0:
-                inset_rect.left += self.get_left_trim()
-                inset_rect.right -= self.get_right_trim()
+                inset_rect.left += self.left_pad_margin
+                inset_rect.right -= self.right_pad_margin
             else:
-                inset_rect.left += self.get_right_trim()
-                inset_rect.right -= self.get_left_trim()
+                inset_rect.left += self.right_pad_margin
+                inset_rect.right -= self.left_pad_margin
         else:
-            inset_rect.left += self.get_left_trim()
-            inset_rect.right -= self.get_right_trim()
-        inset_rect.top -= self.get_top_trim()
-        inset_rect.bottom += self.get_bottom_trim()
+            inset_rect.left += self.left_pad_margin
+            inset_rect.right -= self.right_pad_margin
+        inset_rect.top -= self.top_pad_margin
+        inset_rect.bottom += self.bottom_pad_margin
         inset_rect.get_size()
         return inset_rect
 
@@ -316,21 +375,21 @@ class DocStyle:
         if fromRect is not None:
             margin_rect = copy.copy(fromRect)
         else:
-            margin_rect = Rect(self.get_attr("width", 0), self.get_attr("height", 0))
-        if odd_even_page_no is not None and self.get_attr("alternating-margins", False):
+            margin_rect = Rect(self["width"], self["height"])
+        if odd_even_page_no is not None and self["alternating-margins"]:
             # odd page, swap left/right margin values
             # even page, use as is
             if int(odd_even_page_no) % 2 == 0:
-                margin_rect.left += self.get_left_margin()
-                margin_rect.right -= self.get_right_margin()
+                margin_rect.left += self.left_margin
+                margin_rect.right -= self.right_margin
             else:
-                margin_rect.left += self.get_right_margin()
-                margin_rect.right -= self.get_left_margin()
+                margin_rect.left += self.right_margin
+                margin_rect.right -= self.left_margin
         else:
-            margin_rect.left += self.get_left_margin()
-            margin_rect.right -= self.get_right_margin()
-        margin_rect.top -= self.get_top_margin()
-        margin_rect.bottom += self.get_bottom_margin()
+            margin_rect.left += self.left_margin
+            margin_rect.right -= self.right_margin
+        margin_rect.top -= self.top_margin
+        margin_rect.bottom += self.bottom_margin
         margin_rect.get_size()
         return margin_rect
 
@@ -346,6 +405,9 @@ class DocStyleSheet:
         self.styles = {}
         if filename is not None:
             self.load_from_yml(filename)
+
+    def __repr__(self):
+        return "%s()" % (self.__class__.__name__,)
 
     def __getitem__(self, key):
         if key in self.styles:

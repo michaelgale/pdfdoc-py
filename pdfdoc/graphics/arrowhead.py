@@ -36,6 +36,9 @@ class ArrowHead:
         self.style.set_with_dict(style)
         self.taper = 0.15
 
+    def __repr__(self):
+        return "%s()" % (self.__class__.__name__,)
+
     def draw_in_canvas(self, c, pt, dir=0):
         al2 = self.style["length"] / 2
         aw2 = self.style["width"] / 2
