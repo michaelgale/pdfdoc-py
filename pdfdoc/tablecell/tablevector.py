@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -365,34 +365,7 @@ class TableVector:
         c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
 
     def draw_background(self, c):
-        has_background = self.style["background-fill"]
-        background_colour = self.style["background-colour"]
-        if has_background:
-            fc = rl_colour(background_colour)
-            c.setFillColor(fc)
-        else:
-            fc = rl_colour_trans()
-        rl_set_border_stroke(c, self.style)
-        mrect = self.style.get_margin_rect(self.rect)
-        if self.style["border-radius"] > 0:
-            c.roundRect(
-                mrect.left,
-                mrect.bottom,
-                mrect.width,
-                mrect.height,
-                radius=self.style["border-radius"],
-                stroke=self.style["border-outline"],
-                fill=has_background,
-            )
-        else:
-            c.rect(
-                mrect.left,
-                mrect.bottom,
-                mrect.width,
-                mrect.height,
-                stroke=self.style["border-outline"],
-                fill=has_background,
-            )
+        rl_draw_rect(c, self.rect, self.style)
 
     def assign_cell_overlay_content_rects(self):
         for cell in self.iter_cells():

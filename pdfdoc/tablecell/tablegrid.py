@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -127,11 +127,9 @@ class TableGrid(TableVector):
             align_cols=self.align_cols,
             **self.layout_opts,
         )
-        idx = 0
-        for cell in self.iter_cells():
+        for idx, cell in enumerate(self.iter_cells()):
             cell.content.size = (new_rects[idx].width, new_rects[idx].height)
             cell.content.top_left = (new_rects[idx].left, new_rects[idx].top)
-            idx += 1
         bounds = Rect.bounding_rect_from_rects(new_rects)
         self.total_width = bounds.width + self.style.width_pad_margin
         self.total_height = bounds.height + self.style.height_pad_margin

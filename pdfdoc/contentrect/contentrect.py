@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -89,32 +89,4 @@ class ContentRect:
         return w, h
 
     def draw_rect(self, c):
-        has_background = self.style["background-fill"]
-        background_colour = self.style["background-colour"]
-        if has_background:
-            fc = rl_colour(background_colour)
-            c.setFillColor(fc)
-        else:
-            fc = rl_colour_trans()
-        rl_set_border_stroke(c, self.style)
-        mrect = self.style.get_margin_rect(self.rect)
-        border_radius = self.style["border-radius"]
-        if border_radius > 0:
-            c.roundRect(
-                mrect.left,
-                mrect.bottom,
-                mrect.width,
-                mrect.height,
-                radius=border_radius,
-                stroke=self.style["border-outline"],
-                fill=has_background,
-            )
-        else:
-            c.rect(
-                mrect.left,
-                mrect.bottom,
-                mrect.width,
-                mrect.height,
-                stroke=self.style["border-outline"],
-                fill=has_background,
-            )
+        rl_draw_rect(c, self.rect, self.style)

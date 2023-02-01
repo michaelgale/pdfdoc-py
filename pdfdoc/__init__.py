@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.5'
+__version__ = '0.9.6'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__
@@ -30,6 +30,8 @@ from .helpers import (
     rl_colour_trans,
     rl_colour_hex,
     rl_set_border_stroke,
+    rl_draw_rect,
+    clamp_cmyk,
     MM2PTS,
     IN2PTS,
     PTS2IN,
@@ -72,6 +74,7 @@ from .labeldoc.mechlabel import MechanicalLabel
 from .labeldoc.eleclabel import ElectronicLabel
 from .labeldoc.simplelabel import SimpleLabel
 from .graphics.arrowhead import ArrowHead
+from .graphics.cmykgrid import CMYKGrid
 
 _font_dict = {
     "DroidSans": "DroidSans.ttf",

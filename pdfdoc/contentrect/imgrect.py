@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -61,6 +61,8 @@ class ImageRect(ContentRect):
     def get_content_size(self, with_padding=True):
         if self.filename is None:
             return 0, 0
+        if self.filename == "":
+            return 0, 0
         (iw, ih) = get_image_metrics(self.filename)
         tw, th = iw / self.dpi * 72, ih / self.dpi * 72
         if with_padding:
@@ -72,6 +74,8 @@ class ImageRect(ContentRect):
 
     def draw_image_rect(self, c):
         if self.filename is None:
+            return
+        if self.filename == "":
             return
         (iw, ih) = get_image_metrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)

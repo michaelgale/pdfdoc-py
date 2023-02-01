@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -23,21 +23,14 @@
 #
 # PDF document utilities
 
-import os, os.path
 import math
 import string
 from PIL import Image
 from pathlib import Path
 import fitz
 
-from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
-from reportlab.rl_config import defaultPageSize
-from reportlab.lib.units import inch
-from reportlab.lib import colors
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab.lib.colors import Color
+from reportlab.lib.colors import Color, CMYKColor
 
 
 from toolbox import *
@@ -45,10 +38,15 @@ from pdfdoc import *
 
 
 def rl_colour(from_colour):
-    if isinstance(from_colour, Color):
+    if isinstance(from_colour, (Color, CMYKColor)):
         return from_colour
     if isinstance(from_colour, (list, tuple)):
-        return Color(from_colour[0], from_colour[1], from_colour[2], alpha=1.0)
+        if len(from_colour) == 3:
+            return Color(from_colour[0], from_colour[1], from_colour[2], alpha=1.0)
+        else:
+            return CMYKColor(
+                from_colour[0], from_colour[1], from_colour[2], from_colour[3]
+            )
     return None
 
 
@@ -69,10 +67,83 @@ def rl_colour_hex(hexstr, alpha=1.0):
     return Color(r, g, b, alpha=alpha)
 
 
+def clamp_cmyk(v):
+    v = (min(v[0], 1.0), min(v[1], 1.0), min(v[2], 1.0), min(v[3], 1.0))
+    v = (max(v[0], 0.0), max(v[1], 0.0), max(v[2], 0.0), max(v[3], 0.0))
+    return v
+
+
 def rl_set_border_stroke(c, style):
     if style["border-outline"]:
         c.setStrokeColor(rl_colour(style["border-colour"]))
         c.setLineWidth(style["border-width"])
+
+
+def rl_draw_rect(c, rect, style):
+    has_background = style["background-fill"]
+    background_colour = style["background-colour"]
+    border_margin = style["border-margin"]
+    if has_background:
+        fc = rl_colour(background_colour)
+        c.setFillColor(fc)
+    else:
+        fc = rl_colour_trans()
+    rl_set_border_stroke(c, style)
+    mrect = style.get_margin_rect(rect)
+    border_radius = style["border-radius"]
+    stroke = style["border-outline"] and not abs(border_margin) > 0
+    if border_radius > 0:
+        c.roundRect(
+            mrect.left,
+            mrect.bottom,
+            mrect.width,
+            mrect.height,
+            radius=border_radius,
+            stroke=stroke,
+            fill=has_background,
+        )
+    else:
+        c.rect(
+            mrect.left,
+            mrect.bottom,
+            mrect.width,
+            mrect.height,
+            stroke=stroke,
+            fill=has_background,
+        )
+    if style["border-outline"] and abs(border_margin) > 0:
+        mrect = mrect.expanded_by(-style["border-margin"])
+        if border_radius > 0:
+            c.roundRect(
+                mrect.left,
+                mrect.bottom,
+                mrect.width,
+                mrect.height,
+                radius=border_radius,
+                stroke=True,
+                fill=False,
+            )
+        else:
+            c.rect(
+                mrect.left,
+                mrect.bottom,
+                mrect.width,
+                mrect.height,
+                stroke=True,
+                fill=False,
+            )
+    border_colour = style["border-colour"]
+    border_width = style["border-width"]
+    c.setStrokeColor(rl_colour(border_colour))
+    c.setLineWidth(border_width)
+    if style["border-line-left"]:
+        c.line(mrect.left, mrect.top, mrect.left, mrect.bottom)
+    if style["border-line-right"]:
+        c.line(mrect.right, mrect.top, mrect.right, mrect.bottom)
+    if style["border-line-top"]:
+        c.line(mrect.left, mrect.top, mrect.right, mrect.top)
+    if style["border-line-bottom"]:
+        c.line(mrect.left, mrect.bottom, mrect.right, mrect.bottom)
 
 
 def get_string_metrics(c, label, fontname, fontsize, with_descent=True):

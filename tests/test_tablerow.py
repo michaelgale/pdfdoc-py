@@ -71,8 +71,12 @@ def test_tablerow_col():
     tr.rect.set_size(6.5 * inch, 0.75 * inch)
     tr.rect.move_top_left_to(Point(1 * inch, 7.5 * inch))
     tr.style.set_attr("background-fill", True)
+    tr.style["border-margin"] = 0.05 * inch
+    tr.style["border-width"] = 0.015 * inch
+    tr.style["border-colour"] = (1, 0, 1)
+    tr.style["border-outline"] = True
     tr.style.set_attr("background-colour", (0.2, 0.8, 0.9))
-    tr.style.set_attr("border-radius", 0.1 * inch)
+    # tr.style.set_attr("border-radius", 0.1 * inch)
     tr.draw_in_canvas(c)
 
     c.showPage()

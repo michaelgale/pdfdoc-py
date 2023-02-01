@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -23,7 +23,7 @@
 #
 # Pre-defined Label Document Styles
 
-from reportlab.lib.units import inch, mm, cm
+from reportlab.lib.units import inch
 
 #
 # Lable Document Styles

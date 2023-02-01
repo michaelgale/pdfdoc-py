@@ -73,10 +73,10 @@ def test_tablegrid_cols():
     TABLE_WIDTH = 3.5 * inch
     TABLE_HEIGHT = 6.5 * inch
     titles = [
-                "TableCell-%d" % (x)
-                if x % 2 == 0
-                else "%d-%s" % (x, str(x) * random.randint(1, 8))
-                for x in range(NUM_ITEMS)
+        "TableCell-%d" % (x)
+        if x % 2 == 0
+        else "%d-%s" % (x, str(x) * random.randint(1, 8))
+        for x in range(NUM_ITEMS)
     ]
     top_pads = [random.randint(0, 10) * 0.02 * inch for _ in range(NUM_ITEMS)]
     bot_pads = [random.randint(0, 10) * 0.02 * inch for _ in range(NUM_ITEMS)]
@@ -122,11 +122,17 @@ def test_tablegrid_cols():
 
         c.save()
 
-    tablegrid_col_test("./testfiles/test_tablegrid_cols.pdf", "Normal", {"strategy": "none"})
-    tablegrid_col_test("./testfiles/test_tablegrid_cols_1.pdf", "Resize", {
+    tablegrid_col_test(
+        "./testfiles/test_tablegrid_cols.pdf", "Normal", {"strategy": "none"}
+    )
+    tablegrid_col_test(
+        "./testfiles/test_tablegrid_cols_1.pdf",
+        "Resize",
+        {
             "strategy": "resize",
             "whitespace_thr": 0.20,
-    })
+        },
+    )
     tablegrid_col_test(
         "./testfiles/test_tablegrid_cols_2.pdf",
         "Whitspc",

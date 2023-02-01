@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #
 # Copyright (C) 2020  Michael Gale
-# This file is part of the legocad python module.
+
 # Permission is hereby granted, free of charge, to any person
 # obtaining a copy of this software and associated documentation
 # files (the "Software"), to deal in the Software without restriction,
@@ -26,7 +26,7 @@
 import copy
 from collections import OrderedDict
 import string
-from reportlab.lib.units import inch, mm, cm
+from reportlab.lib.units import mm
 
 from toolbox import Params
 from pdfdoc import *
@@ -92,6 +92,7 @@ class DocStyle:
             "line-style": "solid",
             "border-width": 0,
             "border-colour": (0, 0, 0),
+            "border-margin": 0,
             "background-colour": (0, 0, 0),
             "background-fill": False,
             "border-outline": False,
@@ -106,6 +107,7 @@ class DocStyle:
             "overlay-vertical-align": "centre",
             "overlay-size": "auto",
             "arrow-style": "taper",
+            "arrow-auto-colour": True,
         }
         if style is not None:
             self.set_with_dict(style)
@@ -118,6 +120,16 @@ class DocStyle:
 
     def __repr__(self):
         return "%s()" % (self.__class__.__name__,)
+
+    def _fmt_tuple(self, v):
+        if any([isinstance(x, float) for x in v]):
+            vs = ["%.3f, " % (x) for x in v]
+            vs = "".join(vs)
+            vs = vs.rstrip()
+            vs = vs.rstrip(",")
+            vs = "(%s)" % (vs)
+            return vs
+        return str(v)
 
     def __str__(self):
         s = []
@@ -138,6 +150,10 @@ class DocStyle:
             k2.append("")
             v2.append("")
         for key1, val1, key2, val2 in zip(k1, v1, k2, v2):
+            if isinstance(val1, tuple):
+                val1 = self._fmt_tuple(val1)
+            if isinstance(val2, tuple):
+                val2 = self._fmt_tuple(val2)
             s.append("%20s: %-16s %20s: %-16s" % (key1, val1, key2, val2))
         return "\n".join(s)
 
@@ -184,13 +200,20 @@ class DocStyle:
             return self.attr[key]
         return def_value
 
-    def set_with_dict(self, style_dict):
+    def set_with_dict(self, style_dict, key_mask=None):
         if isinstance(style_dict, dict):
-            for key, value in style_dict.items():
-                self.set_attr(key, value)
+            items = style_dict.items()
         elif isinstance(style_dict, DocStyle):
-            for key, value in style_dict.attr.items():
-                self.set_attr(key, value)
+            items = style_dict.attr.items()
+        else:
+            return
+        if key_mask is not None:
+            key_mask = [self._attr_key(k) for k in key_mask]
+        for k, value in items:
+            key = self._attr_key(k)
+            if key_mask is not None and key not in key_mask:
+                continue
+            self.set_attr(key, value)
 
     def set_all_margins(self, withMargin):
         self.set_attr("left-margin", withMargin)
@@ -416,6 +439,10 @@ class DocStyleSheet:
 
     def __setitem__(self, key, value):
         self.set_style(key, value)
+
+    def __iter__(self):
+        for style in self.styles:
+            yield style
 
     def print_styles(self):
         for k, v in self.styles.items():

@@ -6,3 +6,4 @@ black pdfdoc/labeldoc/*.py
 black pdfdoc/scripts/*.py
 black pdfdoc/style/*.py
 black pdfdoc/tablecell/*.py
+black tests/*.py
