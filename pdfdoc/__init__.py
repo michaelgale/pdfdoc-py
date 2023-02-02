@@ -59,6 +59,7 @@ from .contentrect.contentrect import ContentRect
 from .contentrect.textrect import TextRect
 from .contentrect.imgrect import ImageRect
 from .contentrect.patternrect import PatternRect
+from .contentrect.svgrect import SvgRect
 from .contentrect.alignmentrect import AlignmentRect
 from .tablecell.tablecell import TableCell
 from .tablecell.tablevector import TableVector
