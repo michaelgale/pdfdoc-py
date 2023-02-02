@@ -14,7 +14,9 @@ from reportlab.lib.units import inch
 
 def test_cmykgrid():
     c = canvas.Canvas(
-        "./testfiles/test_cmykgrid.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./testfiles/test_cmykgrid.pdf",
+        pagesize=(8.5 * inch, 11.0 * inch),
+        enforceColorSpace="cmyk",
     )
     cg = CMYKGrid(2 * inch, 2 * inch)
     cg.label_style.set_with_dict(

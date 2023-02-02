@@ -343,6 +343,28 @@ class TableVector:
                     cy -= cell.content.rect.height
         self.assign_cell_overlay_content_rects()
 
+    def get_content_size(self, with_padding=True):
+        self.compute_cell_sizes()
+        r = self.get_cell_rects(as_is=True)
+        if len(r) > 0:
+            rb = Rect.bounding_rect_from_rects(r)
+        else:
+            rb = Rect(0, 0)
+        self.total_width = rb.width
+        self.total_height = rb.height
+        if with_padding:
+            self.total_width += self.style.width_pad_margin
+            self.total_height += self.style.height_pad_margin
+        if self.is_fixed_width:
+            self.total_width = self.fixed_rect.width
+        if self.is_fixed_height:
+            self.total_height = self.fixed_rect.height
+        if self.min_width:
+            self.total_width = max(self.total_width, self.min_width)
+        if self.min_height:
+            self.total_height = max(self.total_height, self.min_height)
+        return self.total_width, self.total_height
+
     def draw_border_lines(self, c):
         border_colour = self.style["border-colour"]
         border_width = self.style["border-width"]
@@ -395,8 +417,9 @@ class TableVector:
         if self.overlay_content is not None:
             self.overlay_content.rect = self.style.get_inset_rect(self.rect)
 
-    def draw_cells_in_canvas(self, canvas, axis):
-        self.compute_cell_sizes(axis)
+    def draw_cells_in_canvas(self, canvas, axis=None):
+        if axis is not None:
+            self.compute_cell_sizes(axis)
         self.draw_background(canvas)
         if self.show_debug_rects:
             for cell in self.iter_cells():

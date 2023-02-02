@@ -80,49 +80,24 @@ class TableGrid(TableVector):
             idx += 1
         return "\n".join(s)
 
-    def get_content_size(self, with_padding=True):
-        self.compute_cell_sizes()
-        r = self.get_cell_rects(as_is=True)
-        if len(r) > 0:
-            rb = Rect.bounding_rect_from_rects(r)
-        else:
-            rb = Rect(0, 0)
-        self.total_width = rb.width
-        self.total_height = rb.height
-        if with_padding:
-            self.total_width += self.style.width_pad_margin
-            self.total_height += self.style.height_pad_margin
-        if self.is_fixed_width:
-            self.total_width = self.fixed_rect.width
-        if self.is_fixed_height:
-            self.total_height = self.fixed_rect.height
-        if self.min_width:
-            self.total_width = max(self.total_width, self.min_width)
-        if self.min_height:
-            self.total_height = max(self.total_height, self.min_height)
-        return self.total_width, self.total_height
-
     def compute_cell_sizes(self):
         self.compute_cell_order()
         if self.is_fixed_width:
             self.width_constraint = self.fixed_rect.width
         if self.is_fixed_height:
             self.height_constraint = self.fixed_rect.height
-        rpt = self.rect.get_top_left()
+        top_left_corner = self.rect.get_top_left()
         r = Rect(width=self.width_constraint, height=self.height_constraint)
         cell_rect = self.style.get_inset_rect(r)
         inrect = self.style.get_inset_rect(self.rect)
         cell_rect.move_top_left_to(inrect.get_top_left())
         rects = [Rect(*cell.content.get_content_size()) for cell in self.iter_cells()]
-        row_wise = True if self.fill_dir == "row-wise" else False
-        vert_align = self.style["vert-align"]
-        horz_align = self.style["horz-align"]
         new_rects = Rect.layout_rects(
             rects,
             cell_rect,
-            row_wise=row_wise,
-            vert_align=vert_align,
-            horz_align=horz_align,
+            row_wise=(self.fill_dir == "row-wise"),
+            vert_align=self.style["vert-align"],
+            horz_align=self.style["horz-align"],
             auto_adjust=self.auto_adjust,
             align_cols=self.align_cols,
             **self.layout_opts,
@@ -138,7 +113,7 @@ class TableGrid(TableVector):
         if self.min_height:
             self.total_height = max(self.total_height, self.min_height)
         self.rect.set_size(self.total_width, self.total_height)
-        self.top_left = rpt
+        self.top_left = top_left_corner
         self.assign_cell_overlay_content_rects()
 
     def draw_in_canvas(self, canvas):
@@ -146,16 +121,4 @@ class TableGrid(TableVector):
 
     def draw_cells_in_canvas(self, canvas):
         self.compute_cell_sizes()
-        self.draw_background(canvas)
-        if self.show_debug_rects:
-            for cell in self.iter_cells():
-                cell.content.show_debug_rects = True
-        for cell in self.iter_cells():
-            cell.content.draw_in_canvas(canvas)
-        self.draw_border_lines(canvas)
-        if self.overlay_content is not None:
-            self.overlay_content.draw_in_canvas(canvas)
-        if self.show_debug_rects:
-            self.draw_debug_rect(canvas, self.rect)
-            inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(canvas, inset_rect, (0, 0, 1))
+        super().draw_cells_in_canvas(canvas, axis=None)

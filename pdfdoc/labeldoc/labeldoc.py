@@ -46,6 +46,7 @@ class LabelDoc:
         self.compute_page_metrics()
         self.c = None
         self.page_number = 1
+        self.cell_ptr = None
 
     def __str__(self):
         rs = []
@@ -64,21 +65,21 @@ class LabelDoc:
         rs.append(
             "  Margins: (Top: %.3f Bottom: %.3f Left: %.3f Right: %.3f)"
             % (
-                self.style.get_attr("top-margin") / inch,
-                self.style.get_attr("bottom-margin") / inch,
-                self.style.get_attr("left-margin") / inch,
-                self.style.get_attr("right-margin") / inch,
+                self.style["top-margin"] / inch,
+                self.style["bottom-margin"] / inch,
+                self.style["left-margin"] / inch,
+                self.style["right-margin"] / inch,
             )
         )
         if self.row_gutters:
             rs.append(
                 "  Row gutters: %.3f (%d total rows)"
-                % (self.style.get_attr("gutter-height") / inch, self.total_rows)
+                % (self.style["gutter-height"] / inch, self.total_rows)
             )
         if self.col_gutters:
             rs.append(
                 "  Col gutters: %.3f (%d total cols)"
-                % (self.style.get_attr("gutter-width") / inch, self.total_columns)
+                % (self.style["gutter-width"] / inch, self.total_columns)
             )
         for i, r in enumerate(self.tablegrid.cells):
             if isinstance(r.content, (TableRow, TableColumn, TableVector)):
@@ -99,6 +100,9 @@ class LabelDoc:
                 )
         return "\n".join(rs)
 
+    def cell_idx(self, row, col):
+        return "%02d%02d" % (row, col)
+
     def get_row_col(self, idx):
         """Helper method to return row, col index computed from a linear index"""
         r = math.floor(idx / self.ncolumns) % self.nrows
@@ -116,11 +120,13 @@ class LabelDoc:
             row, col = self.get_row_col(row)
         for r in self.tablegrid.cells:
             if isinstance(r.content, (TableRow, TableColumn, TableVector)):
-                title = "%02d%02d" % (row, col)
-                cell = r.content.get_cell_content(title)
+                cell = r.content.get_cell_content(self.cell_idx(row, col))
                 if cell is not None:
                     return cell
         return None
+
+    def add_label(self, content):
+        self.set_table_cell(content, *self.cell_ptr)
 
     def set_table_cell(self, content, row, col=None):
         """This function will typically be called within the context of a
@@ -131,10 +137,9 @@ class LabelDoc:
             row, col = self.get_row_col(row)
         for r in self.tablegrid.cells:
             if isinstance(r.content, (TableRow, TableColumn, TableVector)):
-                title = "%02d%02d" % (row, col)
-                cell = r.content.get_cell_content(title)
+                cell = r.content.get_cell_content(self.cell_idx(row, col))
                 if cell is not None:
-                    r.content.set_cell_content(title, content)
+                    r.content.set_cell_content(self.cell_idx(row, col), content)
 
     def compute_page_metrics(self):
         """Computes all of the derived page metrics of the label grid sheet.
@@ -144,42 +149,38 @@ class LabelDoc:
         is called automatically during __init__, it should be called if any major
         alterations are made to the label sheet layout.
         """
-        self.pagerect = Rect(
-            self.style.get_attr("width"), self.style.get_attr("height")
-        )
+        self.pagerect = Rect(self.style["width"], self.style["height"])
         self.pagerect.move_bottom_left_to((0, 0))
         self.contentrect = self.style.get_margin_rect(self.pagerect)
-        self.nrows = self.style.get_attr("nrows")
-        self.ncolumns = self.style.get_attr("ncolumns")
+        self.nrows = self.style["nrows"]
+        self.ncolumns = self.style["ncolumns"]
         self.labels_per_page = self.nrows * self.ncolumns
         self.row_height = (
-            self.style.get_attr("height")
-            - self.style.get_attr("top-margin")
-            - self.style.get_attr("bottom-margin")
-            - (self.nrows - 1) * self.style.get_attr("gutter-height")
+            self.style["height"]
+            - self.style["top-margin"]
+            - self.style["bottom-margin"]
+            - (self.nrows - 1) * self.style["gutter-height"]
         ) / self.nrows
         self.col_width = (
-            self.style.get_attr("width")
-            - self.style.get_attr("right-margin")
-            - self.style.get_attr("left-margin")
-            - (self.ncolumns - 1) * self.style.get_attr("gutter-width")
+            self.style["width"]
+            - self.style["right-margin"]
+            - self.style["left-margin"]
+            - (self.ncolumns - 1) * self.style["gutter-width"]
         ) / self.ncolumns
-        if self.style.get_attr("gutter-width") > 0:
+        if self.style["gutter-width"] > 0:
             self.total_columns = 2 * self.ncolumns - 1
             self.col_gutters = True
         else:
             self.total_columns = self.ncolumns
             self.col_gutters = False
-        if self.style.get_attr("gutter-height") > 0:
+        if self.style["gutter-height"] > 0:
             self.total_rows = 2 * self.nrows - 1
             self.row_gutters = True
         else:
             self.total_rows = self.nrows
             self.row_gutters = False
-        self.tablegrid.rect.set_size(self.contentrect.width, self.contentrect.height)
-        self.tablegrid.rect.move_top_left_to(
-            Point(self.contentrect.left, self.contentrect.top)
-        )
+        self.tablegrid.size = (self.contentrect.width, self.contentrect.height)
+        self.tablegrid.top_left = self.contentrect.left, self.contentrect.top
         self.tablegrid.clear()
         ly = self.contentrect.top
         for r in range(self.total_rows):
@@ -188,14 +189,10 @@ class LabelDoc:
                 for c in range(self.total_columns):
                     if (self.col_gutters and c % 2 == 0) or not self.col_gutters:
                         cx = (c + 1) / 2
-                        title = "%02d%02d" % (r, cx)
+                        title = self.cell_idx(r, cx)
                     else:
                         title = "gutter%02d" % (c)
-                    w = (
-                        self.col_width
-                        if c % 2 == 0
-                        else self.style.get_attr("gutter-width")
-                    )
+                    w = self.col_width if c % 2 == 0 else self.style["gutter-width"]
                     wr = w / self.contentrect.width
                     row.add_column(title, content=None, order=c, width=wr)
                 h = self.row_height
@@ -203,7 +200,7 @@ class LabelDoc:
                 row.compute_cell_sizes("width")
             else:
                 row = None
-                h = self.style.get_attr("gutter-height")
+                h = self.style["gutter-height"]
             hr = h / self.contentrect.height
             self.tablegrid.add_row("%02d" % (r), row, order=r, height=hr)
             ly -= self.row_height
@@ -214,7 +211,7 @@ class LabelDoc:
         self.compute_page_metrics()
         self.c = canvas.Canvas(
             self.filename,
-            pagesize=(self.style.get_attr("width"), self.style.get_attr("height")),
+            pagesize=(self.style["width"], self.style["height"]),
         )
         self.c.saveState()
         self.page_number = 1
@@ -234,14 +231,14 @@ class LabelDoc:
         self.c.save()
 
     def iter_label(self, labels):
-        """Generator which makes the labels based on provided content list.
-        It returns the next label data content from the list as well as the row
+        """Generator which makes the labels based on provided item list.
+        It returns the next label data item from the list as well as the row
         and column index of the label.  The caller can then use the row, col index
         to specify the label grid content.  This content can be any derived member
         of ContentRect or TableVector.
         """
         idx = 0
-        for i, label in enumerate(labels):
+        for label in labels:
             row, col = self.get_row_col(idx)
             if idx == 0:
                 self._doc_start()
@@ -249,8 +246,19 @@ class LabelDoc:
                 if (idx % self.labels_per_page) == 0:
                     self.tablegrid.draw_in_canvas(self.c)
                     self._page_end()
+            self.cell_ptr = (row, col)
             yield label, row, col
             idx += 1
             if idx == len(labels):
                 self.tablegrid.draw_in_canvas(self.c)
                 self._doc_end()
+
+    def iter_doc(self, labels):
+        """Generator which makes the labels based on provided item list.
+        It returns the next label item from the labels list.  The caller
+        then uses the add_label() method to set the label's contents.
+        The row, col indexing is handled by iter_label generator and the
+        internal cell_ptr attribute (a tuple of current row, col)
+        """
+        for label, _, _ in self.iter_label(labels):
+            yield label

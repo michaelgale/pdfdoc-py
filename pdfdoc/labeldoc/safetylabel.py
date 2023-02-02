@@ -81,8 +81,8 @@ class SafetyLabel(TableRow):
                 self.set_safety_green()
 
     def _get_metrics(self, textrect, c):
-        fontname = textrect.style.get_attr("font-name")
-        fontsize = textrect.style.get_attr("font-size")
+        fontname = textrect.style["font-name"]
+        fontsize = textrect.style["font-size"]
         tw, th = get_string_metrics(
             c,
             textrect.text,
@@ -97,34 +97,33 @@ class SafetyLabel(TableRow):
         if self.icon.overlay_content is not None:
             new_height = max(th - 1.28 * sd, th2 - 1.28 * sd2)
         else:
-            if self.icon.style.get_attr("font-name") == "Hazard":
+            if self.icon.style["font-name"] == "Hazard":
                 new_height = th - 1.28 * sd
             else:
                 new_height = th
         return new_height
 
     def set_auto_size(self, c, new_size=None):
-
         if new_size is not None:
             if self.icon.overlay_content is not None:
-                self.icon.style.set_attr("font-size", 0.9 * new_size)
-                self.icon2.style.set_attr("font-size", new_size)
+                self.icon.style["font-size"] = 0.9 * new_size
+                self.icon2.style["font-size"] = new_size
             else:
-                self.icon.style.set_attr("font-size", new_size)
+                self.icon.style["font-size"] = new_size
 
         tw, th, sa, sd = self._get_metrics(self.icon, c)
         tw2, th2, sa2, sd2 = self._get_metrics(self.icon2, c)
         bw = tw / 16
-        if self.title.style.get_attr("border-outline"):
-            self.title.style.set_attr("border-width", bw)
-            self.title.style.set_attr("right-margin", bw / 2)
+        if self.title.style["border-outline"]:
+            self.title.style["border-width"] = bw
+            self.title.style["right-margin"] = bw / 2
             self.title.style.set_tb_margins(bw / 2)
         else:
             self.title.style.set_all_margins(0)
         xw = tw / 4
-        self.title.style.set_attr("left-margin", xw)
-        self.desc.style.set_attr("left-margin", xw)
-        self.title.style.set_attr("border-radius", 2.5 * bw)
+        self.title.style["left-margin"] = xw
+        self.desc.style["left-margin"] = xw
+        self.title.style["border-radius"] = 2.5 * bw
 
         new_width = 1.05 * tw
         xw = tw / 6
@@ -138,8 +137,8 @@ class SafetyLabel(TableRow):
             new_height = 2 * title_height + xw
             self.text_column.set_row_height("Title", title_height / new_height)
             self.icon_column.set_row_height("Icon", title_height / new_height)
-            self.desc.style.set_attr("top-margin", xw)
-            self.desc.style.set_attr("vert-align", "top")
+            self.desc.style["top-margin"] = xw
+            self.desc.style["vert-align"] = "top"
             self.text_column.set_row_height("Desc", AUTO_SIZE)
             self.icon_column.set_row_height("Spacer", AUTO_SIZE)
             self.spacer.style.set_attr("top-margin", xw)
@@ -150,23 +149,23 @@ class SafetyLabel(TableRow):
         self.set_column_width("Icon", new_width / rw)
         self.compute_cell_sizes("width")
         self.icon2.rect = self.icon.rect
-        self.icon.style.set_attr("horz-align", "centre")
-        self.icon2.style.set_attr("horz-align", "centre")
-        self.icon.style.set_attr("vert-align", "bottom")
-        self.icon2.style.set_attr("vert-align", "bottom")
-        if self.icon.style.get_attr("font-name") == "FontAwesome":
-            self.icon.style.set_attr("vert-align", "centre")
+        self.icon.style["horz-align"] = "centre"
+        self.icon2.style["horz-align"] = "centre"
+        self.icon.style["vert-align"] = "bottom"
+        self.icon2.style["vert-align"] = "bottom"
+        if self.icon.style["font-name"] == "FontAwesome":
+            self.icon.style["vert-align"] = "centre"
 
     def set_overlayed_symbol(self, icon, shape=None):
         if shape is not None:
             if shape.lower() == "circle":
-                self.icon.style.set_attr("font-name", "Zapf Dingbats")
+                self.icon.style["font-name"] = "Zapf Dingbats"
                 self.icon.text = "\u25CF"
             elif shape.lower() == "square":
-                self.icon.style.set_attr("font-name", "Zapf Dingbats")
+                self.icon.style["font-name"] = "Zapf Dingbats"
                 self.icon.text = "\u25A0"
             else:  # triangle
-                self.icon.style.set_attr("font-name", "Zapf Dingbats")
+                self.icon.style["font-name"] = "Zapf Dingbats"
                 self.icon.text = "\u25B2"
             set_icon(icon, self.icon2)
             self.icon.overlay_content = self.icon2
@@ -176,45 +175,42 @@ class SafetyLabel(TableRow):
 
     def set_safety_yellow(self):
         yellow = rl_colour_hex("#FFED10")
-        self.icon.style.set_attr("background-fill", True)
-        self.icon.style.set_attr("background-colour", (1, 1, 1))
-        self.icon.style.set_attr("font-colour", yellow)
-        self.icon2.style.set_attr("background-fill", False)
-        self.icon2.style.set_attr("background-colour", (1, 1, 1))
-        self.icon2.style.set_attr("font-colour", (0, 0, 0))
-        sz = max(
-            self.icon.style.get_attr("font-size"),
-            self.icon2.style.get_attr("font-size"),
-        )
-        self.icon.style.set_attr("font-name", "Zapf Dingbats")
-        self.icon2.style.set_attr("font-name", "Hazard")
-        self.icon.style.set_attr("font-size", 0.9 * sz)
-        self.icon2.style.set_attr("font-size", sz)
+        self.icon.style["background-fill"] = True
+        self.icon.style["background-colour"] = (1, 1, 1)
+        self.icon.style["font-colour"] = yellow
+        self.icon2.style["background-fill"] = False
+        self.icon2.style["background-colour"] = (1, 1, 1)
+        self.icon2.style["font-colour"] = (0, 0, 0)
+        sz = max(self.icon.style["font-size"], self.icon2.style["font-size"])
+        self.icon.style["font-name"] = "Zapf Dingbats"
+        self.icon2.style["font-name"] = "Hazard"
+        self.icon.style["font-size"] = 0.9 * sz
+        self.icon2.style["font-size"] = sz
         self.icon.overlay_content = self.icon2
-        self.title.style.set_attr("background-fill", True)
-        self.title.style.set_attr("background-colour", yellow)
-        self.title.style.set_attr("font-colour", (0, 0, 0))
-        self.title.style.set_attr("border-outline", True)
-        self.title.style.set_attr("border-colour", (0, 0, 0))
+        self.title.style["background-fill"] = True
+        self.title.style["background-colour"] = yellow
+        self.title.style["font-colour"] = (0, 0, 0)
+        self.title.style["border-outline"] = True
+        self.title.style["border-colour"] = (0, 0, 0)
         self._set_desc_rect()
 
     def _set_desc_rect(self):
-        self.desc.style.set_attr("background-fill", False)
-        self.desc.style.set_attr("background-colour", (1, 1, 1))
-        self.desc.style.set_attr("font-colour", (0, 0, 0))
+        self.desc.style["background-fill"] = False
+        self.desc.style["background-colour"] = (1, 1, 1)
+        self.desc.style["font-colour"] = (0, 0, 0)
 
     def _set_filled_title_rect(self, colour):
-        self.icon.style.set_attr("background-fill", False)
-        self.icon.style.set_attr("background-colour", (1, 1, 1))
+        self.icon.style["background-fill"] = False
+        self.icon.style["background-colour"] = (1, 1, 1)
         if self.icon.overlay_content is not None:
-            self.icon.style.set_attr("font-colour", (1, 1, 1))
-            self.icon2.style.set_attr("font-colour", colour)
+            self.icon.style["font-colour"] = (1, 1, 1)
+            self.icon2.style["font-colour"] = colour
         else:
-            self.icon.style.set_attr("font-colour", colour)
-        self.title.style.set_attr("background-fill", True)
-        self.title.style.set_attr("background-colour", colour)
-        self.title.style.set_attr("font-colour", (1, 1, 1))
-        self.title.style.set_attr("border-outline", False)
+            self.icon.style["font-colour"] = colour
+        self.title.style["background-fill"] = True
+        self.title.style["background-colour"] = colour
+        self.title.style["font-colour"] = (1, 1, 1)
+        self.title.style["border-outline"] = False
         self._set_desc_rect()
 
     def set_safety_red(self):
@@ -233,3 +229,7 @@ class SafetyLabel(TableRow):
         self.title.show_debug_rects = show
         self.icon.show_debug_rects = show
         self.desc.show_debug_rects = show
+
+    def draw_in_canvas(self, canvas, new_size=None):
+        self.set_auto_size(canvas, new_size=new_size)
+        super().draw_in_canvas(canvas)

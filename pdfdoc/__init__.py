@@ -42,14 +42,15 @@ from .fonthelpers import (
     register_font_family,
     register_font,
     get_registered_fonts,
-    fasymbol,
-    hazsymbol,
+    fa_symbol,
+    haz_symbol,
     set_icon,
     get_system_font_list,
     print_system_fonts,
     find_font,
     create_specimen_pdf,
     create_font_family_pdf,
+    print_symbol_list,
 )
 from .style.docstyle import DocStyle, DocStyleSheet, roman_number
 from .style.pagestyles import *

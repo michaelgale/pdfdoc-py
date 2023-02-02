@@ -47,7 +47,7 @@ class TableRow(TableVector):
             w, h = self.get_content_size()
             anchor = "top left" if auto_size_anchor is None else auto_size_anchor
             self.rect.set_size_anchored(w, h, anchor_pt=anchor)
-        self.draw_cells_in_canvas(canvas, "width")
+        self.draw_cells_in_canvas(canvas, axis="width")
 
     def set_cell_content(self, label, content):
         cell = self[label]

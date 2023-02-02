@@ -1,14 +1,9 @@
 # Sample Test passing with nose and pytest
 
-import os
-import sys
-import pytest
-import math
 import random
 
 from reportlab.lib.units import inch
 from toolbox import *
-from ldrawpy import LDRColour
 from pdfdoc import *
 
 _test_dict = {"left-margin": 1 * inch, "right-margin": 1 * inch, "horz-align": "left"}
@@ -34,19 +29,19 @@ def test_content_idx():
 def test_labeldoc_iter():
     ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5262_LABEL_DOC_STYLE)
     labels = [i for i in range(25)]
-    for label, row, col in ld.iter_label(labels):
+    for label in ld.iter_doc(labels):
         tr = TextRect(withText="Label %d" % (label))
         tr.show_debug_rects = True
-        ld.set_table_cell(tr, row, col)
+        ld.add_label(tr)
 
 
 def test_simple_label():
     ld = LabelDoc("./testfiles/test_simplelabel.pdf", style=AVERY_5267_LABEL_DOC_STYLE)
     labels = [i for i in range(25)]
-    for label, row, col in ld.iter_label(labels):
-        sl = SimpleLabel(line1="Title", line2="subtitle", line3="subtitle")
+    for label in ld.iter_doc(labels):
+        sl = SimpleLabel(line1="Title %d" % (label), line2="subtitle", line3="subtitle")
         sl.show_debug_rects = True
-        ld.set_table_cell(sl, row, col)
+        ld.add_label(sl)
 
 
 def test_generic_labeldoc():
@@ -54,7 +49,7 @@ def test_generic_labeldoc():
         "./testfiles/test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE
     )
     labels = [i for i in range(25)]
-    for label, row, col in ld.iter_label(labels):
+    for label in ld.iter_doc(labels):
         rt = random.random()
         if rt > 0.67:
             subtitle = "This is a really long bit of text for the subtitle which is more than one line"
@@ -80,4 +75,4 @@ def test_generic_labeldoc():
             pattern=show_pattern,
         )
         gl.set_debug_rects(True)
-        ld.set_table_cell(gl, row, col)
+        ld.add_label(gl)

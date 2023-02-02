@@ -359,18 +359,7 @@ class LayoutCell(TableVector):
 
     def get_content_size(self, with_padding=True):
         self.compute_cell_layout()
-        r = self.get_cell_rects(as_is=True)
-        rb = Rect.bounding_rect_from_rects(r)
-        self.total_width = rb.width
-        self.total_height = rb.height
-        if with_padding:
-            self.total_width += self.style.width_pad_margin
-            self.total_height += self.style.height_pad_margin
-        if self.is_fixed_width:
-            self.total_width = self.fixed_rect.width
-        if self.is_fixed_height:
-            self.total_height = self.fixed_rect.height
-        return self.total_width, self.total_height
+        return super().get_content_size(with_padding=with_padding)
 
     def compute_cell_layout(self):
         self.compute_cell_order()
@@ -390,13 +379,4 @@ class LayoutCell(TableVector):
 
     def draw_cells_in_canvas(self, canvas):
         self.compute_cell_layout()
-        self.draw_background(canvas)
-        for cell in self.iter_cells():
-            cell.content.draw_in_canvas(canvas)
-        self.draw_border_lines(canvas)
-        if self.overlay_content is not None:
-            self.overlay_content.draw_in_canvas(canvas)
-        if self.show_debug_rects:
-            self.draw_debug_rect(canvas, self.rect)
-            inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(canvas, inset_rect, (0, 0, 1))
+        super().draw_cells_in_canvas(canvas, axis=None)

@@ -194,7 +194,7 @@ fa_lookup_dict = {
     "gears": "\uF085",
     "speaker-off": "\uF025",
     "speaker-min": "\uF026",
-    "speaker-max": "\uF027",
+    "speaker-max": "\uF028",
     "label": "\uF02B",
     "labels": "\uF02C",
     "beaker": "\uF0C3",
@@ -287,10 +287,27 @@ fa_lookup_dict = {
     "round-up": "\uF0AA",
     "round-down": "\uF0AB",
     "yes-box": "\uF14A",
+    "thumb-up": "\uF164",
+    "thumb-down": "\uF165",
+    "wheelchair": "\uF193",
+    "file-pdf": "\uF1C1",
+    "file-image": "\uF1C5",
+    "file-audio": "\uF1C7",
+    "file-video": "\uF1C8",
+    "file-code": "\uF1C9",
+    "hourglass": "\uF253",
+    "usb": "\uF287",
+    "first-aid-box": "\uF0FA",
+    "speed": "\uF0E4",
+    "pushpin": "\uF08D",
+    "calendar": "\uF073",
+    "repeat": "\uF021",
+    "house": "\uF015",
+    "search": "\uF002",
 }
 
 
-def fasymbol(x):
+def fa_symbol(x):
     """Returns a FontAwesome symbol using a descriptive name"""
     if x.lower() in fa_lookup_dict:
         return fa_lookup_dict[x.lower()]
@@ -329,7 +346,7 @@ haz_lookup_dict = {
 }
 
 
-def hazsymbol(x):
+def haz_symbol(x):
     """Returns a Hazard symbol using a descriptive name"""
     if x.lower() in haz_lookup_dict:
         return haz_lookup_dict[x.lower()]
@@ -338,10 +355,28 @@ def hazsymbol(x):
 
 def set_icon(x, textrect):
     """Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts"""
-    xl = x.lower()
-    if xl in haz_lookup_dict:
-        textrect.style.set_attr("font-name", "Hazard")
-        textrect.text = haz_lookup_dict[xl]
-    if xl in fa_lookup_dict:
-        textrect.style.set_attr("font-name", "FontAwesome")
-        textrect.text = fa_lookup_dict[xl]
+    sx = haz_symbol(x)
+    if len(sx):
+        textrect.style["font-name"] = "Hazard"
+        textrect.text = sx
+    else:
+        textrect.style["font-name"] = "FontAwesome"
+        textrect.text = fa_symbol(x)
+
+
+def print_symbol_list():
+    s = []
+    idx = 0
+    for k, v in haz_lookup_dict.items():
+        s.append("%-20s" % (k))
+        idx += 1
+        if idx % 4 == 0:
+            print("".join(s))
+            s = []
+    for k, v in fa_lookup_dict.items():
+        s.append("%-20s" % (k))
+        idx += 1
+        if idx % 4 == 0:
+            print("".join(s))
+            s = []
+    print("".join(s))
