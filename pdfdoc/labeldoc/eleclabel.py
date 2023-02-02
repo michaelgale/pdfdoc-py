@@ -33,8 +33,6 @@ from pdfdoc import *
 
 class ElectronicLabel(TableRow):
     def __init__(self, part="", desc="", package=None, colour=None, symbol=None):
-        from ldrawpy import LDRColour
-
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         filename = symbol if symbol is not None else ""
@@ -64,11 +62,11 @@ class ElectronicLabel(TableRow):
         self.pattern = PatternRect(0, 0)
         self.pattern.pattern = ""
         if colour is not None:
-            c = LDRColour(colour)
+            c = safe_colour_tuple(colour)
             self.pattern.style.set_attr("background-fill", True)
-            self.pattern.style.set_attr("background-colour", c.as_tuple())
-            self.pattern.foreground_colour = c.as_tuple()
-            self.pattern.background_colour = c.as_tuple()
+            self.pattern.style.set_attr("background-colour", c)
+            self.pattern.foreground_colour = c
+            self.pattern.background_colour = c
         self.subtitle = TextRect(0, 0, "", GENERIC_LABEL_DESC)
         self.subtitle.style.set_attr("font-size", 8)
         self.subtitle.style.set_attr("font-name", "DIN-Regular")

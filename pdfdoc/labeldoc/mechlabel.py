@@ -33,8 +33,6 @@ from pdfdoc import *
 
 class MechanicalLabel(TableRow):
     def __init__(self, title="", subtitle=None, colour=None, symbol=None):
-        from ldrawpy import LDRColour
-
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         filename = symbol if symbol is not None else ""
@@ -69,21 +67,21 @@ class MechanicalLabel(TableRow):
                 self.titlerow.add_column("Type", self.title, width=0.42)
 
             self.titlerow.add_column("Aux", self.auxtitle, width=AUTO_SIZE)
-            c = LDRColour(colour)
-            self.title.style.set_attr("background-colour", c.as_tuple())
+            c = safe_colour_tuple(colour)
+            self.title.style.set_attr("background-colour", c)
             self.title.style.set_attr("background-fill", True)
             self.title.style.set_attr("horz-align", "centre")
-            self.title.style.set_attr("font-colour", c.high_contrast_complement())
+            self.title.style.set_attr("font-colour", high_contrast_complement(c))
         else:
             self.titlerow.add_column("Type", self.title, width=AUTO_SIZE)
         self.pattern = PatternRect(0, 0)
         self.pattern.pattern = ""
         if colour is not None:
-            c = LDRColour(colour)
+            c = safe_colour_tuple(colour)
             self.pattern.style.set_attr("background-fill", True)
-            self.pattern.style.set_attr("background-colour", c.as_tuple())
-            self.pattern.foreground_colour = c.as_tuple()
-            self.pattern.background_colour = c.as_tuple()
+            self.pattern.style.set_attr("background-colour", c)
+            self.pattern.foreground_colour = c
+            self.pattern.background_colour = c
         self.subtitle = TextRect(0, 0, "", GENERIC_LABEL_DESC)
         self.subtitle.style.set_attr("font-size", 8)
         self.subtitle.style.set_attr("font-name", "DIN-Regular")

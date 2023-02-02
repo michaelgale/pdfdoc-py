@@ -107,26 +107,24 @@ class GenericLabel(TableColumn):
         self.pattern_top.pattern_slant = 12
 
     def set_colour(self, colour):
-        from ldrawpy import LDRColour
-
-        c = LDRColour(colour)
+        c = safe_colour_tuple(colour)
         self.title.style.set_attr("background-fill", True)
-        self.title.style.set_attr("background-colour", c.as_tuple())
-        self.title.style.set_attr("border-colour", c.as_tuple())
+        self.title.style.set_attr("background-colour", c)
+        self.title.style.set_attr("border-colour", c)
         self.title.style.set_attr("border-outline", True)
-        self.title.style.set_attr("font-colour", c.high_contrast_complement())
+        self.title.style.set_attr("font-colour", high_contrast_complement(c))
         self.symbol.style.set_attr("background-fill", True)
-        self.symbol.style.set_attr("background-colour", c.as_tuple())
-        self.symbol.style.set_attr("border-colour", c.as_tuple())
+        self.symbol.style.set_attr("background-colour", c)
+        self.symbol.style.set_attr("border-colour", c)
         self.symbol.style.set_attr("border-outline", True)
-        self.symbol.style.set_attr("font-colour", c.high_contrast_complement())
+        self.symbol.style.set_attr("font-colour", high_contrast_complement(c))
         self.symbol2.style.set_attr("background-fill", True)
-        self.symbol2.style.set_attr("background-colour", c.as_tuple())
-        self.symbol2.style.set_attr("border-colour", c.as_tuple())
+        self.symbol2.style.set_attr("background-colour", c)
+        self.symbol2.style.set_attr("border-colour", c)
         self.symbol2.style.set_attr("border-outline", True)
-        self.symbol2.style.set_attr("font-colour", c.high_contrast_complement())
-        self.pattern.foreground_colour = c.as_tuple()
-        self.pattern_top.foreground_colour = c.as_tuple()
+        self.symbol2.style.set_attr("font-colour", high_contrast_complement(c))
+        self.pattern.foreground_colour = c
+        self.pattern_top.foreground_colour = c
 
     def set_debug_rects(self, show=False):
         self.title.show_debug_rects = show
