@@ -111,10 +111,10 @@ def test_tableimbedded():
         "./testfiles/test_tableimbed.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
-    tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
-    tr.style["border-line-bottom"] = True
-    tr.style["border-colour"] = (0.1, 0.1, 0.1)
-    tr.style["border-width"] = 0.02 * inch
+    tr.top_left = Point(1 * inch, 9 * inch)
+    tr.border_outline = "bottom"
+    tr.border_colour = (0.1, 0.1, 0.1)
+    tr.border_width = 0.02 * inch
     tr.draw_in_canvas(c)
 
     c.showPage()

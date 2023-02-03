@@ -63,14 +63,8 @@ class ImageRect(ContentRect):
             return 0, 0
         if self.filename == "":
             return 0, 0
-        (iw, ih) = get_image_metrics(self.filename)
-        tw, th = iw / self.dpi * 72, ih / self.dpi * 72
-        if with_padding:
-            tw += self.style.width_pad_margin
-            th += self.style.height_pad_margin
-        w = self.fixed_rect.width if self.is_fixed_width else tw
-        h = self.fixed_rect.height if self.is_fixed_height else th
-        return w, h
+        tw, th = PIX2PTS(get_image_metrics(self.filename), self.dpi)
+        return super().get_content_size(tw, th, with_padding=with_padding)
 
     def draw_image_rect(self, c):
         if self.filename is None:
@@ -80,48 +74,11 @@ class ImageRect(ContentRect):
         (iw, ih) = get_image_metrics(self.filename)
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
-            tw, th = self.get_best_rect_metrics(
+            tw, th = Rect.get_best_rect_metrics(
                 iw, ih, inset_rect.width, inset_rect.height
             )
         else:
-            tw, th = iw / self.dpi * 72, ih / self.dpi * 72
-        vert_align = self.style["vert-align"]
-        if vert_align == "centre":
-            _, ty = inset_rect.get_centre()
-            ty -= th / 2.0
-        elif vert_align == "top":
-            ty = inset_rect.top - th
-        else:
-            ty = inset_rect.bottom
-
-        horz_align = self.style["horz-align"]
-        if horz_align == "centre":
-            tx, _ = inset_rect.get_centre()
-            tx -= tw / 2.0
-        elif horz_align == "right":
-            tx = inset_rect.right
-            tx -= tw
-        else:
-            tx = inset_rect.left
+            tw, th = PIX2PTS((iw, ih), self.dpi)
+        tx, ty = self.aligned_corner(tw, th)
         c.setFillColor(rl_colour((0, 0, 0)))
         c.drawImage(self.filename, tx, ty, tw, th, mask="auto")
-
-    @staticmethod
-    def get_best_rect_metrics(from_width, from_height, in_width, in_height):
-        if from_width < 1e-3 or from_height < 1e-3:
-            return 0, 0
-        if from_width > from_height:
-            best_height = in_height
-            best_width = (in_height / from_height) * from_width
-        else:
-            best_width = in_width
-            best_height = (in_width / from_width) * from_height
-        if best_height > in_height:
-            scale = in_height / best_height
-            best_height *= scale
-            best_width *= scale
-        if best_width > in_width:
-            scale = in_width / best_width
-            best_height *= scale
-            best_width *= scale
-        return best_width, best_height

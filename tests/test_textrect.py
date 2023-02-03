@@ -76,19 +76,19 @@ def test_string_splitting():
     c.saveState()
     t1.split_lines = True
     t1.show_debug_rects = True
-    t1.style.set_attr("horz-align", "left")
-    t1.style.set_attr("vert-align", "top")
-    t1.rect.move_top_left_to(Point(1 * inch, 8 * inch))
+    t1.horz_align = "left"
+    t1.vert_align = "top"
+    t1.top_left = 1 * inch, 8 * inch
     t1.draw_in_canvas(c)
 
-    t1.style.set_attr("horz-align", "left")
-    t1.style.set_attr("vert-align", "bottom")
-    t1.rect.move_top_left_to(Point(1 * inch, 6 * inch))
+    t1.horz_align = "left"
+    t1.vert_align = "bottom"
+    t1.top_left = 1 * inch, 6 * inch
     t1.draw_in_canvas(c)
 
-    t1.style.set_attr("horz-align", "left")
-    t1.style.set_attr("vert-align", "centre")
-    t1.rect.move_top_left_to(Point(1 * inch, 4 * inch))
+    t1.horz_align = "left"
+    t1.vert_align = "centre"
+    t1.top_left = 1 * inch, 4 * inch
     t1.draw_in_canvas(c)
 
     c.showPage()
@@ -102,41 +102,41 @@ def test_textrect_render():
     c.saveState()
     t1 = TextRect(3 * inch, 1 * inch, "My Centre Test", _text_dict)
     t1.show_debug_rects = True
-    t1.style.set_attr("vert-align", "centre")
-    t1.rect.move_top_left_to(Point(1 * inch, 8 * inch))
+    t1.vert_align = "centre"
+    t1.top_left = 1 * inch, 8 * inch
     t1.draw_in_canvas(c)
 
     t2 = TextRect(3 * inch, 1 * inch, "My Top Test", _text_dict)
     t2.show_debug_rects = True
-    t2.style.set_attr("vert-align", "top")
-    t2.rect.move_top_left_to(Point(1 * inch, 6.5 * inch))
+    t2.vert_align = "top"
+    t2.top_left = 1 * inch, 6.5 * inch
     t2.draw_in_canvas(c)
 
     t3 = TextRect(3 * inch, 1 * inch, "My Bottom Test", _text_dict)
     t3.show_debug_rects = True
-    t3.style.set_attr("vert-align", "bottom")
-    t3.rect.move_top_left_to(Point(1 * inch, 5 * inch))
+    t3.vert_align = "bottom"
+    t3.top_left = 1 * inch, 5 * inch
     t3.draw_in_canvas(c)
 
     t1 = TextRect(3 * inch, 1 * inch, "My Left Test", _text_dict)
     t1.show_debug_rects = True
-    t1.style.set_attr("vert-align", "centre")
-    t1.style.set_attr("horz-align", "left")
-    t1.rect.move_top_left_to(Point(4.5 * inch, 8 * inch))
+    t1.horz_align = "left"
+    t1.vert_align = "centre"
+    t1.top_left = 4.5 * inch, 8 * inch
     t1.draw_in_canvas(c)
 
     t2 = TextRect(3 * inch, 1 * inch, "My Centre Test", _text_dict)
     t2.show_debug_rects = True
-    t2.style.set_attr("vert-align", "centre")
-    t2.style.set_attr("horz-align", "centre")
-    t2.rect.move_top_left_to(Point(4.5 * inch, 6.5 * inch))
+    t2.horz_align = "centre"
+    t2.vert_align = "centre"
+    t2.top_left = 4.5 * inch, 6.5 * inch
     t2.draw_in_canvas(c)
 
     t3 = TextRect(3 * inch, 1 * inch, "My Right Test", _text_dict)
     t3.show_debug_rects = True
-    t3.style.set_attr("vert-align", "centre")
-    t3.style.set_attr("horz-align", "right")
-    t3.rect.move_top_left_to(Point(4.5 * inch, 5 * inch))
+    t3.horz_align = "right"
+    t3.vert_align = "centre"
+    t3.top_left = 4.5 * inch, 5 * inch
     t3.draw_in_canvas(c)
 
     c.showPage()

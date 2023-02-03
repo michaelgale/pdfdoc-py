@@ -36,6 +36,7 @@ from .helpers import (
     IN2PTS,
     PTS2IN,
     PTS2MM,
+    PIX2PTS,
     get_edge_colours,
 )
 from .fonthelpers import (

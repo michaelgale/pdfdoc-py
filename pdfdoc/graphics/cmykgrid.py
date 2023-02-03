@@ -142,13 +142,13 @@ class CMYKGrid(TableColumn):
                 tuple(self.channel_value(CMYK[c]) for c in range(4))
             )
             tl = TextRect(0, 0, label, style=self.label_style)
-            tl.style["horz-align"] = "left"
+            tl.horz_align = "left"
             rc.add_column("Title", tl)
             rc.set_column_width("Title", CONTENT_SIZE)
             tl = TextRect(
                 0, 0, "%s" % (self.col_channel.upper()), style=self.label_style
             )
-            tl.style["horz-align"] = "centre"
+            tl.horz_align = "centre"
             rc.add_column("ColCh", tl)
             self.add_row("Titles", rc)
             self.set_row_height("Titles", row_height)
@@ -162,8 +162,7 @@ class CMYKGrid(TableColumn):
             v = self.get_cmyk_channel(CMYK, self.col_channel)
             for col in range(self.cols):
                 tl = TextRect(0, 0, self.channel_value(v), style=self.label_style)
-                tl.style["border-line-left"] = True
-                tl.style["border-line-right"] = True
+                tl.border_outline = "left right"
                 rc.add_column("L%d" % (col), tl)
                 v += self.col_inc
             self.add_row("Labels", rc)
@@ -176,14 +175,12 @@ class CMYKGrid(TableColumn):
             if self.labels:
                 # row channel value labels
                 tl = TextRect(wc, hr, self.channel_value(v), style=self.label_style)
-                tl.style["border-line-top"] = True
-                tl.style["border-line-bottom"] = True
+                tl.border_outline = "top bottom"
                 rc.add_column("L%d" % (row), tl)
                 v += self.row_inc
             for col in range(self.cols):
                 cr = ContentRect(wc, hr)
-                cr.style["background-fill"] = True
-                cr.style["background-colour"] = CMYK
+                cr.background_colour = CMYK
                 cr.style.set_all_margins(self.padding)
                 rc.add_column("Cell%d%d" % (row, col), cr)
                 CMYK = self.inc_channel(CMYK, self.col_channel, self.col_inc)

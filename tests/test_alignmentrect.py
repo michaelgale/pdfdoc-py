@@ -35,16 +35,3 @@ def test_alignmentrect_render():
 
     c.showPage()
     c.save()
-
-
-def test_svgrect_render():
-    c = canvas.Canvas(
-        "./testfiles/test_svgrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
-    )
-    c.saveState()
-    cr = SvgRect(2 * inch, 1 * inch, "./testfiles/LogoBlackVector.svg")
-    cr.show_debug_rects = True
-    cr.rect.move_top_left_to(Point(1 * inch, 10 * inch))
-    cr.draw_in_canvas(c)
-    c.showPage()
-    c.save()

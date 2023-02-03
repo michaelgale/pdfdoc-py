@@ -23,7 +23,7 @@
 #
 # SvgRect image cell container class derived from ContentRect
 
-from reportlab.graphics.renderPDF import draw
+from reportlab.graphics import renderPDF
 from svglib.svglib import svg2rlg
 
 from toolbox import *
@@ -66,13 +66,9 @@ class SvgRect(ContentRect):
         if self.filename == "":
             return 0, 0
         dwg = svg2rlg(self.filename)
-        tw, th = dwg.minWidth(), dwg.height
-        if with_padding:
-            tw += self.style.width_pad_margin
-            th += self.style.height_pad_margin
-        w = self.fixed_rect.width if self.is_fixed_width else tw
-        h = self.fixed_rect.height if self.is_fixed_height else th
-        return w, h
+        return super().get_content_size(
+            dwg.minWidth(), dwg.height, with_padding=with_padding
+        )
 
     def draw_svg_rect(self, c):
         if self.filename is None:
@@ -83,48 +79,11 @@ class SvgRect(ContentRect):
         (iw, ih) = dwg.minWidth(), dwg.height
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
-            tw, th = self.get_best_rect_metrics(
+            tw, th = Rect.get_best_rect_metrics(
                 iw, ih, inset_rect.width, inset_rect.height
             )
         else:
             tw, th = iw, ih
         dwg.scale(tw / iw, th / ih)
-        vert_align = self.style["vert-align"]
-        if vert_align == "centre":
-            _, ty = inset_rect.get_centre()
-            ty -= th / 2.0
-        elif vert_align == "top":
-            ty = inset_rect.top - th
-        else:
-            ty = inset_rect.bottom
-
-        horz_align = self.style["horz-align"]
-        if horz_align == "centre":
-            tx, _ = inset_rect.get_centre()
-            tx -= tw / 2.0
-        elif horz_align == "right":
-            tx = inset_rect.right
-            tx -= tw
-        else:
-            tx = inset_rect.left
-        draw(dwg, c, tx, ty)
-
-    @staticmethod
-    def get_best_rect_metrics(from_width, from_height, in_width, in_height):
-        if from_width < 1e-3 or from_height < 1e-3:
-            return 0, 0
-        if from_width > from_height:
-            best_height = in_height
-            best_width = (in_height / from_height) * from_width
-        else:
-            best_width = in_width
-            best_height = (in_width / from_width) * from_height
-        if best_height > in_height:
-            scale = in_height / best_height
-            best_height *= scale
-            best_width *= scale
-        if best_width > in_width:
-            scale = in_width / best_width
-            best_height *= scale
-            best_width *= scale
-        return best_width, best_height
+        tx, ty = self.aligned_corner(tw, th)
+        renderPDF.draw(dwg, c, tx, ty)

@@ -91,7 +91,10 @@ class TableVector:
 
     @top_left.setter
     def top_left(self, pos):
-        self.rect.move_top_left_to(Point(*pos))
+        if not isinstance(pos, Point):
+            self.rect.move_top_left_to(Point(*pos))
+        else:
+            self.rect.move_top_left_to(pos)
 
     @property
     def size(self):
@@ -100,6 +103,77 @@ class TableVector:
     @size.setter
     def size(self, new_size):
         self.rect.set_size(*new_size)
+
+    @property
+    def centre(self):
+        return self.rect.centre
+
+    @centre.setter
+    def centre(self, pos):
+        if not isinstance(pos, Point):
+            self.rect.move_to(Point(*pos))
+        else:
+            self.rect.move_to(pos)
+
+    @property
+    def background_colour(self):
+        return self.style["background-colour"]
+
+    @background_colour.setter
+    def background_colour(self, colour=None):
+        if colour is None:
+            self.style["background-fill"] = False
+        else:
+            self.style["background-fill"] = True
+            self.style["background-colour"] = colour
+
+    @property
+    def border_colour(self):
+        return self.style["border-colour"]
+
+    @border_colour.setter
+    def border_colour(self, colour=None):
+        if colour is None:
+            self.style["border-outline"] = False
+        else:
+            self.style["border-colour"] = colour
+
+    @property
+    def border_width(self):
+        return self.style["border-width"]
+
+    @border_width.setter
+    def border_width(self, width=None):
+        if width is None:
+            self.style["border-outline"] = False
+        else:
+            self.style["border-width"] = width
+
+    @property
+    def border_outline(self):
+        return self.style["border-outline"]
+
+    @border_outline.setter
+    def border_outline(self, show=False):
+        if isinstance(show, str):
+            if "top" in show.lower():
+                self.style["border-line-top"] = True
+            if "bottom" in show.lower():
+                self.style["border-line-bottom"] = True
+            if "left" in show.lower():
+                self.style["border-line-left"] = True
+            if "right" in show.lower():
+                self.style["border-line-right"] = True
+            if "all" in show.lower():
+                self.style["border-outline"] = True
+            if "none" in show.lower():
+                self.style["border-outline"] = False
+                self.style["border-line-top"] = False
+                self.style["border-line-bottom"] = False
+                self.style["border-line-left"] = False
+                self.style["border-line-right"] = False
+        else:
+            self.style["border-outline"] = show
 
     def iter_cells(self, only_visible=True):
         self.compute_cell_order()

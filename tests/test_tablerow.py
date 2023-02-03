@@ -62,20 +62,18 @@ def test_tablerow_col():
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
     tr.set_column_width("Col 1", 0.5)
-    tr.style.set_attr("border-line-bottom", True)
-    tr.style.set_attr("border-colour", (0.1, 0.1, 0.1))
-    tr.style.set_attr("border-width", 0.02 * inch)
+    tr.border_outline = "bottom"
+    tr.border_colour = (0.1, 0.1, 0.1)
+    tr.border_width = 0.02 * inch
     tr.draw_in_canvas(c)
 
     tr.set_column_order("Col 1", 3)
-    tr.rect.set_size(6.5 * inch, 0.75 * inch)
-    tr.rect.move_top_left_to(Point(1 * inch, 7.5 * inch))
-    tr.style.set_attr("background-fill", True)
+    tr.size = 6.5 * inch, 0.75 * inch
+    tr.top_left = 1 * inch, 7.5 * inch
     tr.style["border-margin"] = 0.05 * inch
-    tr.style["border-width"] = 0.015 * inch
-    tr.style["border-colour"] = (1, 0, 1)
-    tr.style["border-outline"] = True
-    tr.style.set_attr("background-colour", (0.2, 0.8, 0.9))
+    tr.border_width = 0.015 * inch
+    tr.border_colour = (1, 0, 1)
+    tr.background_colour = (0.2, 0.8, 0.9)
     # tr.style.set_attr("border-radius", 0.1 * inch)
     tr.draw_in_canvas(c)
 

@@ -80,6 +80,22 @@ class TableGrid(TableVector):
             idx += 1
         return "\n".join(s)
 
+    @property
+    def horz_align(self):
+        return self.style["horz-align"]
+
+    @horz_align.setter
+    def horz_align(self, alignment):
+        self.style["horz-align"] = alignment
+
+    @property
+    def vert_align(self):
+        return self.style["vert-align"]
+
+    @vert_align.setter
+    def vert_align(self, alignment):
+        self.style["vert-align"] = alignment
+
     def compute_cell_sizes(self):
         self.compute_cell_order()
         if self.is_fixed_width:

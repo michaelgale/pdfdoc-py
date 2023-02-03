@@ -261,6 +261,12 @@ def MM2PTS(mm):
     return mm / 25.4 * 72
 
 
+def PIX2PTS(pix, dpi):
+    if isinstance(pix, tuple):
+        return pix[0] / dpi * 72, pix[1] / dpi * 72
+    return pix / dpi * 72
+
+
 def get_edge_colours(fn, pageno, scale=1.0):
     """returns a dictionary containing a list of colour boundary
     regions for each edge of the page.

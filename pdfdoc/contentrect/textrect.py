@@ -52,6 +52,30 @@ class TextRect(ContentRect):
         s.append("  Text: %s" % (self.text))
         return "\n".join(s)
 
+    @property
+    def font(self):
+        return self.style["font-name"]
+
+    @font.setter
+    def font(self, font_name):
+        self.style["font-name"] = font_name
+
+    @property
+    def font_size(self):
+        return self.style["font-size"]
+
+    @font_size.setter
+    def font_size(self, font_size):
+        self.style["font-size"] = font_size
+
+    @property
+    def font_colour(self):
+        return self.style["font-colour"]
+
+    @font_colour.setter
+    def font_colour(self, colour):
+        self.style["font-colour"] = colour
+
     def get_content_size(self, with_padding=True):
         c = canvas.Canvas("tmp.pdf")
         c.saveState()
@@ -66,13 +90,8 @@ class TextRect(ContentRect):
         th += ta
         tw += self.style.width_pad_margin
         tw *= 1.05
-        if with_padding:
-            tw += self.style.width_pad_margin
-            th += self.style.height_pad_margin
-        w = self.fixed_rect.width if self.is_fixed_width else tw
-        h = self.fixed_rect.height if self.is_fixed_height else th
         c.restoreState()
-        return w, h
+        return super().get_content_size(tw, th, with_padding=with_padding)
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)

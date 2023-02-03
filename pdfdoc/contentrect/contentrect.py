@@ -55,7 +55,21 @@ class ContentRect:
 
     @top_left.setter
     def top_left(self, pos):
-        self.rect.move_top_left_to(Point(*pos))
+        if not isinstance(pos, Point):
+            self.rect.move_top_left_to(Point(*pos))
+        else:
+            self.rect.move_top_left_to(pos)
+
+    @property
+    def centre(self):
+        return self.rect.centre
+
+    @centre.setter
+    def centre(self, pos):
+        if not isinstance(pos, Point):
+            self.rect.move_to(Point(*pos))
+        else:
+            self.rect.move_to(pos)
 
     @property
     def size(self):
@@ -64,6 +78,82 @@ class ContentRect:
     @size.setter
     def size(self, new_size):
         self.rect.set_size(*new_size)
+
+    @property
+    def horz_align(self):
+        return self.style["horz-align"]
+
+    @horz_align.setter
+    def horz_align(self, alignment):
+        self.style["horz-align"] = alignment
+
+    @property
+    def vert_align(self):
+        return self.style["vert-align"]
+
+    @vert_align.setter
+    def vert_align(self, alignment):
+        self.style["vert-align"] = alignment
+
+    @property
+    def background_colour(self):
+        return self.style["background-colour"]
+
+    @background_colour.setter
+    def background_colour(self, colour=None):
+        if colour is None:
+            self.style["background-fill"] = False
+        else:
+            self.style["background-fill"] = True
+            self.style["background-colour"] = colour
+
+    @property
+    def border_colour(self):
+        return self.style["border-colour"]
+
+    @border_colour.setter
+    def border_colour(self, colour=None):
+        if colour is None:
+            self.style["border-outline"] = False
+        else:
+            self.style["border-colour"] = colour
+
+    @property
+    def border_width(self):
+        return self.style["border-width"]
+
+    @border_width.setter
+    def border_width(self, width=None):
+        if width is None:
+            self.style["border-outline"] = False
+        else:
+            self.style["border-width"] = width
+
+    @property
+    def border_outline(self):
+        return self.style["border-outline"]
+
+    @border_outline.setter
+    def border_outline(self, show=False):
+        if isinstance(show, str):
+            if "top" in show.lower():
+                self.style["border-line-top"] = True
+            if "bottom" in show.lower():
+                self.style["border-line-bottom"] = True
+            if "left" in show.lower():
+                self.style["border-line-left"] = True
+            if "right" in show.lower():
+                self.style["border-line-right"] = True
+            if "all" in show.lower():
+                self.style["border-outline"] = True
+            if "none" in show.lower():
+                self.style["border-outline"] = False
+                self.style["border-line-top"] = False
+                self.style["border-line-bottom"] = False
+                self.style["border-line-left"] = False
+                self.style["border-line-right"] = False
+        else:
+            self.style["border-outline"] = show
 
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
         c.setFillColor(rl_colour_trans())
@@ -83,10 +173,38 @@ class ContentRect:
         self.is_fixed_width = True
         self.fixed_rect = Rect(w, h)
 
-    def get_content_size(self):
-        w = self.fixed_rect.width if self.is_fixed_width else self.rect.width
-        h = self.fixed_rect.height if self.is_fixed_height else self.rect.height
+    def get_content_size(self, width=None, height=None, with_padding=None):
+        width = self.rect.width if width is None else width
+        height = self.rect.height if height is None else height
+        if with_padding is not None and with_padding:
+            width += self.style.width_pad_margin
+            height += self.style.height_pad_margin
+        w = self.fixed_rect.width if self.is_fixed_width else width
+        h = self.fixed_rect.height if self.is_fixed_height else height
         return w, h
 
     def draw_rect(self, c):
         rl_draw_rect(c, self.rect, self.style)
+
+    def aligned_corner(self, width, height):
+        """Returns the coordinate of the top left corner of the content within a
+        cell, respecting the style's vertical and horizontal alignment."""
+        inset_rect = self.style.get_inset_rect(self.rect)
+        vert_align = self.style["vert-align"]
+        if vert_align == "centre":
+            _, ty = inset_rect.get_centre()
+            ty -= height / 2.0
+        elif vert_align == "top":
+            ty = inset_rect.top - height
+        else:
+            ty = inset_rect.bottom
+        horz_align = self.style["horz-align"]
+        if horz_align == "centre":
+            tx, _ = inset_rect.get_centre()
+            tx -= width / 2.0
+        elif horz_align == "right":
+            tx = inset_rect.right
+            tx -= width
+        else:
+            tx = inset_rect.left
+        return tx, ty

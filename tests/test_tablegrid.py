@@ -27,7 +27,7 @@ _text_dict = {
 def test_tablegrid_rows():
     tr = TableGrid(5 * inch, 3 * inch)
     tr.fill_dir = "row-wise"
-    tr.style.set_attr("vert-align", "bottom")
+    tr.vert_align = "bottom"
     tr.style.set_with_dict(
         {
             "top-margin": 0.05 * inch,
@@ -56,13 +56,13 @@ def test_tablegrid_rows():
         "./testfiles/test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
-    tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
+    tr.top_left = Point(1 * inch, 9 * inch)
     assert tr.top_left == (1 * inch, 9 * inch)
     tr.draw_in_canvas(c)
 
     r = ContentRect(5 * inch, 3 * inch)
     r.show_debug_rects = True
-    r.rect.move_top_left_to(Point(1 * inch, 9 * inch))
+    r.top_left = Point(1 * inch, 9 * inch)
     r.draw_in_canvas(c)
     c.showPage()
     c.save()
@@ -84,8 +84,8 @@ def test_tablegrid_cols():
     def tablegrid_col_test(fn, title, opts):
         tr = TableGrid(TABLE_WIDTH, TABLE_HEIGHT)
         tr.fill_dir = "column-wise"
-        tr.style.set_attr("horz-align", "left")
-        tr.style["vert-align"] = "bottom"
+        tr.horz_align = "left"
+        tr.vert_align = "bottom"
         tr.align_cols = False
         tr.style.set_with_dict(
             {
@@ -111,12 +111,12 @@ def test_tablegrid_cols():
         tr.layout_opts = opts
         c = canvas.Canvas(fn, pagesize=(8.5 * inch, 11.0 * inch))
         c.saveState()
-        tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
+        tr.top_left = Point(1 * inch, 9 * inch)
         tr.draw_in_canvas(c)
 
         r = ContentRect(TABLE_WIDTH, TABLE_HEIGHT)
         r.show_debug_rects = True
-        r.rect.move_top_left_to(Point(1 * inch, 9 * inch))
+        r.top_left = Point(1 * inch, 9 * inch)
         r.draw_in_canvas(c)
         c.showPage()
 
