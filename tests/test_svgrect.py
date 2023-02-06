@@ -14,7 +14,6 @@ def test_svgrect_render():
     c = canvas.Canvas(
         "./testfiles/test_svgrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
-    c.saveState()
     style_dict = {
         "top-margin": 0.05 * inch,
         "bottom-margin": 0.1 * inch,
@@ -30,9 +29,12 @@ def test_svgrect_render():
     cr.top_left = 1 * inch, 10 * inch
     cr.draw_in_canvas(c)
 
-    cr = SvgRect(1 * inch, 2 * inch, "./testfiles/LogoBlackVector.svg")
-    cr.show_debug_rects = True
-    cr.style.set_with_dict(style_dict)
+    cr = SvgRect(1 * inch, 1 * inch, "./testfiles/NewRotationIcon.svg")
+    cr.border_outline = True
+    cr.border_width = 0.03 * inch
+    cr.border_colour = (0, 0, 0)
+    cr.style["border-radius"] = 0.175 * inch
+    cr.style.set_all_padding(0.075 * inch)
     cr.top_left = 4 * inch, 10 * inch
     cr.draw_in_canvas(c)
 

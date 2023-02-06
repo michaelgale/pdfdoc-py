@@ -184,6 +184,25 @@ class TableVector:
                 if not only_visible or cell.visible:
                     yield cell
 
+    def is_cell_on_transparent_rect(self, cell, other):
+        """Determines if other cell safely overlaps a transparent region
+        of a cell with an ImageRect."""
+        c1 = self[cell].content
+        c2 = self[other].content
+        if isinstance(c1, ImageRect):
+            img_cell, img_label = c1, cell
+            other_cell, other_label = c2, other
+        elif isinstance(c2, ImageRect):
+            img_cell, img_label = c2, other
+            other_cell, other_label = c1, cell
+        else:
+            return False
+        if not self[other_label].can_overlap:
+            return False
+        other_rect_pix = img_cell.convert_rect_to_pix(other_cell.rect)
+        overlap = is_rect_in_transparent_region(img_cell.filename, other_rect_pix)
+        return overlap
+
     def is_cell_overlapped(self, label):
         """Determines if cell overlapped any of its peers."""
         if not self.is_cell_visible(label):
@@ -194,7 +213,8 @@ class TableVector:
             return False
         for other in other_cells:
             if r1.overlaps(self.get_cell_rect(other)):
-                return True
+                if not self.is_cell_on_transparent_rect(label, other):
+                    return True
         return False
 
     def has_overlapped_cells(self):
@@ -206,7 +226,8 @@ class TableVector:
                     continue
                 r1 = self.get_cell_rect(cell.label)
                 if r1.overlaps(self.get_cell_rect(other)):
-                    return True
+                    if not self.is_cell_on_transparent_rect(cell.label, other):
+                        return True
         return False
 
     def is_cell_clipped(self, label, tol=1e-2):
@@ -246,8 +267,7 @@ class TableVector:
         """Returns the ratio of whitespace (unoccupied space) to space occupied
         by cells in the TableVector parent container.  A value of 1.0 indicates
         a completely blank space and 0.0 indicates a fully occupied space."""
-        w, h = self.get_content_size()
-        total_area = w * h
+        total_area = self.rect.area
         content_area = sum(
             [self.get_cell_rect(c.label).area for c in self.iter_cells()]
         )
@@ -504,6 +524,10 @@ class TableVector:
         if self.overlay_content is not None:
             self.overlay_content.draw_in_canvas(canvas)
         if self.show_debug_rects:
+            canvas.saveState()
             self.draw_debug_rect(canvas, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
             self.draw_debug_rect(canvas, inset_rect, (0, 0, 1))
+            if self.is_fixed_height and self.is_fixed_width:
+                self.draw_debug_rect(canvas, self.fixed_rect, (1, 0, 1))
+            canvas.restoreState()

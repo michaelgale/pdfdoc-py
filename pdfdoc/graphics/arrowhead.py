@@ -40,6 +40,7 @@ class ArrowHead:
         return "%s()" % (self.__class__.__name__,)
 
     def draw_in_canvas(self, c, pt, dir=0):
+        c.saveState()
         al2 = self.style["length"] / 2
         aw2 = self.style["width"] / 2
         fc = self.style["border-colour"]
@@ -50,7 +51,6 @@ class ArrowHead:
         if self.style["arrow-style"] == "flat":
             tl = 0
         st = 1 if self.style["border-outline"] else 0
-        c.saveState()
         c.translate(pt[0], pt[1])
         c.rotate(dir)
         c.setLineWidth(self.style["border-width"])

@@ -42,6 +42,8 @@ class TableGrid(TableVector):
         self.auto_adjust = True
         self.align_cols = False
         self.layout_opts = {}
+        self.gutters = None
+        self.auto_refill = False
 
     def __str__(self):
         s = []
@@ -59,6 +61,8 @@ class TableGrid(TableVector):
         s.append("  Show debug rects: %s" % (self.show_debug_rects))
         s.append("  Fill direction: %s" % (self.fill_dir))
         s.append("  Auto adjust: %s" % (self.auto_adjust))
+        s.append("  Auto refill: %s" % (self.auto_refill))
+        s.append("  Gutters: %s" % (len(self.gutters) if self.gutters is not None else "[]"))
         s.append(
             "  Width/height constraint: %.1f, %.1f"
             % (self.width_constraint, self.height_constraint)
@@ -108,6 +112,10 @@ class TableGrid(TableVector):
         inrect = self.style.get_inset_rect(self.rect)
         cell_rect.move_top_left_to(inrect.get_top_left())
         rects = [Rect(*cell.content.get_content_size()) for cell in self.iter_cells()]
+        if self.style["gutter-width"] > 0 and self.fill_dir == "column-wise":
+            self.layout_opts["gutter"] = self.style["gutter-width"]
+        if self.style["gutter-height"] > 0 and self.fill_dir == "row-wise":
+            self.layout_opts["gutter"] = self.style["gutter-height"]
         new_rects = Rect.layout_rects(
             rects,
             cell_rect,
@@ -116,8 +124,26 @@ class TableGrid(TableVector):
             horz_align=self.style["horz-align"],
             auto_adjust=self.auto_adjust,
             align_cols=self.align_cols,
+            as_rect=False,
             **self.layout_opts,
         )
+        if self.auto_refill and not self.is_shape_good(new_rects):
+            # if a grid has been forced to layout cells opposite to the
+            # desired fill direction, then swap and re-layout
+            fill = "row-wise" if self.fill_dir == "column-wise" else "column-wise"
+            new_rects = Rect.layout_rects(
+                rects,
+                cell_rect,
+                row_wise=(fill == "row-wise"),
+                vert_align=self.style["vert-align"],
+                horz_align=self.style["horz-align"],
+                auto_adjust=self.auto_adjust,
+                align_cols=self.align_cols,
+                as_rect=False,
+                **self.layout_opts,
+            )
+
+        self.gutters_from_rects(new_rects)
         for idx, cell in enumerate(self.iter_cells()):
             cell.content.size = (new_rects[idx].width, new_rects[idx].height)
             cell.content.top_left = (new_rects[idx].left, new_rects[idx].top)
@@ -132,8 +158,51 @@ class TableGrid(TableVector):
         self.top_left = top_left_corner
         self.assign_cell_overlay_content_rects()
 
+    def is_shape_good(self, rects):
+        rows, cols = RectCell.shape_from_rects(rects)
+        if rows == cols == 1:
+            return True
+        if self.fill_dir == "column-wise":
+            # a bad layout has many more columns than rows and should have been row wise
+            if (cols / rows) > 1 or rows == 1:
+                return False
+        else:
+            # conversely, more rows than columns suggests column wise was better
+            if (rows / cols) > 1 or cols == 1:
+                return False
+        return True
+
+    def gutters_from_rects(self, rects):
+        gutters = None
+        if self.style["gutter-width"] > 0 and self.fill_dir == "column-wise":
+            gutters = RectCell.vert_gutters_from_rects(rects)
+        elif self.style["gutter-height"] > 0 and self.fill_dir == "row-wise":
+            gutters = RectCell.horz_gutters_from_rects(rects)
+        self.gutters = gutters
+
+    def draw_gutter_lines(self, c):
+        if self.gutters is None or len(self.gutters) < 1:
+            return
+        if not self.style["gutter-line"] > 0:
+            return
+        line_colour = self.style.get_attr("gutter-line-colour", (0, 0, 0))
+        line_width = self.style.get_attr("gutter-line", 0.5 * mm)
+        if self.fill_dir == "column-wise":
+            for gutter in self.gutters:
+                c.setStrokeColor(rl_colour(line_colour))
+                c.setLineWidth(line_width)
+                x = gutter.left + gutter.width / 2
+                c.line(x, gutter.top, x, gutter.bottom)
+        elif self.fill_dir == "row-wise":
+            for gutter in self.gutters:
+                c.setStrokeColor(rl_colour(line_colour))
+                c.setLineWidth(line_width)
+                y = gutter.top - gutter.height / 2
+                c.line(gutter.left, y, gutter.right)
+
     def draw_in_canvas(self, canvas):
         self.draw_cells_in_canvas(canvas)
+        self.draw_gutter_lines(canvas)
 
     def draw_cells_in_canvas(self, canvas):
         self.compute_cell_sizes()

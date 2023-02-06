@@ -93,6 +93,8 @@ def test_tablegrid_cols():
                 "bottom-margin": 0.1 * inch,
                 "left-margin": 0.1 * inch,
                 "right-margin": 0.05 * inch,
+                "gutter-line": 0.03 * inch,
+                "gutter-width": 0.25 * inch,
             }
         )
         tr.style.set_tb_padding(0.05 * inch)
@@ -162,4 +164,65 @@ def test_tablegrid_cols():
             "distortion_weight": 1.0,
             "full_reshape": False,
         },
+    )
+
+
+def test_tablegrid_gutters():
+    NUM_ITEMS = 6
+    TABLE_WIDTH = 6.5 * inch
+    TABLE_HEIGHT = 1.5 * inch
+    titles = [
+        "TableCell-%d" % (x)
+        if x % 2 == 0
+        else "%d-%s" % (x, str(x) * random.randint(1, 8))
+        for x in range(NUM_ITEMS)
+    ]
+    top_pads = [random.randint(2, 10) * 0.03 * inch for _ in range(NUM_ITEMS)]
+    bot_pads = [random.randint(2, 10) * 0.03 * inch for _ in range(NUM_ITEMS)]
+
+    def tablegrid_col_test(fn, title, opts):
+        tr = TableGrid(TABLE_WIDTH, TABLE_HEIGHT)
+        tr.fill_dir = "column-wise"
+        tr.horz_align = "left"
+        tr.vert_align = "bottom"
+        tr.align_cols = False
+        tr.style.set_with_dict(
+            {
+                "top-margin": 0.05 * inch,
+                "bottom-margin": 0.1 * inch,
+                "left-margin": 0.1 * inch,
+                "right-margin": 0.05 * inch,
+                "gutter-line": 0.03 * inch,
+                "gutter-width": 0.15 * inch,
+            }
+        )
+        tr.style.set_tb_padding(0.05 * inch)
+
+        for x in range(NUM_ITEMS):
+            cl = titles[x]
+            if x == 0:
+                cl = title
+            tc = TextRect(0, 0, cl, _text_dict)
+            tc.show_debug_rects = True
+            tc.style.set_attr("top-padding", top_pads[x])
+            tc.style.set_attr("bottom-padding", bot_pads[x])
+            tr.add_cell(cl, tc)
+
+        assert len(tr) == NUM_ITEMS
+        tr.layout_opts = opts
+        c = canvas.Canvas(fn, pagesize=(8.5 * inch, 11.0 * inch))
+        c.saveState()
+        tr.top_left = Point(1 * inch, 9 * inch)
+        tr.draw_in_canvas(c)
+
+        r = ContentRect(TABLE_WIDTH, TABLE_HEIGHT)
+        r.show_debug_rects = True
+        r.top_left = Point(1 * inch, 9 * inch)
+        r.draw_in_canvas(c)
+        c.showPage()
+
+        c.save()
+
+    tablegrid_col_test(
+        "./testfiles/test_tablegrid_gutters.pdf", "Normal", {"strategy": "none"}
     )

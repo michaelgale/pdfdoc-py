@@ -64,7 +64,7 @@ class AlignmentRect(ContentRect):
 
     def rebound_rect(self):
         w, h = self.content.get_content_size()
-        self.content.rect.set_size(w, h)
+        self.content.size = w, h
         rc = self.style.get_inset_rect(self.fixed_rect)
         nw = max(w, rc.width)
         nh = max(h, rc.height)
@@ -74,24 +74,22 @@ class AlignmentRect(ContentRect):
 
     def get_content_size(self):
         self.rebound_rect()
-        return self.rect.width, self.rect.height
+        return self.size
 
     def draw_content_rect(self, c):
         w, h = self.content.get_content_size()
         rc = self.style.get_inset_rect(self.rect)
-        ha = self.style["horz-align"]
-        va = self.style["vert-align"]
-        if ha == "left":
+        if self.horz_align == "left":
             x = rc.left
-        elif ha == "right":
+        elif self.horz_align == "right":
             x = rc.right - w
         else:
             x = rc.left + rc.width / 2 - w / 2
-        if va == "top":
+        if self.vert_align == "top":
             y = rc.top
-        elif va == "bottom":
+        elif self.vert_align == "bottom":
             y = rc.bottom + h
         else:
             y = rc.bottom + rc.height / 2 + h / 2
-        self.content.rect.move_top_left_to((x, y))
+        self.content.top_left = x, y
         self.content.draw_in_canvas(c)

@@ -201,13 +201,6 @@ class LayoutCell(TableVector):
         s.append("LayoutCell: %r" % (self))
         s.append("  Cell count: %d" % (len(self.cells)))
         s.append("  Rect: %s" % (str(self.rect)))
-        w, h = self.get_content_size()
-        s.append("  Content size: %.1f, %.1f" % (w, h))
-        clipped = self.has_clipped_cells()
-        overlapped = self.has_overlapped_cells()
-        ratio = self.get_whitespace_ratio()
-        s.append("  Clipped cells: %s Overlapped cells: %s" % (clipped, overlapped))
-        s.append("  Whitespace ratio: %.1f%%" % (ratio * 100.0))
         s.append("  Overlay content: %r" % (self.overlay_content))
         s.append("  Show debug rects: %s" % (self.show_debug_rects))
         s.append(
@@ -349,6 +342,7 @@ class LayoutCell(TableVector):
                         crect.anchor_with_constraint(prect, cd["dest_pt"])
             self.set_cell_rect(cell.label, crect)
 
+
     def add_cell(self, label, content, order=None, constraints=None):
         if order is not None:
             cell = TableCell(label, content, order, 0, 0)
@@ -358,19 +352,30 @@ class LayoutCell(TableVector):
         self.cells.append(cell)
 
     def get_content_size(self, with_padding=True):
-        self.compute_cell_layout()
-        return super().get_content_size(with_padding=with_padding)
+        self.compute_cell_layout(with_padding=with_padding)
+        if self.is_fixed_width:
+            self.total_width = self.fixed_rect.width
+        if self.is_fixed_height:
+            self.total_height = self.fixed_rect.height
+        if self.min_width:
+            self.total_width = max(self.total_width, self.min_width)
+        if self.min_height:
+            self.total_height = max(self.total_height, self.min_height)
+        return self.total_width, self.total_height
 
-    def compute_cell_layout(self):
+    def compute_cell_layout(self, with_padding=True):
         self.compute_cell_order()
         rpt = self.top_left
         for cell in self.iter_cells():
             self.set_cell_rect(cell.label, Rect(*cell.content.get_content_size()))
         self.layout_cells()
         bounds = Rect.bounding_rect_from_rects(self.get_cell_rects(as_is=True))
-        self.total_width = bounds.width + self.style.width_pad_margin
-        self.total_height = bounds.height + self.style.height_pad_margin
-        self.size = (self.total_width, self.total_height)
+        self.total_width = bounds.width
+        self.total_height = bounds.height
+        if with_padding:
+            self.total_width += self.style.width_pad_margin
+            self.total_height += self.style.height_pad_margin
+        self.rect.set_size(self.total_width, self.total_height)
         self.top_left = rpt
         self.assign_cell_overlay_content_rects()
 
@@ -380,3 +385,10 @@ class LayoutCell(TableVector):
     def draw_cells_in_canvas(self, canvas):
         self.compute_cell_layout()
         super().draw_cells_in_canvas(canvas, axis=None)
+        if self.show_debug_rects:
+            rw = Rect(self.width_constraint, 1)
+            rh = Rect(1, self.height_constraint)
+            rw.move_top_left_to((self.rect.left, self.rect.top))
+            rh.move_top_left_to((self.rect.left, self.rect.top))
+            self.draw_debug_rect(canvas, rw, (1, 0, 1))
+            self.draw_debug_rect(canvas, rh, (1, 0, 1))

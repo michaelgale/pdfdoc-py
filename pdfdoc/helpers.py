@@ -266,6 +266,11 @@ def PIX2PTS(pix, dpi):
         return pix[0] / dpi * 72, pix[1] / dpi * 72
     return pix / dpi * 72
 
+def PTS2PIX(pts, dpi):
+    if isinstance(pts, tuple):
+        return int(pts[0] * dpi / 72), int(pts[1] * dpi / 72)
+    return int(pts * dpi / 72)
+
 
 def get_edge_colours(fn, pageno, scale=1.0):
     """returns a dictionary containing a list of colour boundary
@@ -321,3 +326,21 @@ def get_edge_colours(fn, pageno, scale=1.0):
     edge_dict["bottom"] = _diff_strip(hstrip2, pmh.width)
     edge_dict["right"] = _diff_strip(vstrip2, pmv.height)
     return edge_dict
+
+def is_rect_in_transparent_region(fn, rect):
+    """Determines if a rect area overlaps only transparent pixels in an image"""
+    im = Image.open(fn)
+    im = im.convert("RGBA")
+    pix = im.load()
+    width, height = im.size
+    # intersect the rectangle within the bounds of the image
+    rb, rt = int(rect.bottom), int(rect.top)
+    y0, y1 = min(rb, rt), max(rb, rt)
+    x0, x1 = int(rect.left), int(rect.right)
+    x0, x1 = clamp_value(x0, 0, width), clamp_value(x1, 0, width)
+    y0, y1 = clamp_value(y0, 0, height), clamp_value(y1, 0, height)
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if not pix[x, y][3] == 0:
+                return False
+    return True

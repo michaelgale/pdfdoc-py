@@ -54,6 +54,8 @@ class TableCell:
         self.constraints = []
         if constraints is not None:
             self.constraints = constraints
+        # attribute which specifies if cell can overlap other cells
+        self.can_overlap = False
 
     def __repr__(self):
         return "%s(%r, %r, %.2f, %.2f, %r)" % (

@@ -48,6 +48,10 @@ class ImageRect(ContentRect):
         s.append("  filename: %s" % (self.filename))
         return "\n".join(s)
 
+    @property
+    def image_shape(self):
+        return get_image_metrics(self.filename)
+
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_image_rect(c)
@@ -82,3 +86,18 @@ class ImageRect(ContentRect):
         tx, ty = self.aligned_corner(tw, th)
         c.setFillColor(rl_colour((0, 0, 0)))
         c.drawImage(self.filename, tx, ty, tw, th, mask="auto")
+
+    def convert_rect_to_pix(self, rect):
+        """Converts a passed rect into the pixel coordinates of this image."""
+        pl = clamp_value(rect.left, self.rect.left, self.rect.right)
+        pr = clamp_value(rect.right, self.rect.left, self.rect.right)
+        pt = clamp_value(rect.top, self.rect.bottom, self.rect.top)
+        pb = clamp_value(rect.bottom, self.rect.bottom, self.rect.top)        
+        iw, ih = self.image_shape
+        pl = int((pl - self.rect.left) / self.rect.width * iw)
+        pr = int((pr - self.rect.left) / self.rect.width * iw)
+        pt = ih - int((pt - self.rect.bottom) / self.rect.height * ih)
+        pb = ih - int((pb - self.rect.bottom) / self.rect.height * ih)
+        pix_rect = Rect(0, 0)
+        pix_rect.set_points((pl, pt), (pr, pb))
+        return pix_rect

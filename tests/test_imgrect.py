@@ -92,3 +92,16 @@ def test_imgrect_render():
 
     c.showPage()
     c.save()
+
+def test_transparent_intersect():
+    fn = "./testfiles/long.png"
+    r1 = Rect(10, 10)
+    r1.move_top_left_to((0, 10))
+    x = is_rect_in_transparent_region(fn, r1)
+    assert x
+    r1.move_top_left_to((230, 125))
+    x = is_rect_in_transparent_region(fn, r1)
+    assert not x
+    r1.move_top_left_to((430, 230))
+    x = is_rect_in_transparent_region(fn, r1)
+    assert x

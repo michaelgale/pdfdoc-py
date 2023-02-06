@@ -156,10 +156,12 @@ class ContentRect:
             self.style["border-outline"] = show
 
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
+        c.saveState()
         c.setFillColor(rl_colour_trans())
         c.setStrokeColor(rl_colour(colour))
         c.setLineWidth(0.1)
         c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
+        c.restoreState()
 
     def draw_in_canvas(self, c):
         self.draw_rect(c)
@@ -190,19 +192,17 @@ class ContentRect:
         """Returns the coordinate of the top left corner of the content within a
         cell, respecting the style's vertical and horizontal alignment."""
         inset_rect = self.style.get_inset_rect(self.rect)
-        vert_align = self.style["vert-align"]
-        if vert_align == "centre":
+        if self.vert_align == "centre":
             _, ty = inset_rect.get_centre()
             ty -= height / 2.0
-        elif vert_align == "top":
+        elif self.vert_align == "top":
             ty = inset_rect.top - height
         else:
             ty = inset_rect.bottom
-        horz_align = self.style["horz-align"]
-        if horz_align == "centre":
+        if self.horz_align == "centre":
             tx, _ = inset_rect.get_centre()
             tx -= width / 2.0
-        elif horz_align == "right":
+        elif self.horz_align == "right":
             tx = inset_rect.right
             tx -= width
         else:

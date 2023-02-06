@@ -254,10 +254,10 @@ class Document:
         return self.inset_rect.right - self.cursor[0]
 
     def is_enough_height(self, for_height):
-        return for_height < self.get_remaining_height()
+        return for_height <= self.get_remaining_height()
 
     def is_enough_width(self, for_width):
-        return for_width < self.get_remaining_width()
+        return for_width <= self.get_remaining_width()
 
     def is_enough_space(self, for_space):
         if self.is_portrait():
@@ -476,7 +476,6 @@ class Document:
             self.c.setTitle(self.title)
         if self.subject is not None:
             self.c.setSubject(self.subject)
-        self.c.saveState()
         self.page_number = 1
         if self.section_list is not None:
             if len(self.section_list) > 0:

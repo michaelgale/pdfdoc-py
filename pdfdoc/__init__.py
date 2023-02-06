@@ -37,7 +37,9 @@ from .helpers import (
     PTS2IN,
     PTS2MM,
     PIX2PTS,
+    PTS2PIX,
     get_edge_colours,
+    is_rect_in_transparent_region,
 )
 from .fonthelpers import (
     register_font_family,
