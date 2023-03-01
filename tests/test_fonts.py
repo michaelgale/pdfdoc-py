@@ -9,8 +9,7 @@ from pdfdoc import *
 
 
 def test_listfiles():
-    # print_system_fonts("*.ttf")
-    # print_system_fonts("*.otf")
+    # print_system_fonts()
 
     find_font("freesans")
     find_font("FuturaStd-Medium.otf")
@@ -31,6 +30,9 @@ def test_font_specimen():
         "DroidSans",
         "IKEA-Sans-Regular",
         "Hazard",
+        "Transport-Medium",
+        "Transport-Heavy",
+        "British-Rail-Dark",
     ]
     for f in FONT_LIST:
         fn = f.replace(" ", "").replace("-", "").replace("_", "")

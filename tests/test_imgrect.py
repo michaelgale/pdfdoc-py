@@ -93,6 +93,7 @@ def test_imgrect_render():
     c.showPage()
     c.save()
 
+
 def test_transparent_intersect():
     fn = "./testfiles/long.png"
     r1 = Rect(10, 10)

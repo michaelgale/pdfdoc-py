@@ -55,8 +55,7 @@ class ImageRect(ContentRect):
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_image_rect(c)
-        if self.overlay_content is not None:
-            self.overlay_content.draw_in_canvas(c)
+        self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
@@ -76,6 +75,8 @@ class ImageRect(ContentRect):
         if self.filename == "":
             return
         (iw, ih) = get_image_metrics(self.filename)
+        if not iw > 0 or not ih > 0:
+            return
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
             tw, th = Rect.get_best_rect_metrics(
@@ -92,12 +93,10 @@ class ImageRect(ContentRect):
         pl = clamp_value(rect.left, self.rect.left, self.rect.right)
         pr = clamp_value(rect.right, self.rect.left, self.rect.right)
         pt = clamp_value(rect.top, self.rect.bottom, self.rect.top)
-        pb = clamp_value(rect.bottom, self.rect.bottom, self.rect.top)        
+        pb = clamp_value(rect.bottom, self.rect.bottom, self.rect.top)
         iw, ih = self.image_shape
         pl = int((pl - self.rect.left) / self.rect.width * iw)
         pr = int((pr - self.rect.left) / self.rect.width * iw)
         pt = ih - int((pt - self.rect.bottom) / self.rect.height * ih)
         pb = ih - int((pb - self.rect.bottom) / self.rect.height * ih)
-        pix_rect = Rect(0, 0)
-        pix_rect.set_points((pl, pt), (pr, pb))
-        return pix_rect
+        return Rect.rect_from_points((pl, pt), (pr, pb))

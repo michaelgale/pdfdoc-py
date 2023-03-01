@@ -44,6 +44,47 @@ def test_simple_label():
         ld.add_label(sl)
 
 
+def test_plaintext_label():
+    ld = LabelDoc(
+        "./testfiles/test_plaintextlabel.pdf", style=AVERY_5260_LABEL_DOC_STYLE
+    )
+    labels = [i for i in range(25)]
+    WORDS = (
+        "python",
+        "jumble",
+        "easy",
+        "difficult",
+        "answer",
+        "xylophone",
+        "125",
+        "valid",
+        "Up",
+        "Down",
+        "Left",
+        "Right",
+        "British",
+        "Rail",
+        "Transport",
+        "Kennedy",
+        "Connaught",
+        "Kowloon",
+        "Bonham Strand",
+    )
+    for i, label in enumerate(ld.iter_doc(labels)):
+        text = ["Label %d`" % (i)]
+        others = [random.choice(WORDS) for x in range(random.randint(1, 12))]
+        others.extend(
+            [str(random.randint(10, 1024)) for x in range(random.randint(0, 8))]
+        )
+        text.extend(others)
+        text = " ".join(text)
+        sl = PlainTextLabel(text=text)
+        sl.textlabel.font = "DIN-Medium"
+        sl.textlabel.vert_align = "top"
+        sl.show_debug_rects = True
+        ld.add_label(sl)
+
+
 def test_generic_labeldoc():
     ld = LabelDoc(
         "./testfiles/test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE

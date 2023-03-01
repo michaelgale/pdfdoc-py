@@ -23,6 +23,8 @@ from .helpers import (
     get_string_metrics,
     get_string_asc_des,
     get_image_metrics,
+    does_string_fit,
+    scale_string_to_fit,
     trim_string_to_fit,
     split_string_to_fit,
     trim_string_function,
@@ -58,7 +60,7 @@ from .fonthelpers import (
 from .style.docstyle import DocStyle, DocStyleSheet, roman_number
 from .style.pagestyles import *
 from .style.labelstyles import *
-from .contentrect.contentrect import ContentRect
+from .contentrect.contentrect import ContentRect, FixedRect
 from .contentrect.textrect import TextRect
 from .contentrect.imgrect import ImageRect
 from .contentrect.patternrect import PatternRect
@@ -77,13 +79,14 @@ from .labeldoc.genericlabel import GenericLabel
 from .labeldoc.safetylabel import SafetyLabel
 from .labeldoc.mechlabel import MechanicalLabel
 from .labeldoc.eleclabel import ElectronicLabel
-from .labeldoc.simplelabel import SimpleLabel
+from .labeldoc.simplelabel import SimpleLabel, PlainTextLabel
 from .graphics.arrowhead import ArrowHead
 from .graphics.cmykgrid import CMYKGrid
 
 _font_dict = {
     "DroidSans": "DroidSans.ttf",
     "DroidSans-Bold": "DroidSans-Bold.ttf",
+    "DIN-Light": "DIN-Light.ttf",
     "DIN-Medium": "DIN-Medium.ttf",
     "DIN-Regular": "DIN-Regular.ttf",
     "DIN-Bold": "DIN-Bold.ttf",
@@ -97,6 +100,8 @@ _font_dict = {
     "FontAwesome": "fontawesome-webfont.ttf",
     "Hazard": "haw_____.ttf",
     "Zapf Dingbats": "ZapfDingbats.ttf",
+    "Transport-Medium": "Transport Medium.ttf",
+    "Transport-Heavy": "Transport Heavy.ttf",
 }
 
 for k, v in _font_dict.items():

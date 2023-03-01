@@ -62,7 +62,9 @@ class TableGrid(TableVector):
         s.append("  Fill direction: %s" % (self.fill_dir))
         s.append("  Auto adjust: %s" % (self.auto_adjust))
         s.append("  Auto refill: %s" % (self.auto_refill))
-        s.append("  Gutters: %s" % (len(self.gutters) if self.gutters is not None else "[]"))
+        s.append(
+            "  Gutters: %s" % (len(self.gutters) if self.gutters is not None else "[]")
+        )
         s.append(
             "  Width/height constraint: %.1f, %.1f"
             % (self.width_constraint, self.height_constraint)

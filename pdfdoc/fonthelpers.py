@@ -48,14 +48,25 @@ def get_system_font_list(spec="*"):
             files = Path(dirname).rglob(spec)
             for f in list(files):
                 if not os.path.isdir(f):
-                    font_list.append(str(f))
+                    fn = str(f).lower()
+                    if fn.endswith("ttf") or fn.endswith("ttc"):
+                        font_list.append(str(f))
     return font_list
 
 
 def print_system_fonts(spec="*"):
-    fonts = sorted(get_system_font_list(spec))
-    for font in fonts:
-        print(colour_path_str(font))
+    import crayons
+
+    fonts = sorted(get_system_font_list("*.ttf"))
+    print("TrueType Fonts")
+    for i, font in enumerate(fonts):
+        _, fn = split_path(font)
+        print("%3d." % (i + 1), crayons.cyan(str(fn), bold=True))
+    fonts = sorted(get_system_font_list("*.ttc"))
+    print("TrueType Fonts Families")
+    for i, font in enumerate(fonts):
+        _, fn = split_path(font)
+        print("%3d." % (i + 1), crayons.blue(str(fn), bold=True))
 
 
 def find_font(font):

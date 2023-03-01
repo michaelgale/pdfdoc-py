@@ -271,6 +271,10 @@ class DocStyle:
         self.set_attr("left-padding", withPadding)
 
     @property
+    def size(self):
+        return self["width"], self["height"]
+
+    @property
     def width_pad_margin(self):
         return self.get_width_trim()
 

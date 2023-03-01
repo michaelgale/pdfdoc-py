@@ -78,17 +78,24 @@ def test_string_splitting():
     t1.show_debug_rects = True
     t1.horz_align = "left"
     t1.vert_align = "top"
-    t1.top_left = 1 * inch, 8 * inch
+    t1.top_left = 1 * inch, 9 * inch
     t1.draw_in_canvas(c)
 
     t1.horz_align = "left"
     t1.vert_align = "bottom"
-    t1.top_left = 1 * inch, 6 * inch
+    t1.top_left = 1 * inch, 7 * inch
     t1.draw_in_canvas(c)
 
     t1.horz_align = "left"
     t1.vert_align = "centre"
-    t1.top_left = 1 * inch, 4 * inch
+    t1.top_left = 1 * inch, 5 * inch
+    t1.draw_in_canvas(c)
+
+    t1.horz_align = "left"
+    t1.vert_align = "centre"
+    t1.top_left = 1 * inch, 3 * inch
+    t1.split_lines = False
+    t1.scale_to_fit = True
     t1.draw_in_canvas(c)
 
     c.showPage()

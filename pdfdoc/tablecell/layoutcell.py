@@ -342,7 +342,6 @@ class LayoutCell(TableVector):
                         crect.anchor_with_constraint(prect, cd["dest_pt"])
             self.set_cell_rect(cell.label, crect)
 
-
     def add_cell(self, label, content, order=None, constraints=None):
         if order is not None:
             cell = TableCell(label, content, order, 0, 0)
@@ -350,6 +349,9 @@ class LayoutCell(TableVector):
             cell = TableCell(label, content, len(self.cells), 0, 0)
         cell.constraints = constraints
         self.cells.append(cell)
+
+    def recompute_layout(self, with_padding=True):
+        _, _ = self.get_content_size(with_padding=with_padding)
 
     def get_content_size(self, with_padding=True):
         self.compute_cell_layout(with_padding=with_padding)

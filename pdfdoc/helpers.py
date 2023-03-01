@@ -191,13 +191,22 @@ def get_image_metrics(filename):
     return (0, 0)
 
 
+def does_string_fit(canvas, s, fontname, fontsize, width):
+    return canvas.stringWidth(s, fontname, fontsize) <= width
+
+
 def trim_string_to_fit(canvas, s, fontname, fontsize, toWidth):
     sn = s
-    sw = canvas.stringWidth(sn, fontname, fontsize)
-    while sw > toWidth:
+    while not does_string_fit(canvas, sn, fontname, fontsize, toWidth):
         sn = sn[:-1]
-        sw = canvas.stringWidth(sn, fontname, fontsize)
     return sn
+
+
+def scale_string_to_fit(canvas, s, fontname, fontsize, toWidth):
+    fs = fontsize
+    while not does_string_fit(canvas, s, fontname, fs, toWidth):
+        fs *= 0.95
+    return fs
 
 
 def split_string_to_fit(canvas, s, fontname, fontsize, toWidth):
@@ -206,7 +215,7 @@ def split_string_to_fit(canvas, s, fontname, fontsize, toWidth):
     line = []
     line_sum = 0
     for word in words:
-        sw = canvas.stringWidth(word, fontname, fontsize)
+        sw = canvas.stringWidth(word + " ", fontname, fontsize)
         if "`" in word:
             w = word.replace("`", "")
             line.append(w)
@@ -265,6 +274,7 @@ def PIX2PTS(pix, dpi):
     if isinstance(pix, tuple):
         return pix[0] / dpi * 72, pix[1] / dpi * 72
     return pix / dpi * 72
+
 
 def PTS2PIX(pts, dpi):
     if isinstance(pts, tuple):
@@ -326,6 +336,7 @@ def get_edge_colours(fn, pageno, scale=1.0):
     edge_dict["bottom"] = _diff_strip(hstrip2, pmh.width)
     edge_dict["right"] = _diff_strip(vstrip2, pmv.height)
     return edge_dict
+
 
 def is_rect_in_transparent_region(fn, rect):
     """Determines if a rect area overlaps only transparent pixels in an image"""

@@ -55,8 +55,7 @@ class AlignmentRect(ContentRect):
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_content_rect(c)
-        if self.overlay_content is not None:
-            self.overlay_content.draw_in_canvas(c)
+        self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)

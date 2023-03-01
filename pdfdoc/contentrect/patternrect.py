@@ -57,6 +57,7 @@ class PatternRect(ContentRect):
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_pattern_rect(c)
+        self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)

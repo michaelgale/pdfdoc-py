@@ -163,8 +163,14 @@ class ContentRect:
         c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
         c.restoreState()
 
+    def draw_overlay_content(self, c):
+        if self.overlay_content is not None:
+            self.overlay_content.rect = self.rect
+            self.overlay_content.draw_in_canvas(c)
+
     def draw_in_canvas(self, c):
         self.draw_rect(c)
+        self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
@@ -208,3 +214,28 @@ class ContentRect:
         else:
             tx = inset_rect.left
         return tx, ty
+
+
+class FixedRect(ContentRect):
+    """Convenience class to delcare a fixed sized rectangle."""
+
+    def __init__(self, w=1, h=1, style=None):
+        self.rect = Rect(w, h)
+        self.style = DocStyle()
+        if style is not None:
+            self.style.set_with_dict(style)
+        self.show_debug_rects = False
+        self.overlay_content = None
+        self.is_fixed_width = True
+        self.is_fixed_height = True
+        self.fixed_rect = Rect(w, h)
+
+    def __repr__(self):
+        return "%s(%.2f, %.2f)" % (
+            self.__class__.__name__,
+            self.rect.width,
+            self.rect.height,
+        )
+
+    def __str__():
+        return "FixedRect: %s" % (self.rect)

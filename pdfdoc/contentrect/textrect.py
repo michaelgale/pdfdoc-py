@@ -37,6 +37,7 @@ class TextRect(ContentRect):
         self.trim_callback = None
         self.split_lines = True
         self.detect_fractions = True
+        self.scale_to_fit = False
 
     def __repr__(self):
         return "%s(%.2f, %.2f, %r)" % (
@@ -96,8 +97,7 @@ class TextRect(ContentRect):
     def draw_in_canvas(self, c):
         self.draw_rect(c)
         self.draw_text(c)
-        if self.overlay_content is not None:
-            self.overlay_content.draw_in_canvas(c)
+        self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
@@ -110,7 +110,12 @@ class TextRect(ContentRect):
             c.setFont(font_name, font_size)
         except:
             c.setFont(DEF_FONT_NAME, font_size)
+            font_name = DEF_FONT_NAME
         _, th = get_string_metrics(c, self.text, font_name, font_size)
+        _, th0 = get_string_metrics(
+            c, self.text, font_name, font_size, with_descent=False
+        )
+        th0 = th0 - th
         tx = self.rect.left
         font_colour = rl_colour(self.style["font-colour"])
         c.setFillColor(font_colour)
@@ -124,6 +129,11 @@ class TextRect(ContentRect):
             )
         else:
             textLabel = self.text
+            if self.scale_to_fit:
+                new_size = scale_string_to_fit(
+                    c, self.text, font_name, font_size, text_width
+                )
+                c.setFont(font_name, new_size)
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.split_lines:
             lines = split_string_to_fit(c, textLabel, font_name, font_size, text_width)
@@ -139,7 +149,7 @@ class TextRect(ContentRect):
                 else:
                     ty = ty + cy - th / 2 - (i * th * ls)
             elif self.vert_align == "top":
-                ty = inset_rect.top - th - (i * th * ls)
+                ty = inset_rect.top - th - (i * th * ls) - th0
             else:
                 if len(lines) == 1:
                     ty = inset_rect.bottom + cy

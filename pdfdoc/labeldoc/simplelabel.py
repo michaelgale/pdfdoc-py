@@ -74,3 +74,24 @@ class SimpleLabel(TableRow):
         self.title.show_debug_rects = show
         self.line2.show_debug_rects = show
         self.line3.show_debug_rects = show
+
+
+class PlainTextLabel(TableRow):
+    def __init__(self, text=""):
+        super().__init__(0, 0)
+        self.style.set_tb_padding(0.025 * inch)
+        self.textlabel = TextRect(0, 0, text, GENERIC_LABEL_TITLE)
+        self.textlabel.text = text
+        self.textlabel.style.set_attr("font-size", 11)
+        self.textlabel.style.set_attr("font-name", "DIN-Medium")
+        self.textlabel.style.set_attr("horz-align", "left")
+        self.textlabel.style.set_attr("right-margin", 0)
+        self.textlabel.style.set_attr("right-padding", 0)
+        self.style.set_lr_padding(0.025 * inch)
+        self.add_column("Label", self.textlabel, width=AUTO_SIZE)
+        self.compute_cell_sizes("width")
+
+    def set_debug_rects(self, show=False):
+        self.title.show_debug_rects = show
+        self.line2.show_debug_rects = show
+        self.line3.show_debug_rects = show
