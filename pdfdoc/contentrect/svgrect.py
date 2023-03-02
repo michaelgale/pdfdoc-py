@@ -31,10 +31,11 @@ from pdfdoc import *
 
 
 class SvgRect(ContentRect):
-    def __init__(self, w=1, h=1, filename=None, style=None, auto_size=None):
+    def __init__(self, w=1, h=1, filename=None, style=None, auto_size=None, **kwargs):
         super().__init__(w, h, style)
         self.filename = filename
         self.auto_size = auto_size if auto_size is not None else True
+        self.parse_kwargs(**kwargs)
 
     def __repr__(self):
         return "%s(%.2f, %.2f, %r)" % (

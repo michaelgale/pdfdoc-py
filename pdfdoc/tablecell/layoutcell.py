@@ -191,10 +191,11 @@ class LayoutCell(TableVector):
         or  below, above, rightof, leftof <[labels]>
     """
 
-    def __init__(self, w=0, h=0, style=None):
+    def __init__(self, w=0, h=0, style=None, **kwargs):
         super().__init__(w, h, style)
         self.width_constraint = w
         self.height_constraint = h
+        self.parse_kwargs(**kwargs)
 
     def __str__(self):
         s = []

@@ -28,11 +28,14 @@ from pdfdoc import *
 
 
 class ImageRect(ContentRect):
-    def __init__(self, w=1, h=1, filename=None, style=None, dpi=None, auto_size=None):
+    def __init__(
+        self, w=1, h=1, filename=None, style=None, dpi=None, auto_size=None, **kwargs
+    ):
         super().__init__(w, h, style)
         self.filename = filename
         self.auto_size = auto_size if auto_size is not None else True
         self.dpi = dpi if dpi is not None else 300
+        self.parse_kwargs(**kwargs)
 
     def __repr__(self):
         return "%s(%.2f, %.2f, %r)" % (

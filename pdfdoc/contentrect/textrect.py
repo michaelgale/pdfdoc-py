@@ -30,7 +30,7 @@ from pdfdoc import *
 
 
 class TextRect(ContentRect):
-    def __init__(self, w=1, h=1, withText="", style=None):
+    def __init__(self, w=1, h=1, withText="", style=None, **kwargs):
         super().__init__(w, h, style)
         self.text = withText
         self.clip_text = False
@@ -38,6 +38,7 @@ class TextRect(ContentRect):
         self.split_lines = True
         self.detect_fractions = True
         self.scale_to_fit = False
+        self.parse_kwargs(**kwargs)
 
     def __repr__(self):
         return "%s(%.2f, %.2f, %r)" % (

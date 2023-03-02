@@ -34,7 +34,7 @@ class TableGrid(TableVector):
     a row is automatically created when the previous row's content size has exceeded
     width_constraint.  Similarly, a new column is created when height_constraint to exceeded."""
 
-    def __init__(self, w=0, h=0, style=None):
+    def __init__(self, w=0, h=0, style=None, **kwargs):
         super().__init__(w, h, style)
         self.fill_dir = "row-wise"
         self.width_constraint = w
@@ -44,6 +44,7 @@ class TableGrid(TableVector):
         self.layout_opts = {}
         self.gutters = None
         self.auto_refill = False
+        self.parse_kwargs(**kwargs)
 
     def __str__(self):
         s = []

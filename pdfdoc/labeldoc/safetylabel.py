@@ -34,12 +34,10 @@ from pdfdoc import *
 class SafetyLabel(TableRow):
     def __init__(self, icon="caution", title="", desc="", colour=None):
         super().__init__(0, 0)
-        self.icon = TextRect(0, 0, "", SAFETY_LABEL_ICON)
+        self.icon = TextRect(0, 0, "", SAFETY_LABEL_ICON, split_lines=False)
         set_icon(icon, self.icon)
-        self.icon.split_lines = False
         self.icon.font_size = 60
-        self.icon2 = TextRect(0, 0, "", SAFETY_LABEL_ICON)
-        self.icon2.split_lines = False
+        self.icon2 = TextRect(0, 0, "", SAFETY_LABEL_ICON, split_lines=False)
         self.icon.overlay_content = self.icon2
         self.spacer = ContentRect(0, 0)
         self.icon_column = TableColumn(0, 0)

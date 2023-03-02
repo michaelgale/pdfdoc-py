@@ -33,11 +33,12 @@ class AlignmentRect(ContentRect):
     If the child cell's content exceeds this container cell's
     bounds, then it will expand automatically to accommodate."""
 
-    def __init__(self, w, h, style=None):
+    def __init__(self, w, h, style=None, **kwargs):
         super().__init__(w, h, style)
         self.content = None
         self.is_fixed_height = True
         self.is_fixed_width = True
+        self.parse_kwargs(**kwargs)
 
     def __repr__(self):
         return "%s(%.2f, %.2f)" % (

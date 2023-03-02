@@ -36,6 +36,7 @@ class TableCell:
         width=AUTO_SIZE,
         height=AUTO_SIZE,
         constraints=None,
+        **kwargs,
     ):
         self.label = label
         # If no content is provided, create a placeholder ContentRect
@@ -56,6 +57,12 @@ class TableCell:
             self.constraints = constraints
         # attribute which specifies if cell can overlap other cells
         self.can_overlap = False
+        self.parse_kwargs(**kwargs)
+
+    def parse_kwargs(self, **kwargs):
+        for k, v in kwargs.items():
+            if k in self.__dict__:
+                self.__dict__[k] = v
 
     def __repr__(self):
         return "%s(%r, %r, %.2f, %.2f, %r)" % (

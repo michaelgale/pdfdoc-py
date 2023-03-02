@@ -28,8 +28,9 @@ from pdfdoc import *
 
 
 class TableColumn(TableVector):
-    def __init__(self, w=0, h=0, style=None):
+    def __init__(self, w=0, h=0, style=None, **kwargs):
         super().__init__(w, h, style)
+        self.parse_kwargs(**kwargs)
 
     def add_row(self, label, content, order=None, height=0):
         self.add_cell(label, content, order=order, height=height)

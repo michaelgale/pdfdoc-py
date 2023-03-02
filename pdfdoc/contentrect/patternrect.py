@@ -30,7 +30,7 @@ from pdfdoc import *
 
 
 class PatternRect(ContentRect):
-    def __init__(self, w=1, h=1, pattern=None, style=None):
+    def __init__(self, w=1, h=1, pattern=None, style=None, **kwargs):
         super().__init__(w, h, style=style)
         self.pattern = "slant-line"
         if pattern is not None:
@@ -39,6 +39,7 @@ class PatternRect(ContentRect):
         self.pattern_slant = 18.0
         self.background_colour = (1, 1, 1)
         self.foreground_colour = (1, 0, 0)
+        self.parse_kwargs(**kwargs)
 
     def __repr__(self):
         return "%s(%.2f, %.2f, %r)" % (

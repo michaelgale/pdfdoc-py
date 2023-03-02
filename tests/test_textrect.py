@@ -23,6 +23,11 @@ def test_textrect_init():
     t1.size = (20, 3)
     assert t1.size == (20, 3)
 
+    t2 = TextRect()
+    assert t2.clip_text == False
+    t3 = TextRect(clip_text=True)
+    assert t3.clip_text == True
+
 
 def test_textrect_pos():
     t1 = TextRect(10, 2, "MyText", _test_dict)

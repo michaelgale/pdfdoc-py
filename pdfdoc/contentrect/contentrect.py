@@ -28,7 +28,7 @@ from pdfdoc import *
 
 
 class ContentRect:
-    def __init__(self, w=1, h=1, style=None):
+    def __init__(self, w=1, h=1, style=None, **kwargs):
         self.rect = Rect(w, h)
         self.style = DocStyle()
         if style is not None:
@@ -38,6 +38,7 @@ class ContentRect:
         self.is_fixed_width = False
         self.is_fixed_height = False
         self.fixed_rect = Rect(w, h)
+        self.parse_kwargs(**kwargs)
 
     def __repr__(self):
         return "%s(%.2f, %.2f)" % (
@@ -48,6 +49,11 @@ class ContentRect:
 
     def __str__():
         return "Content Rect: %s" % (self.rect)
+
+    def parse_kwargs(self, **kwargs):
+        for k, v in kwargs.items():
+            if k in self.__dict__:
+                self.__dict__[k] = v
 
     @property
     def top_left(self):

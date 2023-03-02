@@ -95,8 +95,8 @@ def test_safety_symbols():
     labels.extend([k for k, _ in fa_lookup_dict.items()])
     for label in ld.iter_doc(labels):
         sl = TableRow()
-        t1 = TextRect(0, 0, label)
-        t2 = TextRect(0, 0, label)
+        t1 = TextRect(0, 0, label, split_lines=False)
+        t2 = TextRect(0, 0, label, split_lines=False)
         set_icon(label, t1)
         t1.style["font-size"] = 22
         t2.style["font-size"] = 10

@@ -47,6 +47,11 @@ class TableVector:
         self.min_width = 0
         self.min_height = 0
 
+    def parse_kwargs(self, **kwargs):
+        for k, v in kwargs.items():
+            if k in self.__dict__:
+                self.__dict__[k] = v
+
     def __len__(self):
         return len(self.cells)
 
