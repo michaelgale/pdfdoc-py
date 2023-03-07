@@ -41,9 +41,12 @@ CONSTRAINT_TOKENS = [
     "below",
     "rightof",
     "leftof",
+    "right_of",
+    "left_of",
     "centre",
     "center",
     "middleof",
+    "middle_of",
     "resize",
     "between_horz",
     "between_vert",
@@ -60,6 +63,9 @@ SINGLE_TOKENS = [
     "below",
     "rightof",
     "leftof",
+    "right_of",
+    "left_of",
+    "middle_of",
     "middleof",
     "left_bound",
     "right_bound",
@@ -137,14 +143,14 @@ def parse_constraint(constraint):
             d = c[1]
             for e in other:
                 d = d.replace(e, "")
-            cdict["dest_pt"] = d
+            cdict["dest_pt"] = d.lstrip()
             cdict["dest_labels"] = other
         else:
             cdict["from_pt"] = c[0]
-            cdict["dest_pt"] = c[1]
+            cdict["dest_pt"] = c[1].lstrip()
     else:
         cdict["from_pt"] = c[0]
-        cdict["dest_pt"] = c[0]
+        cdict["dest_pt"] = c[0].lstrip()
     return cdict
 
 

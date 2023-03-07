@@ -124,9 +124,10 @@ def test_layoutcell_inside():
         "Cell5",
         t5,
         constraints=[
-            "rightof Cell2 Cell4",
+            "right_of Cell2 Cell4",
             "below Cell1",
-            "right to Cell3 right resize",
+            "left to Cell6 right"
+            # "right to Cell3 right resize",
         ],
     )
     tl2.add_cell(

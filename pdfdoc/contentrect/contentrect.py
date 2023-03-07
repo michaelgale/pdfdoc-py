@@ -56,6 +56,17 @@ class ContentRect:
                 self.__dict__[k] = v
 
     @property
+    def bottom_left(self):
+        return self.rect.get_bottom_left()
+
+    @bottom_left.setter
+    def bottom_left(self, pos):
+        if not isinstance(pos, Point):
+            self.rect.move_bottom_left_to(Point(*pos))
+        else:
+            self.rect.move_bottom_left_to(pos)
+
+    @property
     def top_left(self):
         return self.rect.get_top_left()
 

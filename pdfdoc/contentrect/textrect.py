@@ -35,7 +35,7 @@ class TextRect(ContentRect):
         self.text = withText
         self.clip_text = False
         self.trim_callback = None
-        self.split_lines = True
+        self.split_lines = False
         self.detect_fractions = True
         self.scale_to_fit = False
         self.parse_kwargs(**kwargs)
