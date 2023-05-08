@@ -186,7 +186,7 @@ class CropMarksCallback(DocumentCallback):
         c = context["canvas"]
         l = self.length
         line_colour = self.style.get_attr("line-colour", (0, 0, 0))
-        line_width = self.style.get_attr("line-width", 0.1 * mm)
+        line_width = self.style.get_attr("line-width", MM2PTS(0.1))
         c.setStrokeColor(rl_colour(line_colour))
         c.setLineWidth(line_width)
 
@@ -207,6 +207,36 @@ class CropMarksCallback(DocumentCallback):
             pts = r.get_pts()
             for pt in pts:
                 self._draw_cross(context, pt)
+
+
+class FoldMarkCallback(DocumentCallback):
+    """A callback which draws fold marks in the bleed area of the page."""
+
+    def __init__(self, length, style=None):
+        super().__init__()
+        self.length = length
+        self.style = DocStyle(style=style)
+        self.line_dash = [1.5, 3, 1.5, 0]
+        self.orientation = "vertical"
+
+    def render(self, context):
+        r = context["page_rect"]
+        c = context["canvas"]
+        l = self.length
+        line_colour = self.style.get_attr("line-colour", (0, 0, 0))
+        line_width = self.style.get_attr("line-width", MM2PTS(0.1))
+        c.setStrokeColor(rl_colour(line_colour))
+        c.setLineWidth(line_width)
+        c.setDash(array=self.line_dash)
+        if self.orientation.lower() == "vertical":
+            mid = r.left + (r.right - r.left) / 2.0
+            c.line(mid, r.top, mid, r.top + l)
+            c.line(mid, r.bottom, mid, r.bottom - l)
+        else:
+            mid = r.bottom + (r.top - r.bottom) / 2.0
+            c.line(r.left, mid, r.left - l, mid)
+            c.line(r.right, mid, r.right + l, mid)
+        c.setDash([])
 
 
 class ColumnLineCallback(DocumentCallback):

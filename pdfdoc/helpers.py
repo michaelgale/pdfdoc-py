@@ -25,6 +25,10 @@
 
 import math
 import string
+import subprocess, shlex
+import shutil
+import tempfile
+
 from PIL import Image
 from pathlib import Path
 import fitz
@@ -282,11 +286,11 @@ def PTS2PIX(pts, dpi):
     return int(pts * dpi / 72)
 
 
-def get_edge_colours(fn, pageno, scale=1.0):
+def get_edge_colours(fn, pageno, scale=1.0, pix_scale=2.0):
     """returns a dictionary containing a list of colour boundary
     regions for each edge of the page.
     """
-    PIX_SCALE = 2
+    PIX_SCALE = pix_scale
 
     def _rgb_at_xy(pixmap, x, y):
         idx = int(y * pixmap.width + x) * 3
@@ -294,14 +298,57 @@ def get_edge_colours(fn, pageno, scale=1.0):
         r, g, b = pix[idx], pix[idx + 1], pix[idx + 2]
         return r / 255, g / 255, b / 255
 
+    def _cmyk_at_xy(pixmap, x, y):
+        idx = int(y * pixmap.width + x) * 4
+        pix = pixmap.samples
+        c, m, y, k = pix[idx], pix[idx + 1], pix[idx + 2], pix[idx + 3]
+        return c / 255, m / 255, y / 255, k / 255
+
+    def _mag_rgb(p):
+        return math.sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2])
+
     def _diff_rgb(p0, p1):
         diff = (p0[0] - p1[0]) * (p0[0] - p1[0])
         diff += (p0[1] - p1[1]) * (p0[1] - p1[1])
         diff += (p0[2] - p1[2]) * (p0[2] - p1[2])
         return math.sqrt(diff)
 
+    def _diff_cmyk(p0, p1):
+        diff = (p0[0] - p1[0]) * (p0[0] - p1[0])
+        diff += (p0[1] - p1[1]) * (p0[1] - p1[1])
+        diff += (p0[2] - p1[2]) * (p0[2] - p1[2])
+        diff += (p0[3] - p1[3]) * (p0[3] - p1[3])
+        return math.sqrt(diff)
+
     def _sum_rgb(p0, p1):
         return (p0[0] + p1[0], p0[1] + p1[1], p0[2] + p1[2])
+
+    def _sum_cmyk(p0, p1):
+        return (p0[0] + p1[0], p0[1] + p1[1], p0[2] + p1[2], p0[3] + p1[3])
+
+    def find_bottom_edge(pix):
+        ph = pix.height
+        if ph >= 2:
+            py = ph - 1
+            for py in range(py, 1, -1):
+                h1 = [_rgb_at_xy(pix, x, py) for x in range(0, pix.width)]
+                h0 = [_rgb_at_xy(pix, x, py - 1) for x in range(0, pix.width)]
+                diff = sum([_diff_rgb(h1[i], h0[i]) for i in range(pix.width)])
+                if diff / pix.width < 0.006:
+                    return h1
+        return [_rgb_at_xy(pix, x, ph - 1) for x in range(0, pix.width)]
+
+    def find_right_edge(pix):
+        pw = pix.width
+        if pw >= 2:
+            px = pw - 1
+            for px in range(px, 1, -1):
+                h1 = [_rgb_at_xy(pix, px, y) for y in range(0, pix.height)]
+                h0 = [_rgb_at_xy(pix, px - 1, y) for y in range(0, pix.height)]
+                diff = sum([_diff_rgb(h1[i], h0[i]) for i in range(pix.height)])
+                if diff / pix.height < 0.006:
+                    return h1
+        return [_rgb_at_xy(pix, pw - 1, y) for y in range(0, pix.height)]
 
     def _diff_strip(pix, plen):
         edges = []
@@ -313,28 +360,59 @@ def get_edge_colours(fn, pageno, scale=1.0):
             p1 = pix[p]
             acc_cnt += 1
             acc_avg = _sum_rgb(acc_avg, p0)
-            acc_diff += _diff_rgb(p0, p1)
-            if acc_diff > 0.01:
+            diff = _diff_rgb(p0, p1)
+            acc_diff += diff
+            if _mag_rgb(p1) < 0.015:
+                continue
+            if acc_diff > 0.03:
                 acc_avg = tuple([x / acc_cnt for x in acc_avg])
-                edges.append((p * scale * 1 / PIX_SCALE, acc_avg))
+                edges.append((p * scale / PIX_SCALE, acc_avg))
                 acc_diff = 0
                 acc_avg = 0, 0, 0
                 acc_cnt = 0
-        edges.append((plen * scale * 1 / PIX_SCALE, p1))
+        edges.append((plen * scale / PIX_SCALE, p0))
         return edges
 
     mudoc = fitz.open(fn)
-    pmh = mudoc[pageno].get_pixmap(matrix=fitz.Matrix(PIX_SCALE, 0.5), alpha=False)
-    pmv = mudoc[pageno].get_pixmap(matrix=fitz.Matrix(0.5, PIX_SCALE), alpha=False)
-    hstrip = [_rgb_at_xy(pmh, x, 0) for x in range(0, pmh.width)]
-    vstrip = [_rgb_at_xy(pmv, 0, y) for y in range(0, pmv.height)]
-    hstrip2 = [_rgb_at_xy(pmh, x, pmh.height - 1) for x in range(0, pmh.width)]
-    vstrip2 = [_rgb_at_xy(pmv, pmv.width - 1, y) for y in range(0, pmv.height)]
+    page = mudoc[pageno]
+    rect = page.rect
+    clip_top = fitz.Rect((0, 0), (rect.width, 2))
+    clip_bottom = fitz.Rect((0, rect.height - 2), rect.br)
+    clip_left = fitz.Rect((0, 0), (2, rect.height))
+    clip_right = fitz.Rect((rect.width - 2, 0), rect.br)
+    pix_top = page.get_pixmap(
+        matrix=fitz.Matrix(PIX_SCALE, PIX_SCALE),
+        alpha=False,
+        clip=clip_top,
+        colorspace="RGB",
+    )
+    pix_bottom = page.get_pixmap(
+        matrix=fitz.Matrix(PIX_SCALE, PIX_SCALE),
+        alpha=False,
+        clip=clip_bottom,
+        colorspace="RGB",
+    )
+    pix_left = page.get_pixmap(
+        matrix=fitz.Matrix(PIX_SCALE, PIX_SCALE),
+        alpha=False,
+        clip=clip_left,
+        colorspace="RGB",
+    )
+    pix_right = page.get_pixmap(
+        matrix=fitz.Matrix(PIX_SCALE, PIX_SCALE),
+        alpha=False,
+        clip=clip_right,
+        colorspace="RGB",
+    )
+    top_strip = [_rgb_at_xy(pix_top, x, 0) for x in range(0, pix_top.width)]
+    left_strip = [_rgb_at_xy(pix_left, 0, y) for y in range(0, pix_left.height)]
+    bottom_strip = find_bottom_edge(pix_bottom)
+    right_strip = find_right_edge(pix_right)
     edge_dict = {}
-    edge_dict["top"] = _diff_strip(hstrip, pmh.width)
-    edge_dict["left"] = _diff_strip(vstrip, pmv.height)
-    edge_dict["bottom"] = _diff_strip(hstrip2, pmh.width)
-    edge_dict["right"] = _diff_strip(vstrip2, pmv.height)
+    edge_dict["top"] = _diff_strip(top_strip, pix_top.width)
+    edge_dict["left"] = _diff_strip(left_strip, pix_left.height)
+    edge_dict["bottom"] = _diff_strip(bottom_strip, pix_bottom.width)
+    edge_dict["right"] = _diff_strip(right_strip, pix_right.height)
     return edge_dict
 
 
@@ -355,3 +433,34 @@ def is_rect_in_transparent_region(fn, rect):
             if not pix[x, y][3] == 0:
                 return False
     return True
+
+
+def modify_pdf_file(
+    fn, fnout, outlines=True, cmyk=False, compress=False, verbose=False
+):
+    temp_path = tempfile.gettempdir() + os.sep + "temp_outlines.pdf"
+    s = []
+    s.append("gs")
+    s.append("-sOutputFile=%s" % (temp_path))
+    if outlines:
+        s.append("-dNoOutputFonts")
+    s.append("-sDEVICE=pdfwrite")
+    if cmyk:
+        s.append("-sColorConversionStrategy=CMYK")
+    s.append("-dbatch")
+    s.append("-dNOPAUSE")
+    if not verbose:
+        s.append("-q")
+        s.append("-dQUIET")
+    if compress:
+        s.append("-dAutoFilterColorImages=true")
+    else:
+        s.append("-dAutoFilterColorImages=false")
+        s.append("-dColorImageFilter=/FlateEncode")
+    s.append("-dInterpolateControl=0")
+    s.append("%s" % (fn))
+    s.append("-c quit")
+    s = " ".join(s)
+    args = shlex.split(s)
+    subprocess.Popen(args).wait()
+    shutil.copyfile(temp_path, fnout)

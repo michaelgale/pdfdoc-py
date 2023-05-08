@@ -72,7 +72,7 @@ def draw_bleed_rect(doc, location, edge_colours, margin):
         cr.style["background-colour"] = colour
         cr.style["border-outline"] = True
         cr.style["border-colour"] = colour
-        cr.style["border-width"] = 0.02
+        cr.style["border-width"] = 0.1
         cr.rect = r
         cr.draw_in_canvas(doc.c)
 
@@ -84,57 +84,60 @@ def get_page_size(pages):
     return width, height
 
 
-def add_bleed(fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None):
+def add_bleed(
+    fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None, pix_scale=2.0
+):
     scale = float(scale)
     pages = PdfReader(fn).pages
     num_pages = len(pages)
     pw, ph = get_page_size(pages)
     page_list = [pagexobj(x) for x in pages]
     toolboxprint(
-        "Document page size : %4.0f x %4.0f pts ( %4.0f x %4.0f mm) ( %5.2f x %5.2f in)"
+        "Document page size : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.2f x %5.2f in)"
         % (pw, ph, PTS2MM(pw), PTS2MM(ph), PTS2IN(pw), PTS2IN(ph))
     )
     w, h = pw * scale, ph * scale
     if abs(scale - 1.0) > 0:
         print(crayons.yellow("Rescaling document pages by %.2fx" % (scale)))
         toolboxprint(
-            "Scaled page size   : %4.0f x %4.0f pts ( %4.0f x %4.0f mm) ( %5.2f x %5.2f in)"
+            "Scaled page size   : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.2f x %5.2f in)"
             % (w, h, PTS2MM(w), PTS2MM(h), PTS2IN(w), PTS2IN(h))
         )
 
     doc_style = {"width": w, "height": h}
     doc = Document(ofn)
-
+    toolboxprint("Pixel scale : %.3f ( %.1f dpi)" % (pix_scale, pix_scale * 72))
     total_bleed = 0
     if bleed is not None:
         bleed = float(bleed)
         toolboxprint(
-            "Bleed size  : %4.0f pts (%4.0f mm) ( %5.3f in)"
+            "Bleed size  : %4.0f pts (%4.1f mm) ( %5.3f in)"
             % (float(bleed), PTS2MM(bleed), PTS2IN(bleed))
         )
         total_bleed += float(bleed)
     if margin is not None:
         margin = float(margin)
         toolboxprint(
-            "Margin size : %4.0f pts (%4.0f mm) ( %5.3f in)"
+            "Margin size : %4.0f pts (%4.1f mm) ( %5.3f in)"
             % (float(margin), PTS2MM(margin), PTS2IN(margin))
         )
         total_bleed += float(margin)
     doc.page_end_callbacks = []
     if crop_marks is not None:
         crop_marks = float(crop_marks)
+        crop_marks = min(crop_marks, total_bleed)
         crop_callback = CropMarksCallback(length=crop_marks)
-        crop_callback.style["line-colour"] = (0.5, 0.5, 0.5)
+        crop_callback.style["line-colour"] = (1.0, 0.1, 0.4)
         doc.page_end_callbacks.append(crop_callback)
         toolboxprint(
-            "Adding crop marks : %4.0f pts (%4.0f mm) ( %5.3f in)"
+            "Adding crop marks : %4.0f pts (%4.1f mm) ( %5.3f in)"
             % (crop_marks, PTS2MM(crop_marks), PTS2IN(crop_marks))
         )
     doc.set_page_size(doc_style, with_bleed=total_bleed)
     if total_bleed > 0:
         wb, hb = doc.bleed_rect.width, doc.bleed_rect.height
         toolboxprint(
-            "Size with bleed    : %4.0f x %4.0f pts ( %4.0f x %4.0f mm) ( %5.2f x %5.2f in)"
+            "Size with bleed    : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.2f x %5.2f in)"
             % (wb, hb, PTS2MM(wb), PTS2MM(hb), PTS2IN(wb), PTS2IN(hb))
         )
     doc._doc_start()
@@ -145,7 +148,7 @@ def add_bleed(fn, ofn, bleed=None, scale=1.0, crop_marks=None, margin=None):
         if total_bleed > 0:
             x += float(total_bleed)
             y += float(total_bleed)
-            edges = get_edge_colours(fn, idx, scale)
+            edges = get_edge_colours(fn, idx, scale, pix_scale=pix_scale)
             draw_bleed_rect(doc, "top", edges, margin)
             draw_bleed_rect(doc, "left", edges, margin)
             draw_bleed_rect(doc, "bottom", edges, margin)
@@ -176,21 +179,21 @@ def main():
         "-b",
         "--bleed",
         action="store",
-        default=None,
+        default=18,
         help="Add bleed region with size specified in points",
     )
     parser.add_argument(
         "-m",
         "--margin",
         action="store",
-        default=None,
+        default=18,
         help="Margin around the bleed region in points",
     )
     parser.add_argument(
         "-c",
         "--crop",
         action="store",
-        default=None,
+        default=32,
         help="Add crop marks with length in points",
     )
     parser.add_argument(
@@ -200,6 +203,21 @@ def main():
         default=1.0,
         help="Re-scale document by factor (0.1 ~ 5.0) default=1.0",
     )
+    parser.add_argument(
+        "-f",
+        "--fontoutlines",
+        action="store_true",
+        default=False,
+        help="Convert all fonts to outline shapes",
+    )
+    parser.add_argument(
+        "-p",
+        "--pixscale",
+        action="store",
+        default=4.1666667,
+        help="Pixel scale resolution factor used for bleed (default=4.167, 300 dpi)",
+    )
+
     args = parser.parse_args()
     argsd = vars(args)
     fn = argsd["input"]
@@ -208,16 +226,43 @@ def main():
         toolboxprint("Input file %s cannot be found" % (colour_path_str(fn)))
         exit()
     fn = full_path(fn)
+    size = os.stat(fn)
+    size = size.st_size
     pages = PdfReader(fn).pages
     num_pages = len(pages)
     toolboxprint("Input file  : %s has %d pages" % (colour_path_str(fn), num_pages))
-
+    toolboxprint(
+        "              %d pages, size %s" % (num_pages, eng_units(size, units="B"))
+    )
     if argsd["output"] is None:
         ofn = fn.replace(".pdf", "_bleed.pdf")
     else:
         ofn = argsd["output"]
+    if argsd["bleed"] is None and argsd["margin"] is None:
+        print("Converting text to outlines...")
+        modify_pdf_file(fn, ofn, outlines=True)
+    else:
+        add_bleed(
+            fn,
+            ofn,
+            argsd["bleed"],
+            argsd["scale"],
+            argsd["crop"],
+            argsd["margin"],
+            float(argsd["pixscale"]),
+        )
+        if argsd["fontoutlines"]:
+            print("Converting text to outlines...")
+            modify_pdf_file(ofn, ofn, outlines=True)
+
     toolboxprint("Output file : %s" % (colour_path_str(ofn)))
-    add_bleed(fn, ofn, argsd["bleed"], argsd["scale"], argsd["crop"], argsd["margin"])
+    pages = PdfReader(ofn).pages
+    num_pages = len(pages)
+    size = os.stat(ofn)
+    size = size.st_size
+    toolboxprint(
+        "              %d pages, size %s" % (num_pages, eng_units(size, units="B"))
+    )
 
 
 if __name__ == "__main__":

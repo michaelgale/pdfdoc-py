@@ -64,6 +64,7 @@ setuptools.setup(
         "console_scripts": [
             "fourup=pdfdoc.scripts.fourup:main",
             "fullbleed=pdfdoc.scripts.fullbleed:main",
+            "text2outlines=pdfdoc.scripts.text2outlines:main",
         ]
     }
 )
