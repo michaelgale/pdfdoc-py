@@ -49,6 +49,7 @@ setuptools.setup(
     author="Michael Gale",
     author_email="michael@fxbricks.com",
     packages=setuptools.find_packages(),
+    package_data = { "": ["*.svg"], },
     long_description=build_description(),
     license="MIT",
     classifiers=[

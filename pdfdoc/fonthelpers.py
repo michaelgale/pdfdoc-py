@@ -315,6 +315,8 @@ fa_lookup_dict = {
     "repeat": "\uF021",
     "house": "\uF015",
     "search": "\uF002",
+    "tag": "\uF02B",
+    "tags": "\uF02C",
 }
 
 

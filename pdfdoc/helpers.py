@@ -42,6 +42,8 @@ from pdfdoc import *
 
 
 def rl_colour(from_colour):
+    if isinstance(from_colour, str):
+        return rl_colour_hex(from_colour)
     if isinstance(from_colour, (Color, CMYKColor)):
         return from_colour
     if isinstance(from_colour, (list, tuple)):
@@ -69,6 +71,17 @@ def rl_colour_hex(hexstr, alpha=1.0):
     g = float(gd) / 255.0
     b = float(bd) / 255.0
     return Color(r, g, b, alpha=alpha)
+
+
+def canvas_save_state(c, x, y, a):
+    c.saveState()
+    c.translate(x, y)
+    c.rotate(a)
+
+
+def canvas_restore_state(c, a):
+    c.rotate(-a)
+    c.restoreState()
 
 
 def clamp_cmyk(v):

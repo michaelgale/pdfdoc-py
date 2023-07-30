@@ -87,21 +87,32 @@ def test_safety_label():
     c.save()
 
 
+def test_simple_label():
+    ld = LabelDoc("./testfiles/test_bigsafety.pdf", style=AVERY_8126_LABEL_DOC_STYLE)
+    labels = [i for i in range(4)]
+    for label in ld.iter_doc(labels):
+        s = SafetyLabel(
+            icon="caution", title="Danger", desc="High voltage", colour="yellow"
+        )
+        s.set_overlayed_symbol("caution", shape="triangle")
+        s.rect = Rect(ld.col_width, ld.row_height)
+        s.set_auto_size(ld.c, 2.5 * inch)
+        s.title.font_size = 72
+        s.show_debug_rects = True
+        ld.add_label(s)
+
+
 def test_safety_symbols():
     from pdfdoc.fonthelpers import haz_lookup_dict, fa_lookup_dict
 
     ld = LabelDoc("./testfiles/test_symbol_list.pdf", style=AVERY_5267_LABEL_DOC_STYLE)
     labels = [k for k, _ in haz_lookup_dict.items()]
     labels.extend([k for k, _ in fa_lookup_dict.items()])
+    labels = sorted(labels)
     for label in ld.iter_doc(labels):
         sl = TableRow()
-        t1 = TextRect(0, 0, label, split_lines=False)
-        t2 = TextRect(0, 0, label, split_lines=False)
-        set_icon(label, t1)
-        t1.style["font-size"] = 22
-        t2.style["font-size"] = 10
-        t2.style["horz-align"] = "left"
-        sl.add_column("icon", t1)
-        sl.add_column("label", t2)
-        sl.set_column_width("icon", 0.25)
+        t1 = TextRect(icon=label, split_lines=False, font_size=22)
+        t2 = TextRect(label, split_lines=False, font_size=13, horz_align="left")
+        sl.add_column(t1, width=0.26)
+        sl.add_column(t2)
         ld.add_label(sl)

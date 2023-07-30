@@ -47,6 +47,7 @@ attr_aliases = {
     "rows": "nrows",
     "n-columns": "ncolumns",
     "n-rows": "nrows",
+    "dash": "line-dash",
 }
 
 
@@ -93,6 +94,7 @@ class DocStyle:
             "line-width": 0.1 * mm,
             "line-colour": (0, 0, 0),
             "line-style": "solid",
+            "line-dash": None,
             "border-width": 0,
             "border-colour": (0, 0, 0),
             "border-margin": 0,
@@ -111,6 +113,12 @@ class DocStyle:
             "overlay-size": "auto",
             "arrow-style": "taper",
             "arrow-auto-colour": True,
+            "arrow-length": 0,
+            "arrow-width": 0,
+            "grid-colour": (0.5, 0.5, 0.5),
+            "grid-line-width": 0,
+            "grid-dash": [],
+            "grid-interval": 0,
         }
         if style is not None:
             self.set_with_dict(style)
@@ -505,3 +513,187 @@ def roman_number(num):
                 break
 
     return "".join([a for a in roman_num(num)])
+
+
+class DocStyleMixin:
+    """Convenience class to add style semantics to another class."""
+
+    @property
+    def horz_align(self):
+        return self.style["horz-align"]
+
+    @horz_align.setter
+    def horz_align(self, alignment):
+        self.style["horz-align"] = alignment
+
+    @property
+    def vert_align(self):
+        return self.style["vert-align"]
+
+    @vert_align.setter
+    def vert_align(self, alignment):
+        self.style["vert-align"] = alignment
+
+    @property
+    def left_margin(self):
+        return self.style["left-margin"]
+
+    @left_margin.setter
+    def left_margin(self, val):
+        self.style["left-margin"] = val
+
+    @property
+    def right_margin(self):
+        return self.style["right-margin"]
+
+    @right_margin.setter
+    def right_margin(self, val):
+        self.style["right-margin"] = val
+
+    @property
+    def top_margin(self):
+        return self.style["top-margin"]
+
+    @top_margin.setter
+    def top_margin(self, val):
+        self.style["top-margin"] = val
+
+    @property
+    def bottom_margin(self):
+        return self.style["bottom-margin"]
+
+    @bottom_margin.setter
+    def bottom_margin(self, val):
+        self.style["bottom-margin"] = val
+
+    @property
+    def background_colour(self):
+        return self.style["background-colour"]
+
+    @background_colour.setter
+    def background_colour(self, colour=None):
+        if colour is None:
+            self.style["background-fill"] = False
+        else:
+            self.style["background-fill"] = True
+            self.style["background-colour"] = colour
+
+    @property
+    def border_colour(self):
+        return self.style["border-colour"]
+
+    @border_colour.setter
+    def border_colour(self, colour=None):
+        if colour is None:
+            self.style["border-outline"] = False
+        else:
+            self.style["border-colour"] = colour
+
+    @property
+    def border_width(self):
+        return self.style["border-width"]
+
+    @border_width.setter
+    def border_width(self, width=None):
+        if width is None:
+            self.style["border-outline"] = False
+        else:
+            self.style["border-width"] = width
+
+    @property
+    def border_radius(self):
+        return self.style["border-radius"]
+
+    @border_radius.setter
+    def border_radius(self, radius):
+        self.style["border-radius"] = radius
+
+    @property
+    def border_outline(self):
+        return self.style["border-outline"]
+
+    @border_outline.setter
+    def border_outline(self, show=False):
+        if isinstance(show, str):
+            if "top" in show.lower():
+                self.style["border-line-top"] = True
+            if "bottom" in show.lower():
+                self.style["border-line-bottom"] = True
+            if "left" in show.lower():
+                self.style["border-line-left"] = True
+            if "right" in show.lower():
+                self.style["border-line-right"] = True
+            if "all" in show.lower():
+                self.style["border-outline"] = True
+            if "none" in show.lower():
+                self.style["border-outline"] = False
+                self.style["border-line-top"] = False
+                self.style["border-line-bottom"] = False
+                self.style["border-line-left"] = False
+                self.style["border-line-right"] = False
+        else:
+            self.style["border-outline"] = show
+
+    @property
+    def top_padding(self):
+        return self.style["top-padding"]
+
+    @top_padding.setter
+    def top_padding(self, val):
+        self.style["top-padding"] = val
+
+    @property
+    def bottom_padding(self):
+        return self.style["top-padding"]
+
+    @bottom_padding.setter
+    def bottom_padding(self, val):
+        self.style["bottom-padding"] = val
+
+    @property
+    def left_padding(self):
+        return self.style["left-padding"]
+
+    @left_padding.setter
+    def left_padding(self, val):
+        self.style["left-padding"] = val
+
+    @property
+    def right_padding(self):
+        return self.style["right-padding"]
+
+    @right_padding.setter
+    def right_padding(self, val):
+        self.style["right-padding"] = val
+
+    @property
+    def font(self):
+        return self.style["font-name"]
+
+    @font.setter
+    def font(self, font_name):
+        self.style["font-name"] = font_name
+
+    @property
+    def font_size(self):
+        return self.style["font-size"]
+
+    @font_size.setter
+    def font_size(self, font_size):
+        self.style["font-size"] = font_size
+
+    @property
+    def font_colour(self):
+        return self.style["font-colour"]
+
+    @font_colour.setter
+    def font_colour(self, colour):
+        self.style["font-colour"] = colour
+
+    @property
+    def line_spacing(self):
+        return self.style["line-spacing"]
+
+    @line_spacing.setter
+    def line_spacing(self, spacing):
+        self.style["line-spacing"] = spacing

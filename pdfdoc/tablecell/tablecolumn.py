@@ -32,8 +32,11 @@ class TableColumn(TableVector):
         super().__init__(w, h, style)
         self.parse_kwargs(**kwargs)
 
-    def add_row(self, label, content, order=None, height=0):
-        self.add_cell(label, content, order=order, height=height)
+    def add_row(self, label=None, content=None, order=None, height=0):
+        if isinstance(label, str):
+            self.add_cell(label, content, order=order, height=height)
+        else:
+            self.add_content(content=label, order=order, height=height)
 
     def set_row_order(self, label, order):
         self.set_cell_order(label, order)

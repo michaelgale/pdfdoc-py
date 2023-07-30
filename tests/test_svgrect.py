@@ -46,3 +46,32 @@ def test_svgrect_render():
 
     c.showPage()
     c.save()
+
+
+def test_preset():
+    c = canvas.Canvas(
+        "./testfiles/test_svg_preset.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
+    style_dict = {
+        "top-margin": 0.05 * inch,
+        "bottom-margin": 0.1 * inch,
+        "left-margin": 0.1 * inch,
+        "right-margin": 0.05 * inch,
+        "horz-align": "centre",
+        "vert-align": "centre",
+    }
+
+    cr = SvgRect.from_preset("warning_icon", style=style_dict)
+    cr.size = 2 * inch, 2 * inch
+    cr.show_debug_rects = True
+    cr.top_left = 1 * inch, 10 * inch
+    cr.draw_in_canvas(c)
+
+    cr = SvgRect.from_preset(
+        "no_touch_icon", w=90, h=90, top_left=(5 * inch, 10 * inch)
+    )
+    cr.show_debug_rects = True
+    cr.draw_in_canvas(c)
+
+    c.showPage()
+    c.save()

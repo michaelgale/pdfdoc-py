@@ -27,7 +27,7 @@ from toolbox import *
 from pdfdoc import *
 
 
-class ContentRect:
+class ContentRect(DocStyleMixin, RectMixin):
     def __init__(self, w=1, h=1, style=None, **kwargs):
         self.rect = Rect(w, h)
         self.style = DocStyle()
@@ -54,123 +54,21 @@ class ContentRect:
         for k, v in kwargs.items():
             if k in self.__dict__:
                 self.__dict__[k] = v
-
-    @property
-    def bottom_left(self):
-        return self.rect.get_bottom_left()
-
-    @bottom_left.setter
-    def bottom_left(self, pos):
-        if not isinstance(pos, Point):
-            self.rect.move_bottom_left_to(Point(*pos))
-        else:
-            self.rect.move_bottom_left_to(pos)
-
-    @property
-    def top_left(self):
-        return self.rect.get_top_left()
-
-    @top_left.setter
-    def top_left(self, pos):
-        if not isinstance(pos, Point):
-            self.rect.move_top_left_to(Point(*pos))
-        else:
-            self.rect.move_top_left_to(pos)
-
-    @property
-    def centre(self):
-        return self.rect.centre
-
-    @centre.setter
-    def centre(self, pos):
-        if not isinstance(pos, Point):
-            self.rect.move_to(Point(*pos))
-        else:
-            self.rect.move_to(pos)
-
-    @property
-    def size(self):
-        return self.rect.get_size()
-
-    @size.setter
-    def size(self, new_size):
-        self.rect.set_size(*new_size)
-
-    @property
-    def horz_align(self):
-        return self.style["horz-align"]
-
-    @horz_align.setter
-    def horz_align(self, alignment):
-        self.style["horz-align"] = alignment
-
-    @property
-    def vert_align(self):
-        return self.style["vert-align"]
-
-    @vert_align.setter
-    def vert_align(self, alignment):
-        self.style["vert-align"] = alignment
-
-    @property
-    def background_colour(self):
-        return self.style["background-colour"]
-
-    @background_colour.setter
-    def background_colour(self, colour=None):
-        if colour is None:
-            self.style["background-fill"] = False
-        else:
-            self.style["background-fill"] = True
-            self.style["background-colour"] = colour
-
-    @property
-    def border_colour(self):
-        return self.style["border-colour"]
-
-    @border_colour.setter
-    def border_colour(self, colour=None):
-        if colour is None:
-            self.style["border-outline"] = False
-        else:
-            self.style["border-colour"] = colour
-
-    @property
-    def border_width(self):
-        return self.style["border-width"]
-
-    @border_width.setter
-    def border_width(self, width=None):
-        if width is None:
-            self.style["border-outline"] = False
-        else:
-            self.style["border-width"] = width
-
-    @property
-    def border_outline(self):
-        return self.style["border-outline"]
-
-    @border_outline.setter
-    def border_outline(self, show=False):
-        if isinstance(show, str):
-            if "top" in show.lower():
-                self.style["border-line-top"] = True
-            if "bottom" in show.lower():
-                self.style["border-line-bottom"] = True
-            if "left" in show.lower():
-                self.style["border-line-left"] = True
-            if "right" in show.lower():
-                self.style["border-line-right"] = True
-            if "all" in show.lower():
-                self.style["border-outline"] = True
-            if "none" in show.lower():
-                self.style["border-outline"] = False
-                self.style["border-line-top"] = False
-                self.style["border-line-bottom"] = False
-                self.style["border-line-left"] = False
-                self.style["border-line-right"] = False
-        else:
-            self.style["border-outline"] = show
+            elif k in RectMixin.__dict__:
+                if k == "top_left":
+                    self.top_left = v
+                elif k == "top_right":
+                    self.top_right = v
+                elif k == "bottom_left":
+                    self.bottom_left = v
+                elif k == "bottom_right":
+                    self.bottom_right = v
+                elif k == "centre":
+                    self.centre = v
+            else:
+                key = self.style._attr_key(k)
+                if key in self.style.attr:
+                    self.style[key] = v
 
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
         c.saveState()

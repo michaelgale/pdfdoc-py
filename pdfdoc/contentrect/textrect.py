@@ -30,15 +30,23 @@ from pdfdoc import *
 
 
 class TextRect(ContentRect):
-    def __init__(self, w=1, h=1, withText="", style=None, **kwargs):
-        super().__init__(w, h, style)
-        self.text = withText
+    def __init__(self, w=None, h=None, withText=None, style=None, **kwargs):
+        if isinstance(w, (int, float)) and isinstance(h, (int, float)):
+            super().__init__(w, h, style)
+        else:
+            super().__init__(1, 1, style)
+        if isinstance(w, str):
+            self.text = w
+        else:
+            self.text = withText if withText is not None else ""
         self.clip_text = False
         self.trim_callback = None
-        self.split_lines = False
+        self.split_lines = True
         self.detect_fractions = True
         self.scale_to_fit = False
         self.parse_kwargs(**kwargs)
+        if "icon" in kwargs:
+            self.set_icon(kwargs["icon"])
 
     def __repr__(self):
         return "%s(%.2f, %.2f, %r)" % (
@@ -54,29 +62,15 @@ class TextRect(ContentRect):
         s.append("  Text: %s" % (self.text))
         return "\n".join(s)
 
-    @property
-    def font(self):
-        return self.style["font-name"]
-
-    @font.setter
-    def font(self, font_name):
-        self.style["font-name"] = font_name
-
-    @property
-    def font_size(self):
-        return self.style["font-size"]
-
-    @font_size.setter
-    def font_size(self, font_size):
-        self.style["font-size"] = font_size
-
-    @property
-    def font_colour(self):
-        return self.style["font-colour"]
-
-    @font_colour.setter
-    def font_colour(self, colour):
-        self.style["font-colour"] = colour
+    def set_icon(self, icon_name):
+        """Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts"""
+        hs = haz_symbol(icon_name)
+        if len(hs) > 0:
+            self.style["font-name"] = "Hazard"
+            self.text = hs
+        else:
+            self.style["font-name"] = "FontAwesome"
+            self.text = fa_symbol(icon_name)
 
     def get_content_size(self, with_padding=True):
         c = canvas.Canvas("tmp.pdf")

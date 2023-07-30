@@ -34,6 +34,8 @@ from .helpers import (
     rl_set_border_stroke,
     rl_draw_rect,
     clamp_cmyk,
+    canvas_save_state,
+    canvas_restore_state,
     MM2PTS,
     IN2PTS,
     PTS2IN,
@@ -58,7 +60,7 @@ from .fonthelpers import (
     create_font_family_pdf,
     print_symbol_list,
 )
-from .style.docstyle import DocStyle, DocStyleSheet, roman_number
+from .style.docstyle import DocStyle, DocStyleSheet, DocStyleMixin, roman_number
 from .style.pagestyles import *
 from .style.labelstyles import *
 from .contentrect.contentrect import ContentRect, FixedRect
@@ -83,6 +85,7 @@ from .labeldoc.eleclabel import ElectronicLabel
 from .labeldoc.simplelabel import SimpleLabel, PlainTextLabel
 from .graphics.arrowhead import ArrowHead
 from .graphics.cmykgrid import CMYKGrid
+from .graphics.line import StyledLine
 
 _font_dict = {
     "DroidSans": "DroidSans.ttf",

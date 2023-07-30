@@ -26,7 +26,7 @@
 from reportlab.lib.units import inch
 
 #
-# Lable Document Styles
+# Label Document Styles
 #
 
 # Avery 5260
@@ -114,8 +114,45 @@ AVERY_5164_LABEL_DOC_STYLE = {
     "gutter-height": 0,
 }
 
+
+# Avery 35520
+# - 30 labels per sheet
+# - 1" x 2-5/8" label size
+
+AVERY_35520_LABEL_DOC_STYLE = {
+    "height": 11 * inch,
+    "width": 8.5 * inch,
+    "columns": 3,
+    "rows": 10,
+    "top-margin": 0.5 * inch,
+    "bottom-margin": 0.5 * inch,
+    "left-margin": 3 / 16 * inch,
+    "right-margin": 3 / 16 * inch,
+    "gutter-width": 1 / 8 * inch,
+    "gutter-height": 0,
+}
+
+
+# Avery 8126
+# - 2 labels per sheet
+# - 8-1/2" x 5-1/2" label size
+
+AVERY_8126_LABEL_DOC_STYLE = {
+    "height": 11 * inch,
+    "width": 8.5 * inch,
+    "columns": 1,
+    "rows": 2,
+    "top-margin": 1 / 8 * inch,
+    "bottom-margin": 1 / 8 * inch,
+    "left-margin": 1 / 8 * inch,
+    "right-margin": 1 / 8 * inch,
+    "gutter-width": 0,
+    "gutter-height": 0,
+}
+
+
 #
-# Lable Cell Styles
+# Label Cell Styles
 #
 
 GENERIC_LABEL_TITLE = {
