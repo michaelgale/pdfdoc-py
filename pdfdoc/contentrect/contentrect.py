@@ -28,7 +28,9 @@ from pdfdoc import *
 
 
 class ContentRect(DocStyleMixin, RectMixin):
-    def __init__(self, w=1, h=1, style=None, **kwargs):
+    def __init__(self, w=None, h=None, style=None, **kwargs):
+        w = w if w is not None and not isinstance(w, str) else 1
+        h = h if h is not None and not isinstance(w, str) else 1
         self.rect = Rect(w, h)
         self.style = DocStyle()
         if style is not None:

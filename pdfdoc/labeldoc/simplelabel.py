@@ -87,6 +87,7 @@ class PlainTextLabel(TableRow):
         self.textlabel.style.set_attr("horz-align", "left")
         self.textlabel.style.set_attr("right-margin", 0)
         self.textlabel.style.set_attr("right-padding", 0)
+        self.textlabel.style["line-spacing"] = 1.2
         self.style.set_lr_padding(0.025 * inch)
         self.add_column("Label", self.textlabel, width=AUTO_SIZE)
         self.compute_cell_sizes("width")

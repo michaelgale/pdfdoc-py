@@ -143,7 +143,7 @@ def create_specimen_pdf(font, filename, size=28):
     c = canvas.Canvas(filename, pagesize=(8.5 * inch, 11.0 * inch))
     c.saveState()
     t1 = TextRect(7 * inch, 0.5 * inch, "Font Specimen: %s" % (fname), style=_font_dict)
-    t1.rect.move_top_left_to(Point(1 * inch, 10 * inch))
+    t1.top_left = Point(1 * inch, 10 * inch)
     t1.draw_in_canvas(c)
     _font_dict = {
         "font-name": fname,
@@ -164,9 +164,8 @@ def create_specimen_pdf(font, filename, size=28):
     for i, line in enumerate(char_list):
         for j, ch in enumerate(line):
             t1 = TextRect(0.65 * inch, 0.5 * inch, ch, style=_font_dict)
-            t1.rect.move_top_left_to(
-                Point(1 * inch + j * 0.3 * inch, 9.5 * inch - i * 0.75 * inch)
-            )
+            pt = 1 * inch + j * 0.3 * inch, 9.5 * inch - i * 0.75 * inch
+            t1.top_left = Point(*pt)
             t1.draw_in_canvas(c)
     c.showPage()
     c.save()
@@ -188,7 +187,7 @@ def create_font_family_pdf(fontname, pdffile):
         t1 = TextRect(
             7 * inch, 0.5 * inch, "%s Font Specimen" % (font), style=_font_dict
         )
-        t1.rect.move_top_left_to(Point(1 * inch, 10 * inch - i * 0.5 * inch))
+        t1.top_left = Point(1 * inch, 10 * inch - i * 0.5 * inch)
         t1.draw_in_canvas(c)
     c.showPage()
     c.save()

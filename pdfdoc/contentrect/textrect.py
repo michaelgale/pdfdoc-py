@@ -85,6 +85,7 @@ class TextRect(ContentRect):
         ta, _ = get_string_asc_des(c, self.text, font_name, font_size)
         th += ta
         tw += self.style.width_pad_margin
+        tw += self.kerning * (len(self.text) - 1)
         tw *= 1.05
         c.restoreState()
         return super().get_content_size(tw, th, with_padding=with_padding)
@@ -132,31 +133,35 @@ class TextRect(ContentRect):
         inset_rect = self.style.get_inset_rect(self.rect)
         if self.split_lines:
             lines = split_string_to_fit(c, textLabel, font_name, font_size, text_width)
+            # check to make sure we didn't split by adding a blank line
+            if len(lines) == 2 and "`" not in textLabel:
+                if len(lines[0]) == 0:
+                    lines = [textLabel]
         else:
             lines = [textLabel]
-        ls = 1.0 + self.style["line-spacing"]
-        cy = (len(lines) - 1) * (th / 2) * ls
+        cy = (len(lines) - 1) * th * self.style["line-spacing"]
+        line_space = (th + th0) * self.style["line-spacing"]
         for i, line in enumerate(lines):
             if self.vert_align == "centre":
                 _, ty = inset_rect.get_centre()
                 if len(lines) == 1:
                     ty -= th / 2
                 else:
-                    ty = ty + cy - th / 2 - (i * th * ls)
+                    ty = ty + cy - th / 2 - (i * line_space) - th0
             elif self.vert_align == "top":
-                ty = inset_rect.top - th - (i * th * ls) - th0
+                ty = inset_rect.top - th - (i * line_space) - th0
             else:
                 if len(lines) == 1:
                     ty = inset_rect.bottom + cy
                 else:
-                    ty = inset_rect.bottom + cy - ((i - 1) * th * ls)
+                    ty = inset_rect.bottom + cy - ((i - 1) * line_space)
 
             if self.horz_align == "centre":
                 tx, _ = inset_rect.get_centre()
-                c.drawCentredString(tx, ty, line)
+                c.drawCentredString(tx, ty, line, charSpace=self.kerning)
             elif self.horz_align == "right":
                 tx = inset_rect.right
-                c.drawRightString(tx, ty, line)
+                c.drawRightString(tx, ty, line, charSpace=self.kerning)
             else:
                 tx = inset_rect.left
-                c.drawString(tx, ty, line)
+                c.drawString(tx, ty, line, charSpace=self.kerning)

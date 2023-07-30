@@ -31,9 +31,17 @@ from pdfdoc import *
 
 
 class SvgRect(ContentRect):
-    def __init__(self, w=1, h=1, filename=None, style=None, auto_size=None, **kwargs):
-        super().__init__(w, h, style)
-        self.filename = filename
+    def __init__(
+        self, w=None, h=None, filename=None, style=None, auto_size=None, **kwargs
+    ):
+        if isinstance(w, (int, float)) and isinstance(h, (int, float)):
+            super().__init__(w, h, style)
+        else:
+            super().__init__(1, 1, style)
+        if isinstance(w, str) and filename is None:
+            self.filename = w
+        else:
+            self.filename = filename
         self.auto_size = auto_size if auto_size is not None else True
         self.parse_kwargs(**kwargs)
 

@@ -149,10 +149,8 @@ def rl_draw_rect(c, rect, style):
                 stroke=True,
                 fill=False,
             )
-    border_colour = style["border-colour"]
-    border_width = style["border-width"]
-    c.setStrokeColor(rl_colour(border_colour))
-    c.setLineWidth(border_width)
+    c.setStrokeColor(rl_colour(style["border-colour"]))
+    c.setLineWidth(style["border-width"])
     if style["border-line-left"]:
         c.line(mrect.left, mrect.top, mrect.left, mrect.bottom)
     if style["border-line-right"]:

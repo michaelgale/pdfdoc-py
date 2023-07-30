@@ -107,6 +107,31 @@ def test_string_splitting():
     c.save()
 
 
+def test_string_splitting():
+    c = canvas.Canvas(
+        "./testfiles/test_kerning.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
+    t1 = TextRect(4 * inch, 1.5 * inch, "No Kerning", _text_dict)
+    t1.show_debug_rects = True
+    t1.top_left = 1 * inch, 9 * inch
+    t1.draw_in_canvas(c)
+
+    t1 = TextRect(4 * inch, 1.5 * inch, "Pos Kerning", _text_dict)
+    t1.kerning = 1.5
+    t1.top_left = 1 * inch, 6 * inch
+    t1.show_debug_rects = True
+    t1.draw_in_canvas(c)
+
+    t1 = TextRect(4 * inch, 1.5 * inch, "Neg Kerning", _text_dict)
+    t1.kerning = -1.5
+    t1.top_left = 1 * inch, 3 * inch
+    t1.show_debug_rects = True
+    t1.draw_in_canvas(c)
+
+    c.showPage()
+    c.save()
+
+
 def test_textrect_render():
     c = canvas.Canvas(
         "./testfiles/test_textrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)

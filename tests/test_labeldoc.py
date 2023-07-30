@@ -72,9 +72,9 @@ def test_plaintext_label():
     )
     for i, label in enumerate(ld.iter_doc(labels)):
         text = ["Label %d`" % (i)]
-        others = [random.choice(WORDS) for x in range(random.randint(1, 12))]
+        others = [random.choice(WORDS) for _ in range(random.randint(1, 12))]
         others.extend(
-            [str(random.randint(10, 1024)) for x in range(random.randint(0, 8))]
+            [str(random.randint(10, 1024)) for _ in range(random.randint(0, 8))]
         )
         text.extend(others)
         text = " ".join(text)

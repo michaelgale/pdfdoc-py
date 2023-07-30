@@ -119,6 +119,7 @@ class DocStyle:
             "grid-line-width": 0,
             "grid-dash": [],
             "grid-interval": 0,
+            "kerning": 0,
         }
         if style is not None:
             self.set_with_dict(style)
@@ -697,3 +698,11 @@ class DocStyleMixin:
     @line_spacing.setter
     def line_spacing(self, spacing):
         self.style["line-spacing"] = spacing
+
+    @property
+    def kerning(self):
+        return self.style["kerning"]
+
+    @kerning.setter
+    def kerning(self, val):
+        self.style["kerning"] = val
