@@ -26,7 +26,7 @@
 from toolbox import *
 from pdfdoc import *
 
-CONSTRAINT_TOKENS = [
+CONSTRAINT_TOKENS = (
     "left",
     "right",
     "top",
@@ -57,8 +57,8 @@ CONSTRAINT_TOKENS = [
     "right_bound",
     "top_bound",
     "bottom_bound",
-]
-SINGLE_TOKENS = [
+)
+SINGLE_TOKENS = (
     "above",
     "below",
     "rightof",
@@ -71,17 +71,17 @@ SINGLE_TOKENS = [
     "right_bound",
     "top_bound",
     "bottom_bound",
-]
-ABS_TOKENS = ["horz_pos", "vert_pos"]
-BETWEEN_TOKENS = ["between", "between_horz", "between_vert"]
-OTHER_TOKENS = [
+)
+ABS_TOKENS = ("horz_pos", "vert_pos")
+BETWEEN_TOKENS = ("between", "between_horz", "between_vert")
+OTHER_TOKENS = (
     "to",
     "and",
     "parent_right",
     "parent_left",
     "parent_bottom",
     "parent_top",
-]
+)
 
 
 def extract_labels(constraint, token_list=None):
@@ -89,11 +89,7 @@ def extract_labels(constraint, token_list=None):
     SINGLE_TOKENS.  These extracted strings are labels of other cells."""
     tokens = token_list if token_list is not None else CONSTRAINT_TOKENS
     c = constraint.split()
-    labels = []
-    for e in c:
-        if e not in tokens:
-            labels.append(e)
-    return labels
+    return [e for e in c if e not in tokens]
 
 
 def split_with_token(constraint, token):

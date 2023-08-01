@@ -312,30 +312,33 @@ class TableVector(DocStyleMixin, RectMixin):
         total_limit = cell_rect.width if axis == "width" else cell_rect.height
         acc_size = 0
         unassigned = []
+        axis_width = axis == "width"
+        cr_height = cell_rect.height
+        cr_width = cell_rect.width
 
         # set cell size for cells with a specification
         for cell in self.iter_cells():
-            if axis == "width":
+            if axis_width:
                 if cell.width > 0:
                     cwidth = cell.width * total_limit
-                    cell.content.size = (cwidth, cell_rect.height)
+                    cell.content.size = (cwidth, cr_height)
                     acc_size += cwidth
                 elif cell.width == CONTENT_SIZE:
                     cw, ch = cell.content.get_content_size()
                     # cw += cell.content.style.get_width_trim()
-                    cell.content.size = (cw, cell_rect.height)
+                    cell.content.size = (cw, cr_height)
                     acc_size += cw
                 else:
                     unassigned.append(cell.label)
             else:
                 if cell.height > 0:
                     cheight = cell.height * total_limit
-                    cell.content.size = (cell_rect.width, cheight)
+                    cell.content.size = (cr_width, cheight)
                     acc_size += cheight
                 elif cell.height == CONTENT_SIZE:
                     cw, ch = cell.content.get_content_size()
                     # ch += cell.content.style.get_height_trim()
-                    cell.content.size = (cell_rect.width, ch)
+                    cell.content.size = (cr_width, ch)
                     acc_size += ch
                 else:
                     unassigned.append(cell.label)
@@ -343,15 +346,18 @@ class TableVector(DocStyleMixin, RectMixin):
         # set cell sizes for remaining cells automatically
         # based on the remaining space in the table vector
         rem_size = total_limit - acc_size
+        if len(unassigned) > 0 and rem_size > 0:
+            csize = rem_size / len(unassigned)
+        else:
+            csize = 0
         for ucell in unassigned:
-            csize = rem_size / len(unassigned) if rem_size > 0 else 0
             for cell in self.cells:
                 if not (cell.label == ucell and cell.visible):
                     continue
                 if axis == "width":
-                    cell.content.size = (csize, cell_rect.height)
+                    cell.content.size = (csize, cr_height)
                 else:
-                    cell.content.size = (cell_rect.width, csize)
+                    cell.content.size = (cr_width, csize)
                 acc_size += csize
 
         # move each cells's origin based on the cell order

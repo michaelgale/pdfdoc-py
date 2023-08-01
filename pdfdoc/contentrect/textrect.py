@@ -141,17 +141,19 @@ class TextRect(ContentRect):
             lines = [textLabel]
         cy = (len(lines) - 1) * th * self.style["line-spacing"]
         line_space = (th + th0) * self.style["line-spacing"]
+        single_line = len(lines) == 1
+        half = th / 2
         for i, line in enumerate(lines):
             if self.vert_align == "centre":
                 _, ty = inset_rect.get_centre()
-                if len(lines) == 1:
-                    ty -= th / 2
+                if single_line:
+                    ty -= half
                 else:
-                    ty = ty + cy - th / 2 - (i * line_space) - th0
+                    ty = ty + cy - half - (i * line_space) - th0
             elif self.vert_align == "top":
                 ty = inset_rect.top - th - (i * line_space) - th0
             else:
-                if len(lines) == 1:
+                if single_line:
                     ty = inset_rect.bottom + cy
                 else:
                     ty = inset_rect.bottom + cy - ((i - 1) * line_space)
