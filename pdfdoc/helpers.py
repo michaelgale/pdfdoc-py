@@ -38,7 +38,6 @@ from reportlab.lib.colors import Color, CMYKColor
 
 
 from toolbox import *
-from pdfdoc import *
 
 
 def rl_colour(from_colour):

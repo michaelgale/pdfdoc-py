@@ -32,7 +32,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.units import inch
 from reportlab.pdfbase.ttfonts import TTFont
 
-from toolbox import full_path, split_path, split_filename, Point, colour_path_str
+from toolbox import full_path, split_path, split_filename, Point
 from pdfdoc import FONT_PATHS, REGISTERED_FONTS
 
 

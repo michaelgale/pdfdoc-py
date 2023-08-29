@@ -8,13 +8,9 @@ import sys
 import setuptools
 
 PACKAGE_NAME = "pdfdoc"
-MINIMUM_PYTHON_VERSION = "3.6"
+MINIMUM_PYTHON_VERSION = "3.7"
 
 
-def check_python_version():
-    """Exit when the Python version is too low."""
-    if sys.version < MINIMUM_PYTHON_VERSION:
-        sys.exit("Python {0}+ is required.".format(MINIMUM_PYTHON_VERSION))
 
 
 def read_package_variable(key, filename="__init__.py"):
@@ -39,7 +35,6 @@ def build_description():
         return readme + "\n" + changelog
 
 
-check_python_version()
 
 setuptools.setup(
     name=read_package_variable("__project__"),
@@ -49,14 +44,14 @@ setuptools.setup(
     author="Michael Gale",
     author_email="michael@fxbricks.com",
     packages=setuptools.find_packages(),
-    package_data = { "": ["*.svg"], },
+    package_data = { "": ["*.svg", "*.png"], },
     long_description=build_description(),
     license="MIT",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Natural Language :: English",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
     ],

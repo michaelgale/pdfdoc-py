@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.7'
+__version__ = '0.9.8'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__

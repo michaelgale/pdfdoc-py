@@ -106,3 +106,10 @@ class SvgRect(ContentRect):
         if not fn.endswith(".svg"):
             fn = fn + ".svg"
         return SvgRect(filename=fn, **kwargs)
+
+    @staticmethod
+    def list_presets():
+        fp, _ = split_path(__file__)
+        fp = fp + os.sep + ".." + os.sep + "graphics"
+        fs = FileOps()
+        return fs.get_file_list(fp, "*.svg", recursive=True)

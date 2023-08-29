@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs/>
+  <metadata> Produced by OmniGraffle 7.12.1 
+    <dc:date>2020-01-22 19:24:04 +0000</dc:date>
+  </metadata>
+  <g id="Logo_Square" stroke-opacity="1" fill="none" fill-opacity="1" stroke="none" stroke-dasharray="none">
+    <title>Logo Square</title>
+    <rect fill="white" x="0" y="0" width="512" height="512"/>
+    <g id="Logo_Square: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_5">
+        <rect x="26" y="26" width="460" height="460" fill="white"/>
+      </g>
+      <g id="Group_4">
+        <g id="Graphic_3">
+          <rect x="32.182858" y="43.885715" width="444.7086" height="425.69143" fill="white"/>
+          <rect x="32.182858" y="43.885715" width="444.7086" height="425.69143" stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+        <g id="Graphic_2">
+          <path d="M 0 0 L 0 512 L 512 512 L 512 0 Z M 157.44185 147.20903 L 157.44185 147.20903 C 143.07999 147.20903 135.89906 157.98043 135.89906 172.34229 C 135.89906 179.52322 135.89906 211.8374 135.89906 211.8374 C 135.89906 211.8374 227.45593 211.83743 250.79395 211.8374 C 279.51768 211.8374 297.47 219.01834 319.0128 240.56113 C 334.97042 256.51876 344.14605 265.6944 344.14605 265.6944 L 403.38874 206.4517 L 448.26955 251.33253 L 389.02687 310.5752 L 448.26955 369.8179 L 405.18397 412.9035 L 345.9413 353.6608 L 286.6986 412.9035 L 241.8178 368.02266 L 301.06047 308.77998 C 301.06047 308.77998 286.6986 294.4181 279.51768 287.2372 C 268.74628 276.4658 257.97488 276.4658 247.2035 276.4658 C 236.4321 276.4658 135.89906 276.4658 135.89906 276.4658 L 135.89906 412.9035 L 71.27068 412.9035 C 71.27068 412.9035 71.27069 168.75182 71.27068 143.61856 C 71.27068 118.4853 87.09599 82.57723 121.5372 82.58065 C 155.9784 82.58407 286.6986 82.58065 286.6986 82.58065 L 286.6986 147.20903 C 286.6986 147.20903 171.80371 147.20903 157.44185 147.20903 Z" fill="#f15f0d"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

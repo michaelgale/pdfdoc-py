@@ -106,3 +106,20 @@ def test_transparent_intersect():
     r1.move_top_left_to((430, 230))
     x = is_rect_in_transparent_region(fn, r1)
     assert x
+
+
+def test_list_presets():
+    ld = LabelDoc(
+        "./testfiles/test_img_preset_list.pdf", style=AVERY_5260_LABEL_DOC_STYLE
+    )
+
+    presets = ImageRect.list_presets()
+    for _, file in enumerate(ld.iter_doc(presets)):
+        tr = TableRow()
+        tr.add_column("img", ImageRect(filename=file))
+        _, fn = split_path(file)
+        tr.add_column(
+            "label", TextRect(str(fn), horz_align="left", font_size=10, left_padding=8)
+        )
+        tr.set_column_width("img", 0.3)
+        ld.add_label(tr)

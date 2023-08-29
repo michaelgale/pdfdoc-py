@@ -75,3 +75,20 @@ def test_preset():
 
     c.showPage()
     c.save()
+
+
+def test_list_presets():
+    ld = LabelDoc(
+        "./testfiles/test_svg_preset_list.pdf", style=AVERY_5260_LABEL_DOC_STYLE
+    )
+
+    presets = SvgRect.list_presets()
+    for _, file in enumerate(ld.iter_doc(presets)):
+        tr = TableRow()
+        tr.add_column("svg", SvgRect(filename=file))
+        _, fn = split_path(file)
+        tr.add_column(
+            "label", TextRect(str(fn), horz_align="left", font_size=10, left_padding=8)
+        )
+        tr.set_column_width("svg", 0.3)
+        ld.add_label(tr)

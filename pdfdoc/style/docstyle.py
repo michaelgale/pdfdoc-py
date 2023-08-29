@@ -489,7 +489,6 @@ class DocStyleSheet:
 
 
 def roman_number(num):
-
     roman = OrderedDict()
     roman[1000] = "M"
     roman[900] = "CM"
@@ -578,6 +577,14 @@ class DocStyleMixin:
         else:
             self.style["background-fill"] = True
             self.style["background-colour"] = colour
+
+    @property
+    def has_border(self):
+        return self.style["border-outline"]
+
+    @property
+    def has_background(self):
+        return self.style["background-fill"]
 
     @property
     def border_colour(self):
@@ -676,6 +683,14 @@ class DocStyleMixin:
         self.style["font-name"] = font_name
 
     @property
+    def font_name(self):
+        return self.style["font-name"]
+
+    @font.setter
+    def font_name(self, font_name):
+        self.style["font-name"] = font_name
+
+    @property
     def font_size(self):
         return self.style["font-size"]
 
@@ -706,3 +721,19 @@ class DocStyleMixin:
     @kerning.setter
     def kerning(self, val):
         self.style["kerning"] = val
+
+    @property
+    def line_colour(self):
+        return self.style["line-colour"]
+
+    @line_colour.setter
+    def line_colour(self, colour):
+        self.style["line-colour"] = colour
+
+    @property
+    def line_width(self):
+        return self.style["line-width"]
+
+    @line_width.setter
+    def line_width(self, width):
+        self.style["line-width"] = width

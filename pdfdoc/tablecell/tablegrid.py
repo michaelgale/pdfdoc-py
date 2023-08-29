@@ -32,7 +32,8 @@ class TableGrid(TableVector):
     content cells (TableCell objects with a type of ContentRect as actual content).  TableGrid
     is filled either row-wise or column-wise based on the cell order.  When filling row-wise,
     a row is automatically created when the previous row's content size has exceeded
-    width_constraint.  Similarly, a new column is created when height_constraint to exceeded."""
+    width_constraint.  Similarly, a new column is created when height_constraint to exceeded.
+    """
 
     def __init__(self, w=0, h=0, style=None, **kwargs):
         super().__init__(w, h, style)

@@ -253,6 +253,17 @@ class LayoutCell(TableVector):
             self.set_cell_order(cell[0], i)
 
     def layout_cells(self):
+        def _collect_rects(cells, parent_rect):
+            rects = []
+            for cell in cells:
+                if self.is_cell_visible(cell):
+                    rects.append(self.get_cell_rect(cell))
+                else:
+                    pr = dummy_rect_from_parent_edge(parent_rect, cell)
+                    if pr is not None:
+                        rects.append(pr)
+            return rects
+
         w = self.fixed_rect.width if self.is_fixed_width else self.rect.width
         h = self.fixed_rect.height if self.is_fixed_height else self.rect.height
         self.rect.set_size_anchored(w, h, anchor_pt="top left")
@@ -271,21 +282,8 @@ class LayoutCell(TableVector):
                     bt = "between" if "between" in cd else ""
                     bt = "between_horz" if "between_horz" in cd else bt
                     bt = "between_vert" if "between_vert" in cd else bt
-                    g1r, g2r = [], []
-                    for x in cd[bt]["group1"]:
-                        if self.is_cell_visible(x):
-                            g1r.append(self.get_cell_rect(x))
-                        else:
-                            pr = dummy_rect_from_parent_edge(prect, x)
-                            if pr is not None:
-                                g1r.append(pr)
-                    for x in cd[bt]["group2"]:
-                        if self.is_cell_visible(x):
-                            g2r.append(self.get_cell_rect(x))
-                        else:
-                            pr = dummy_rect_from_parent_edge(prect, x)
-                            if pr is not None:
-                                g2r.append(pr)
+                    g1r = _collect_rects(cd[bt]["group1"], prect)
+                    g2r = _collect_rects(cd[bt]["group2"], prect)
                     if len(g1r) > 0 and len(g2r) > 0:
                         g1_rect = Rect.bounding_rect_from_rects(g1r)
                         g2_rect = Rect.bounding_rect_from_rects(g2r)

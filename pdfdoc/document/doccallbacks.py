@@ -29,7 +29,8 @@ from pdfdoc import *
 
 class DocumentCallback:
     """A generic base class which implements behaviour for Document class
-    callback actions at intervals such as page breaks, sections and document start/end."""
+    callback actions at intervals such as page breaks, sections and document start/end.
+    """
 
     def __init__(self):
         self.page_exclusions = []

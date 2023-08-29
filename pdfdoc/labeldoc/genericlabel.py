@@ -55,9 +55,15 @@ class GenericLabel(TableColumn):
             self.symbol2 = ImageRect(0, 0, filename=image)
         else:
             symbol_text = symbol if symbol is not None else ""
-            self.symbol = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
-            self.symbol2 = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
-        t1, t2 = "", ""
+            if symbol_text.lower().endswith(".svg"):
+                self.symbol = SvgRect.from_preset(symbol_text)
+                self.symbol2 = SvgRect.from_preset(symbol_text)
+            elif symbol_text.lower().endswith(".png"):
+                self.symbol = ImageRect.from_preset(symbol_text)
+                self.symbol2 = ImageRect.from_preset(symbol_text)
+            else:
+                self.symbol = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
+                self.symbol2 = TextRect(0, 0, symbol_text, GENERIC_SYMBOL_LABEL)
         ht = 0.3
         hp2 = 0.07
         hp = hp2 if pattern is not None else 0

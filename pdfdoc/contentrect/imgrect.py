@@ -116,3 +116,21 @@ class ImageRect(ContentRect):
         pt = ih - int((pt - self.rect.bottom) / self.rect.height * ih)
         pb = ih - int((pb - self.rect.bottom) / self.rect.height * ih)
         return Rect.rect_from_points((pl, pt), (pr, pb))
+
+    @staticmethod
+    def from_preset(name, **kwargs):
+        """Returns an instance of ImageRect from a named preset graphic included
+        in this package."""
+        fp, _ = split_path(__file__)
+        fp = fp + os.sep + ".." + os.sep + "graphics"
+        fn = fp + os.sep + name
+        if not fn.endswith(".png"):
+            fn = fn + ".png"
+        return ImageRect(filename=fn, **kwargs)
+
+    @staticmethod
+    def list_presets():
+        fp, _ = split_path(__file__)
+        fp = fp + os.sep + ".." + os.sep + "graphics"
+        fs = FileOps()
+        return fs.get_file_list(fp, "*.png", recursive=True)
