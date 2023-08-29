@@ -100,12 +100,13 @@ class SvgRect(ContentRect):
     def from_preset(name, **kwargs):
         """Returns an instance of SvgRect from a named preset graphic included
         in this package."""
-        fp, _ = split_path(__file__)
-        fp = fp + os.sep + ".." + os.sep + "graphics"
-        fn = fp + os.sep + name
-        if not fn.endswith(".svg"):
-            fn = fn + ".svg"
-        return SvgRect(filename=fn, **kwargs)
+        if not name.endswith(".svg"):
+            name = name + ".svg"
+        presets = SvgRect.list_presets()
+        for preset in presets:
+            _, pf = split_path(preset)
+            if pf == name:
+                return SvgRect(filename=preset, **kwargs)
 
     @staticmethod
     def list_presets():

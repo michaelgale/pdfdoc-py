@@ -121,13 +121,14 @@ class ImageRect(ContentRect):
     def from_preset(name, **kwargs):
         """Returns an instance of ImageRect from a named preset graphic included
         in this package."""
-        fp, _ = split_path(__file__)
-        fp = fp + os.sep + ".." + os.sep + "graphics"
-        fn = fp + os.sep + name
-        if not fn.endswith(".png"):
-            fn = fn + ".png"
-        return ImageRect(filename=fn, **kwargs)
-
+        if not name.endswith(".png"):
+            name = name + ".png"
+        presets = ImageRect.list_presets()
+        for preset in presets:
+            _, pf = split_path(preset)
+            if pf == name:
+                return ImageRect(filename=preset, **kwargs)
+            
     @staticmethod
     def list_presets():
         fp, _ = split_path(__file__)
