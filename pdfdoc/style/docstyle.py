@@ -586,6 +586,10 @@ class DocStyleMixin:
     def has_background(self):
         return self.style["background-fill"]
 
+    @has_background.setter
+    def has_background(self, has_bg):
+        self.style["background-fill"] = has_bg
+
     @property
     def border_colour(self):
         return self.style["border-colour"]

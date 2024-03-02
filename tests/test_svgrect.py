@@ -12,7 +12,7 @@ from reportlab.lib.units import inch
 
 def test_svgrect_render():
     c = canvas.Canvas(
-        "./testfiles/test_svgrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_svgrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     style_dict = {
         "top-margin": 0.05 * inch,
@@ -23,13 +23,13 @@ def test_svgrect_render():
         "vert-align": "centre",
     }
 
-    cr = SvgRect(2 * inch, 1 * inch, "./testfiles/LogoBlackVector.svg")
+    cr = SvgRect(2 * inch, 1 * inch, "./tests/testfiles/LogoBlackVector.svg")
     cr.show_debug_rects = True
     cr.style.set_with_dict(style_dict)
     cr.top_left = 1 * inch, 10 * inch
     cr.draw_in_canvas(c)
 
-    cr = SvgRect(1 * inch, 1 * inch, "./testfiles/NewRotationIcon.svg")
+    cr = SvgRect(1 * inch, 1 * inch, "./tests/testfiles/NewRotationIcon.svg")
     cr.border_outline = True
     cr.border_width = 0.03 * inch
     cr.border_colour = (0, 0, 0)
@@ -38,7 +38,7 @@ def test_svgrect_render():
     cr.top_left = 4 * inch, 10 * inch
     cr.draw_in_canvas(c)
 
-    cr = SvgRect(2 * inch, 2 * inch, "./testfiles/PFxLogoVector.svg")
+    cr = SvgRect(2 * inch, 2 * inch, "./tests/testfiles/PFxLogoVector.svg")
     cr.show_debug_rects = True
     cr.style.set_with_dict(style_dict)
     cr.centre = 3 * inch, 5 * inch
@@ -50,7 +50,7 @@ def test_svgrect_render():
 
 def test_preset():
     c = canvas.Canvas(
-        "./testfiles/test_svg_preset.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_svg_preset.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     style_dict = {
         "top-margin": 0.05 * inch,
@@ -78,10 +78,8 @@ def test_preset():
 
 
 def test_list_presets():
-    ld = LabelDoc(
-        "./testfiles/test_svg_preset_list.pdf", style=AVERY_5260_LABEL_DOC_STYLE
-    )
-
+    pdf_fn = "./tests/testfiles/test_svg_preset_list.pdf"
+    ld = LabelDoc(pdf_fn, style=AVERY_5260_LABEL_DOC_STYLE)
     presets = SvgRect.list_presets()
     for _, file in enumerate(ld.iter_doc(presets)):
         tr = TableRow()
@@ -92,3 +90,5 @@ def test_list_presets():
         )
         tr.set_column_width("svg", 0.3)
         ld.add_label(tr)
+
+    convert_pdf_to_thumbnail(pdf_fn)

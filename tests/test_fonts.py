@@ -36,7 +36,7 @@ def test_font_specimen():
     ]
     for f in FONT_LIST:
         fn = f.replace(" ", "").replace("-", "").replace("_", "")
-        create_specimen_pdf(f, "./testfiles/test_specimen_%s.pdf" % (fn))
+        create_specimen_pdf(f, "./tests/testfiles/test_specimen_%s.pdf" % (fn))
 
 
 _font_dict = {
@@ -49,7 +49,7 @@ _font_dict = {
 def test_register_font():
     valid_fonts = register_font_family("Avenir Next Condensed.ttc")
     c = canvas.Canvas(
-        "./testfiles/test_fontnames.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_fontnames.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     for i, font in enumerate(valid_fonts):

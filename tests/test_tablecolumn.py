@@ -5,9 +5,9 @@ import sys
 import pytest
 
 from toolbox import *
-from pdfdoc.textrect import TextRect
-from pdfdoc.tablerow import TableRow
-from pdfdoc.tablecolumn import TableColumn
+from pdfdoc import TextRect
+from pdfdoc import TableRow
+from pdfdoc import TableColumn
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 
@@ -58,7 +58,7 @@ def test_tablecolumn_row():
     assert tr.cells[1].label == "Row 2"
     assert tr.cells[2].label == "Row 3"
     c = canvas.Canvas(
-        "./testfiles/test_tablecolumn.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_tablecolumn.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))
@@ -108,7 +108,7 @@ def test_tableimbedded():
     assert len(tr) == 3
 
     c = canvas.Canvas(
-        "./testfiles/test_tableimbed.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_tableimbed.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     tr.top_left = Point(1 * inch, 9 * inch)

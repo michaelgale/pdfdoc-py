@@ -12,7 +12,7 @@ from reportlab.lib.units import inch, mm
 
 def test_line():
     c = canvas.Canvas(
-        "./testfiles/test_line.pdf",
+        "./tests/testfiles/test_line.pdf",
         pagesize=(8.5 * inch, 11.0 * inch),
     )
     style = {
@@ -50,7 +50,7 @@ def test_line():
 
 def test_grid():
     c = canvas.Canvas(
-        "./testfiles/test_grid.pdf",
+        "./tests/testfiles/test_grid.pdf",
         pagesize=(8.5 * inch, 11.0 * inch),
     )
     style = {

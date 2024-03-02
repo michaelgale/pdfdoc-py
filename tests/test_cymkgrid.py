@@ -5,8 +5,6 @@ import sys
 import pytest
 
 from toolbox import *
-from pdfdoc.textrect import TextRect
-from pdfdoc.tablerow import TableRow
 from pdfdoc import CMYKGrid
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -14,7 +12,7 @@ from reportlab.lib.units import inch
 
 # def test_cmykgrid():
 #     c = canvas.Canvas(
-#         "./testfiles/test_cmykgrid.pdf",
+#         "./tests/testfiles/test_cmykgrid.pdf",
 #         pagesize=(8.5 * inch, 11.0 * inch),
 #         enforceColorSpace="cmyk",
 #     )
@@ -86,7 +84,7 @@ from reportlab.lib.units import inch
 
 def test_cmykgrid():
     c = canvas.Canvas(
-        "./testfiles/test_cmykgrid.pdf",
+        "./tests/testfiles/test_cmykgrid.pdf",
         pagesize=(8.5 * inch, 11.0 * inch),
         enforceColorSpace="cmyk",
     )

@@ -5,8 +5,8 @@ import sys
 import pytest
 
 from toolbox import *
-from pdfdoc.textrect import TextRect
-from pdfdoc.tablerow import TableRow
+from pdfdoc import TextRect
+from pdfdoc import TableRow
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 
@@ -57,7 +57,7 @@ def test_tablerow_col():
     assert tr.cells[1].label == "Col 2"
     assert tr.cells[2].label == "Col 3"
     c = canvas.Canvas(
-        "./testfiles/test_tablerow.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_tablerow.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     tr.rect.move_top_left_to(Point(1 * inch, 9 * inch))

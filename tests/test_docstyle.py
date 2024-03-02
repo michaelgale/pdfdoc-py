@@ -43,7 +43,7 @@ def test_docstyle_setattr():
 
 
 def test_docstylesheet():
-    styles = DocStyleSheet(filename="./testfiles/sample_stylesheet.yml")
+    styles = DocStyleSheet(filename="./tests/testfiles/sample_stylesheet.yml")
     assert "STEP_NUM_STYLE" in styles.styles
     assert "CALLOUT_STYLE_L1" in styles.styles
     assert "BLACK" not in styles.styles

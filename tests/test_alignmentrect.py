@@ -12,7 +12,7 @@ from reportlab.lib.units import inch
 
 def test_alignmentrect_render():
     c = canvas.Canvas(
-        "./testfiles/test_alignmentrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_alignmentrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     cr = PatternRect(3.25 * inch, 0.25 * inch)
@@ -39,7 +39,7 @@ def test_alignmentrect_render():
 
 def test_alignmentrect_placement():
     c = canvas.Canvas(
-        "./testfiles/test_alignmentrect2.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_alignmentrect2.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     cr = ContentRect(32, 32)
     cr.background_colour = "#402080"

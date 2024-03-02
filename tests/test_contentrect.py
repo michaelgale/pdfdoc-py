@@ -12,7 +12,7 @@ from reportlab.lib.units import inch
 
 def test_fixedrect():
     c = canvas.Canvas(
-        "./testfiles/test_fixedrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_fixedrect.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     cr = FixedRect(1 * inch, 1 * inch)

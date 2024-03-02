@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.8'
+__version__ = '0.9.9'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__
@@ -45,6 +45,7 @@ from .helpers import (
     get_edge_colours,
     is_rect_in_transparent_region,
     modify_pdf_file,
+    convert_pdf_to_thumbnail,
 )
 from .fonthelpers import (
     register_font_family,

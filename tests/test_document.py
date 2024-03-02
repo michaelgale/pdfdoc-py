@@ -99,8 +99,8 @@ class DocEndCallback(DocumentCallback):
 
 
 def test_document_callbacks():
-    doc = Document("./testfiles/test_document.pdf")
-    assert doc.filename == "./testfiles/test_document.pdf"
+    doc = Document("./tests/testfiles/test_document.pdf")
+    assert doc.filename == "./tests/testfiles/test_document.pdf"
     doc.set_page_size(PAGE_LETTER, with_bleed=8 * mm)
     ds = DocStartCallback()
     ds.z_order = 1
@@ -118,7 +118,7 @@ def test_document_callbacks():
 
 
 def test_document_cropmarks():
-    doc = Document("./testfiles/test_cropmarks.pdf")
+    doc = Document("./tests/testfiles/test_cropmarks.pdf")
     doc.set_page_size(PAGE_A5, orientation="landscape", with_bleed=10 * mm)
     crops = CropMarksCallback(length=5 * mm)
     back = PageBackgroundCallback(colour=(0.7, 0.8, 1.0))
@@ -134,7 +134,7 @@ def test_document_cropmarks():
 
 
 def test_document_sections():
-    doc = Document("./testfiles/test_sections.pdf")
+    doc = Document("./tests/testfiles/test_sections.pdf")
     doc.set_page_size(PAGE_LETTER)
     doc.section_list = ["Title", "Middle", "End"]
 
@@ -165,7 +165,7 @@ def test_document_sections():
 
 
 def test_document_columns():
-    doc = Document("./testfiles/test_columns.pdf")
+    doc = Document("./tests/testfiles/test_columns.pdf")
     doc.set_page_size(PAGE_LETTER)
     doc.style["gutter-width"] = 0.5 * inch
     doc.set_columns(2)

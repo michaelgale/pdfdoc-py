@@ -23,7 +23,7 @@ _test_dict = {
 def test_arrowhead():
     a1 = ArrowHead(style=_test_dict)
     c = canvas.Canvas(
-        "./testfiles/test_arrowhead.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_arrowhead.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     p1 = (4 * inch, 9 * inch)
     p2 = (6 * inch, 6 * inch)

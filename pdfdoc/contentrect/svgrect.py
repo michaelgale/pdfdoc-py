@@ -112,5 +112,11 @@ class SvgRect(ContentRect):
     def list_presets():
         fp, _ = split_path(__file__)
         fp = fp + os.sep + ".." + os.sep + "graphics"
+        fp = os.path.abspath(fp)
         fs = FileOps()
-        return fs.get_file_list(fp, "*.svg", recursive=True)
+        files = fs.get_file_list(fp, "*.svg", recursive=True)
+        presets = []
+        for file in files:
+            if str(file).lower().endswith(".svg"):
+                presets.append(str(file))
+        return presets

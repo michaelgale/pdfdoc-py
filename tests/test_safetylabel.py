@@ -22,7 +22,7 @@ def test_safety_init():
 
 def test_safety_label():
     c = canvas.Canvas(
-        "./testfiles/test_safetylabel.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_safetylabel.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     s = SafetyLabel(icon="caution", title="Danger", desc="", colour="yellow")
@@ -88,7 +88,9 @@ def test_safety_label():
 
 
 def test_simple_label():
-    ld = LabelDoc("./testfiles/test_bigsafety.pdf", style=AVERY_8126_LABEL_DOC_STYLE)
+    ld = LabelDoc(
+        "./tests/testfiles/test_bigsafety.pdf", style=AVERY_8126_LABEL_DOC_STYLE
+    )
     labels = [i for i in range(4)]
     for label in ld.iter_doc(labels):
         s = SafetyLabel(
@@ -105,7 +107,9 @@ def test_simple_label():
 def test_safety_symbols():
     from pdfdoc.fonthelpers import haz_lookup_dict, fa_lookup_dict
 
-    ld = LabelDoc("./testfiles/test_symbol_list.pdf", style=AVERY_5267_LABEL_DOC_STYLE)
+    ld = LabelDoc(
+        "./tests/testfiles/test_symbol_list.pdf", style=AVERY_5267_LABEL_DOC_STYLE
+    )
     labels = [k for k, _ in haz_lookup_dict.items()]
     labels.extend([k for k, _ in fa_lookup_dict.items()])
     labels = sorted(labels)

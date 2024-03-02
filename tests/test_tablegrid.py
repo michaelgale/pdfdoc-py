@@ -53,7 +53,7 @@ def test_tablegrid_rows():
     # assert tr.cells[1].label == "Grid 1"
     # assert tr.cells[2].label == "TableCell-2"
     c = canvas.Canvas(
-        "./testfiles/test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_tablegrid_rows.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     c.saveState()
     tr.top_left = Point(1 * inch, 9 * inch)
@@ -125,10 +125,10 @@ def test_tablegrid_cols():
         c.save()
 
     tablegrid_col_test(
-        "./testfiles/test_tablegrid_cols.pdf", "Normal", {"strategy": "none"}
+        "./tests/testfiles/test_tablegrid_cols.pdf", "Normal", {"strategy": "none"}
     )
     tablegrid_col_test(
-        "./testfiles/test_tablegrid_cols_1.pdf",
+        "./tests/testfiles/test_tablegrid_cols_1.pdf",
         "Resize",
         {
             "strategy": "resize",
@@ -136,7 +136,7 @@ def test_tablegrid_cols():
         },
     )
     tablegrid_col_test(
-        "./testfiles/test_tablegrid_cols_2.pdf",
+        "./tests/testfiles/test_tablegrid_cols_2.pdf",
         "Whitspc",
         {
             "strategy": "reshape",
@@ -146,7 +146,7 @@ def test_tablegrid_cols():
         },
     )
     tablegrid_col_test(
-        "./testfiles/test_tablegrid_cols_3.pdf",
+        "./tests/testfiles/test_tablegrid_cols_3.pdf",
         "Distort",
         {
             "strategy": "reshape",
@@ -156,7 +156,7 @@ def test_tablegrid_cols():
         },
     )
     tablegrid_col_test(
-        "./testfiles/test_tablegrid_cols_4.pdf",
+        "./tests/testfiles/test_tablegrid_cols_4.pdf",
         "Balance",
         {
             "strategy": "reshape",
@@ -224,5 +224,5 @@ def test_tablegrid_gutters():
         c.save()
 
     tablegrid_col_test(
-        "./testfiles/test_tablegrid_gutters.pdf", "Normal", {"strategy": "none"}
+        "./tests/testfiles/test_tablegrid_gutters.pdf", "Normal", {"strategy": "none"}
     )

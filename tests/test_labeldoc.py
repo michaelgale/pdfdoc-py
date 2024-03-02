@@ -10,7 +10,9 @@ _test_dict = {"left-margin": 1 * inch, "right-margin": 1 * inch, "horz-align": "
 
 
 def test_labeldoc_init():
-    ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE)
+    ld = LabelDoc(
+        "./tests/testfiles/test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE
+    )
     assert ld.nrows == 3
     assert ld.ncolumns == 2
     assert ld.total_rows == 3
@@ -18,7 +20,9 @@ def test_labeldoc_init():
 
 
 def test_content_idx():
-    ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE)
+    ld = LabelDoc(
+        "./tests/testfiles/test_labeldoc.pdf", style=AVERY_5164_LABEL_DOC_STYLE
+    )
     rx = [0, 0, 1, 1, 2, 2, 0, 0, 1, 1]
     cx = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
     for i, x in enumerate(range(10)):
@@ -27,7 +31,9 @@ def test_content_idx():
 
 
 def test_labeldoc_iter():
-    ld = LabelDoc("./testfiles/test_labeldoc.pdf", style=AVERY_5262_LABEL_DOC_STYLE)
+    ld = LabelDoc(
+        "./tests/testfiles/test_labeldoc.pdf", style=AVERY_5262_LABEL_DOC_STYLE
+    )
     labels = [i for i in range(25)]
     for label in ld.iter_doc(labels):
         tr = TextRect(withText="Label %d" % (label))
@@ -36,7 +42,9 @@ def test_labeldoc_iter():
 
 
 def test_simple_label():
-    ld = LabelDoc("./testfiles/test_simplelabel.pdf", style=AVERY_5267_LABEL_DOC_STYLE)
+    ld = LabelDoc(
+        "./tests/testfiles/test_simplelabel.pdf", style=AVERY_5267_LABEL_DOC_STYLE
+    )
     labels = [i for i in range(25)]
     for label in ld.iter_doc(labels):
         sl = SimpleLabel(line1="Title %d" % (label), line2="subtitle", line3="subtitle")
@@ -46,7 +54,7 @@ def test_simple_label():
 
 def test_plaintext_label():
     ld = LabelDoc(
-        "./testfiles/test_plaintextlabel.pdf", style=AVERY_5260_LABEL_DOC_STYLE
+        "./tests/testfiles/test_plaintextlabel.pdf", style=AVERY_5260_LABEL_DOC_STYLE
     )
     labels = [i for i in range(25)]
     WORDS = (
@@ -87,7 +95,7 @@ def test_plaintext_label():
 
 def test_generic_labeldoc():
     ld = LabelDoc(
-        "./testfiles/test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE
+        "./tests/testfiles/test_generic_label.pdf", style=AVERY_5263_LABEL_DOC_STYLE
     )
     labels = [i for i in range(25)]
     for label in ld.iter_doc(labels):

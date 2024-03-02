@@ -128,10 +128,16 @@ class ImageRect(ContentRect):
             _, pf = split_path(preset)
             if pf == name:
                 return ImageRect(filename=preset, **kwargs)
-            
+
     @staticmethod
     def list_presets():
         fp, _ = split_path(__file__)
         fp = fp + os.sep + ".." + os.sep + "graphics"
+        fp = os.path.abspath(fp)
         fs = FileOps()
-        return fs.get_file_list(fp, "*.png", recursive=True)
+        files = fs.get_file_list(fp, "*.png", recursive=True)
+        presets = []
+        for file in files:
+            if str(file).lower().endswith(".png"):
+                presets.append(str(file))
+        return presets

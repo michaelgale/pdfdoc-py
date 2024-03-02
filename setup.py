@@ -4,14 +4,15 @@
 # Learn more: https://github.com/michaelgale/pdfdoc-py
 
 import os
+import os.path
+from pathlib import Path
 import sys
 import setuptools
 
 PACKAGE_NAME = "pdfdoc"
 MINIMUM_PYTHON_VERSION = "3.7"
 
-
-
+dependency_links = []
 
 def read_package_variable(key, filename="__init__.py"):
     """Read the value of a variable from the package without importing."""
@@ -23,17 +24,8 @@ def read_package_variable(key, filename="__init__.py"):
                 return parts[-1].strip("'")
     sys.exit("'{0}' not found in '{1}'".format(key, module_path))
 
-
-def build_description():
-    """Build a description for the project from documentation files."""
-    try:
-        readme = open("README.rst").read()
-        changelog = open("CHANGELOG.rst").read()
-    except IOError:
-        return "<placeholder>"
-    else:
-        return readme + "\n" + changelog
-
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 
 setuptools.setup(
@@ -45,7 +37,8 @@ setuptools.setup(
     author_email="michael@fxbricks.com",
     packages=setuptools.find_packages(),
     package_data = { "": ["*.svg", "*.png"], },
-    long_description=build_description(),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     license="MIT",
     classifiers=[
         "Development Status :: 4 - Beta",

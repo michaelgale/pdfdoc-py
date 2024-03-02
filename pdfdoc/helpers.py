@@ -474,3 +474,24 @@ def modify_pdf_file(
     args = shlex.split(s)
     subprocess.Popen(args).wait()
     shutil.copyfile(temp_path, fnout)
+
+
+def convert_pdf_to_thumbnail(fn, ofn=None, res=144):
+    if ofn is not None:
+        outfile = ofn
+    else:
+        fp, f = split_path(fn)
+        fa, fe = split_filename(f)
+        outfile = fp + os.sep + fa
+    outfile = outfile.replace(".png", "")
+    s = []
+    s.append("pdftoppm")
+    s.append(fn)
+    s.append(outfile)
+    s.append("-png")
+    s.append("-f 1 -l 1")
+    s.append("-singlefile")
+    s.append("-r %d" % (res))
+    s = " ".join(s)
+    args = shlex.split(s)
+    subprocess.Popen(args).wait()
