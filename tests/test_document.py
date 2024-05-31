@@ -193,6 +193,18 @@ def test_document_columns():
     doc.column_end_callbacks = [cl]
     doc._doc_start()
     for x in range(20):
-        doc.cursor_auto_shift(200)
+        doc.cursor_auto_shift(350)
         # print("Page: %d Column: %d Cursor: %.1f,%.1f" % (doc.page_number, doc.column, doc.cursor[0], doc.cursor[1]))
     doc.end_document()
+
+
+def test_document_watermark():
+    doc = Document("./tests/testfiles/test_watermark.pdf")
+    doc.set_page_size(PAGE_A4, orientation="portrait")
+    wm = WatermarkCallback("DRAFT")
+    back = PageBackgroundCallback(colour=(0.8, 0.9, 1.0))
+    doc.page_end_callbacks = [wm]
+    p1 = PageNumberCallback(show_in_header=True)
+    doc.page_start_callbacks = [back, p1]
+    for section, ctx in doc.iter_doc([1, 2, 3]):
+        doc.page_break()

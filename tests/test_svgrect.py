@@ -42,6 +42,7 @@ def test_svgrect_render():
     cr.show_debug_rects = True
     cr.style.set_with_dict(style_dict)
     cr.centre = 3 * inch, 5 * inch
+    cr.rotation = 45
     cr.draw_in_canvas(c)
 
     c.showPage()
@@ -65,10 +66,11 @@ def test_preset():
     cr.size = 2 * inch, 2 * inch
     cr.show_debug_rects = True
     cr.top_left = 1 * inch, 10 * inch
+    cr.rotation = 25
     cr.draw_in_canvas(c)
 
     cr = SvgRect.from_preset(
-        "no_touch_icon", w=90, h=90, top_left=(5 * inch, 10 * inch)
+        "prohibited_touch", w=90, h=90, top_left=(5 * inch, 10 * inch)
     )
     cr.show_debug_rects = True
     cr.draw_in_canvas(c)
@@ -90,5 +92,3 @@ def test_list_presets():
         )
         tr.set_column_width("svg", 0.3)
         ld.add_label(tr)
-
-    convert_pdf_to_thumbnail(pdf_fn)

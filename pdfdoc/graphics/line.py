@@ -25,39 +25,58 @@
 
 from toolbox import *
 from pdfdoc import *
+from pdfdoc.helpers import line_angle, line_mid_point
 
 
-class StyledLine:
+class StyledLine(DocStyleMixin):
     """Draws an arrow head with arbitrary style. The arrow can be placed
     and rotated in direction 0-360 deg."""
 
-    def __init__(self, style):
+    def __init__(self, style=None, arrow_style=None):
         self.style = DocStyle()
-        self.style.set_with_dict(style)
+        if style is not None:
+            self.style.set_with_dict(style)
+        self.coords = None
+        self.use_default_arrow_style = True
+        self.arrow = ArrowHead(style=arrow_style)
+        if arrow_style is not None:
+            self.use_default_arrow_style = False
 
     def __repr__(self):
         return "%s()" % (self.__class__.__name__,)
 
     @property
-    def line_width(self):
-        return self.style["line-width"]
-
-    @property
     def dash(self):
         return self.style["line-dash"]
 
-    def arrow_head(self, c, xo, yo, angle=0):
-        aw = self.style["arrow-width"]
-        al = self.style["arrow-length"]
-        canvas_save_state(c, xo, yo, angle)
-        p = c.beginPath()
-        p.moveTo(al, -aw)
-        p.lineTo(0, 0)
-        p.lineTo(al, aw)
-        c.drawPath(p, stroke=1, fill=0)
-        c.restoreState()
-
     def draw_in_canvas(self, c, x0, y0, x1, y1, arrow0=False, arrow1=False):
+        self.draw_from_coords(c, [(x0, y0), (x1, y1)], arrow0, arrow1)
+
+    def draw_from_coords(self, c, coords=None, arrow0=False, arrow1=False):
+        coords = coords if coords is not None else self.coords
+        if coords is None:
+            return
+        self._prepare_line_style(c)
+        # if the ends have arrows, modify the end points so that
+        # they do not visibly protrude beyond the arrow head tip
+        c0, c1 = coords[0], coords[-1]
+        if arrow0:
+            c0 = self.arrow.tip_offset(coords[0], coords[1], self.line_width)
+        if arrow1:
+            c1 = self.arrow.tip_offset(coords[-1], coords[-2], self.line_width)
+        p = c.beginPath()
+        p.moveTo(*c0)
+        for coord in coords[1:-1]:
+            p.lineTo(*coord)
+        p.lineTo(*c1)
+        c.drawPath(p, stroke=1, fill=0)
+        if arrow0:
+            self._draw_arrow_head(c, coords[0], coords[1])
+        if arrow1:
+            self._draw_arrow_head(c, coords[-1], coords[-2])
+        self._reset_line_style(c)
+
+    def _prepare_line_style(self, c):
         if isinstance(self.dash, list):
             c.setDash(array=self.dash)
         elif self.dash is not None:
@@ -65,20 +84,21 @@ class StyledLine:
         rc = rl_colour(self.style["line-colour"])
         c.setStrokeColor(rc)
         c.setLineWidth(self.line_width)
-        p = c.beginPath()
-        p.moveTo(x0, y0)
-        p.lineTo(x1, y1)
-        c.drawPath(p, stroke=1, fill=0)
-        if arrow0:
-            xl = x1 - x0
-            yl = y1 - y0
-            angle = degrees(atan2(yl, xl))
-            self.arrow_head(c, x0, y0, angle=angle)
-        if arrow1:
-            xl = x0 - x1
-            yl = y0 - y1
-            angle = degrees(atan2(yl, xl))
-            self.arrow_head(c, x1, y1, angle=angle)
+        if self.arrow.style["arrow-style"] == "cap":
+            self.arrow.width = self.line_width
+        if self.use_default_arrow_style:
+            if not self.arrow.style["arrow-style"] == "cap":
+                self.arrow.length = 8 * self.line_width
+                self.arrow.width = 4.5 * self.line_width
+            self.arrow.line_colour = self.line_colour
+            self.arrow.line_width = self.line_width
+            self.arrow.border_outline = False
+
+    def _draw_arrow_head(self, c, p0, p1):
+        angle = line_angle(p1, p0)
+        self.arrow.draw_in_canvas(c, p0, angle, tip_origin=True)
+
+    def _reset_line_style(self, c):
         c.setDash([])
 
     @staticmethod
@@ -100,6 +120,34 @@ class StyledLine:
         if dash is not None:
             line.style["line-dash"] = dash
         line.draw_in_canvas(c, x0, y0, x1, y1, arrow0, arrow1)
+
+    @staticmethod
+    def draw_dim_line(
+        c, x0, y0, x1, y1, label, line_width=None, style=None, offset=None
+    ):
+        line = StyledLine(style=style)
+        line.use_default_arrow_style = False
+        if line_width is not None:
+            line.style["line-width"] = line_width
+        line.arrow.style["arrow-style"] = "dimension"
+        line.arrow.length = 10 * line.line_width
+        line.arrow.width = 6 * line.line_width
+        line.arrow.line_width = line.line_width
+        line.arrow.line_colour = line.line_colour
+        line.draw_in_canvas(c, x0, y0, x1, y1, True, True)
+        angle = line_angle((x0, y0), (x1, y1))
+        mp = line_mid_point((x0, y0), (x1, y1))
+        c.saveState()
+        c.translate(*mp)
+        c.rotate(angle)
+        tr = TextRect(label, style=style, split_lines=False)
+        _, th = tr.get_content_size()
+        if offset is not None:
+            tr.rect.move_to((0, offset))
+        else:
+            tr.rect.move_to((0, -th / 2))
+        tr.draw_in_canvas(c)
+        c.restoreState()
 
     @staticmethod
     def draw_arc(c, x0, y0, radius, a0, a1, line_width=None, dash=None, style=None):

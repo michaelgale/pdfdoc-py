@@ -19,6 +19,8 @@ def test_docstyle_attr():
     assert a2 == 0
     a2 = s1.get_attr("top-margin", 3)
     assert a2 == 0
+    a3 = s1.top_margin
+    assert a3 == 0
 
 
 def test_docstyle_setattr():
@@ -40,6 +42,11 @@ def test_docstyle_setattr():
     assert s1.get_height_trim() == 0
     s1["left-padding"] = 20
     assert s1["left-padding"] == 20
+    assert s1.left_padding == 20
+    s1.top_margin = 13
+    assert s1.top_margin == 13
+    assert s1["top-margin"] == 13
+    assert s1["top_margin"] == 13
 
 
 def test_docstylesheet():

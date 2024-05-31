@@ -181,6 +181,7 @@ class CMYKGrid(TableColumn):
             for col in range(self.cols):
                 cr = ContentRect(wc, hr)
                 cr.background_colour = CMYK
+                cr.background_fill = True
                 cr.style.set_all_margins(self.padding)
                 rc.add_column("Cell%d%d" % (row, col), cr)
                 CMYK = self.inc_channel(CMYK, self.col_channel, self.col_inc)

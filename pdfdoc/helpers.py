@@ -40,14 +40,15 @@ from reportlab.lib.colors import Color, CMYKColor
 from toolbox import *
 
 
-def rl_colour(from_colour):
+def rl_colour(from_colour, alpha=None):
     if isinstance(from_colour, str):
         return rl_colour_hex(from_colour)
     if isinstance(from_colour, (Color, CMYKColor)):
         return from_colour
     if isinstance(from_colour, (list, tuple)):
+        alpha = alpha if alpha is not None else 1.0
         if len(from_colour) == 3:
-            return Color(from_colour[0], from_colour[1], from_colour[2], alpha=1.0)
+            return Color(from_colour[0], from_colour[1], from_colour[2], alpha=alpha)
         else:
             return CMYKColor(
                 from_colour[0], from_colour[1], from_colour[2], from_colour[3]
@@ -91,21 +92,30 @@ def clamp_cmyk(v):
 
 def rl_set_border_stroke(c, style):
     if style["border-outline"]:
-        c.setStrokeColor(rl_colour(style["border-colour"]))
+        c.setStrokeColor(rl_colour(style["border-colour"], style["border-alpha"]))
         c.setLineWidth(style["border-width"])
 
 
 def rl_draw_rect(c, rect, style):
+    rotation = style["rotation"]
     has_background = style["background-fill"]
     background_colour = style["background-colour"]
     border_margin = style["border-margin"]
+    mrect = style.get_margin_rect(rect)
+    if rotation:
+        c.saveState()
+        c.translate(*rect.centre)
+        c.rotate(rotation)
+        rx, ry = rect.centre
+        mx, my = mrect.centre
+        xo, yo = mx - rx, my - ry
+        mrect.move_to(xo, yo)
     if has_background:
-        fc = rl_colour(background_colour)
+        fc = rl_colour(background_colour, style["background-alpha"])
         c.setFillColor(fc)
     else:
         fc = rl_colour_trans()
     rl_set_border_stroke(c, style)
-    mrect = style.get_margin_rect(rect)
     border_radius = style["border-radius"]
     stroke = style["border-outline"] and not abs(border_margin) > 0
     if border_radius > 0:
@@ -148,7 +158,7 @@ def rl_draw_rect(c, rect, style):
                 stroke=True,
                 fill=False,
             )
-    c.setStrokeColor(rl_colour(style["border-colour"]))
+    c.setStrokeColor(rl_colour(style["border-colour"], style["border-alpha"]))
     c.setLineWidth(style["border-width"])
     if style["border-line-left"]:
         c.line(mrect.left, mrect.top, mrect.left, mrect.bottom)
@@ -158,6 +168,8 @@ def rl_draw_rect(c, rect, style):
         c.line(mrect.left, mrect.top, mrect.right, mrect.top)
     if style["border-line-bottom"]:
         c.line(mrect.left, mrect.bottom, mrect.right, mrect.bottom)
+    if rotation:
+        c.restoreState()
 
 
 def get_string_metrics(c, label, fontname, fontsize, with_descent=True):
@@ -171,7 +183,6 @@ def get_string_metrics(c, label, fontname, fontsize, with_descent=True):
     except:
         face = pdfmetrics.getFont(DEF_FONT_NAME).face
         fontname_ = DEF_FONT_NAME
-    # print(face.ascent, face.descent)
     ascent, descent = (face.ascent / 1000.0), abs(face.descent / 1000.0)
     height = ascent - descent if with_descent else ascent
     height *= fontsize
@@ -223,6 +234,17 @@ def scale_string_to_fit(canvas, s, fontname, fontsize, toWidth):
     return fs
 
 
+def expand_string_to_fit(canvas, s, fontname, fontsize, toWidth):
+    fs = fontsize
+    new_size = False
+    while does_string_fit(canvas, s, fontname, fs, toWidth):
+        fs *= 1.05
+        new_size = True
+    if new_size:
+        fs *= 0.9
+    return fs
+
+
 def split_string_to_fit(canvas, s, fontname, fontsize, toWidth):
     words = s.split()
     lines = []
@@ -268,20 +290,29 @@ def trim_string_function(canvas, s, fontname, fontsize, toWidth, func):
     return sn
 
 
+def scale_iterable(v, scale):
+    if isinstance(v, list):
+        return [scale_iterable(e, scale) for e in v]
+    elif isinstance(v, tuple):
+        return tuple(scale_iterable(e, scale) for e in v)
+    else:
+        return v * scale
+
+
 def PTS2MM(pts):
-    return pts / 72 * 25.4
+    return scale_iterable(pts, 25.4 / 72)
 
 
 def PTS2IN(pts):
-    return pts / 72
+    return scale_iterable(pts, 1 / 72)
 
 
 def IN2PTS(inch):
-    return inch * 72
+    return scale_iterable(inch, 72)
 
 
 def MM2PTS(mm):
-    return mm / 25.4 * 72
+    return scale_iterable(mm, 72 / 25.4)
 
 
 def PIX2PTS(pix, dpi):
@@ -476,7 +507,7 @@ def modify_pdf_file(
     shutil.copyfile(temp_path, fnout)
 
 
-def convert_pdf_to_thumbnail(fn, ofn=None, res=144):
+def convert_pdf_to_thumbnail(fn, ofn=None, res=144, **kwargs):
     if ofn is not None:
         outfile = ofn
     else:
@@ -485,13 +516,80 @@ def convert_pdf_to_thumbnail(fn, ofn=None, res=144):
         outfile = fp + os.sep + fa
     outfile = outfile.replace(".png", "")
     s = []
-    s.append("pdftoppm")
+    s.append("pdftopng")
     s.append(fn)
     s.append(outfile)
-    s.append("-png")
     s.append("-f 1 -l 1")
     s.append("-singlefile")
     s.append("-r %d" % (res))
+    for k, v in kwargs.items():
+        s.append("-%s %s" % (k, v))
     s = " ".join(s)
     args = shlex.split(s)
     subprocess.Popen(args).wait()
+
+
+def convert_pdf_to_png(
+    fn,
+    ofn=None,
+    res=150,
+    first=1,
+    last=1,
+    auto_crop_height=False,
+    auto_crop_width=False,
+    pad=None,
+    **kwargs
+):
+    if ofn is not None:
+        outfile = ofn
+    else:
+        fp, f = split_path(fn)
+        fa, fe = split_filename(f)
+        outfile = fp + os.sep + fa
+    outfile = outfile.replace(".png", "")
+    s = []
+    s.append("pdftopng")
+    s.append("-f %d -l %d" % (first, last))
+    s.append("-r %d" % (res))
+    for k, v in kwargs.items():
+        s.append("-%s %s" % (k, v))
+    s.append(fn)
+    s.append(outfile)
+    s = " ".join(s)
+    args = shlex.split(s)
+    subprocess.Popen(args).wait()
+    for page_no in range(first, last + 1):
+        pfn = outfile + "-%06d.png" % (page_no)
+        img = ImageMixin.auto_open(pfn)
+        bg = tuple(int(x) for x in img[0, 0])
+        if auto_crop_height or auto_crop_width:
+            img = ImageMixin.crop_to_content(
+                img, widthwise=auto_crop_width, heightwise=auto_crop_height
+            )
+        if pad is not None:
+            top = True if auto_crop_height else False
+            bottom = True if auto_crop_height else False
+            left = True if auto_crop_width else False
+            right = True if auto_crop_width else False
+            img = ImageMixin.pad_image(
+                img, pad, val=bg, top=top, left=left, bottom=bottom, right=right
+            )
+        ImageMixin.save_image(pfn, img)
+
+
+def line_angle(p0, p1, degrees=True):
+    """Angle of line from point p1 to p0"""
+    xl, yl = p1[0] - p0[0], p1[1] - p0[1]
+    if degrees:
+        return math.degrees(math.atan2(yl, xl))
+    return math.atan2(yl, xl)
+
+
+def line_mid_point(p0, p1):
+    return p0[0] + (p1[0] - p0[0]) / 2, p0[1] + (p1[1] - p0[1]) / 2
+
+
+def linear_offset(length, width, thickness):
+    th = math.atan2(width, length)
+    rx = thickness / math.sin(th)
+    return math.sqrt(rx * rx - thickness * thickness)

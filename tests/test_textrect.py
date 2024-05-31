@@ -112,20 +112,33 @@ def test_string_splitting():
         "./tests/testfiles/test_kerning.pdf", pagesize=(8.5 * inch, 11.0 * inch)
     )
     t1 = TextRect(4 * inch, 1.5 * inch, "No Kerning", _text_dict)
+    t1.background_fill = True
+    t1.background_colour = "#90E090"
     t1.show_debug_rects = True
-    t1.top_left = 1 * inch, 9 * inch
+    t1.top_left = 0.5 * inch, 9 * inch
     t1.draw_in_canvas(c)
 
     t1 = TextRect(4 * inch, 1.5 * inch, "Pos Kerning", _text_dict)
-    t1.kerning = 1.5
-    t1.top_left = 1 * inch, 6 * inch
+    t1.kerning = 0.5
+    t1.top_left = 0.5 * inch, 6 * inch
     t1.show_debug_rects = True
     t1.draw_in_canvas(c)
 
     t1 = TextRect(4 * inch, 1.5 * inch, "Neg Kerning", _text_dict)
-    t1.kerning = -1.5
-    t1.top_left = 1 * inch, 3 * inch
+    t1.kerning = -0.1
+    t1.top_left = 0.5 * inch, 3 * inch
     t1.show_debug_rects = True
+    t1.draw_in_canvas(c)
+
+    t1 = TextRect(4 * inch, 1.5 * inch, "Rotated", _text_dict)
+    t1.rotation = 45
+    t1.background_fill = True
+    t1.background_colour = "#F0E090"
+    t1.background_alpha = 0.5
+    t1.border_alpha = 0.3
+    t1.font_alpha = 0.5
+    t1.show_debug_rects = True
+    t1.top_left = 4 * inch, 8.25 * inch
     t1.draw_in_canvas(c)
 
     c.showPage()

@@ -7,6 +7,7 @@ import pytest
 from toolbox import *
 from pdfdoc import TextRect
 from pdfdoc import TableRow
+from pdfdoc import CONTENT_SIZE
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 

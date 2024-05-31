@@ -30,6 +30,7 @@ from pdfdoc import *
 class TableColumn(TableVector):
     def __init__(self, w=0, h=0, style=None, **kwargs):
         super().__init__(w, h, style)
+        self.fit_to_contents = False
         self.parse_kwargs(**kwargs)
 
     def add_row(self, label=None, content=None, order=None, height=0):
@@ -46,7 +47,8 @@ class TableColumn(TableVector):
         if cell is not None:
             cell.height = height
 
-    def draw_in_canvas(self, canvas, auto_size=False, auto_size_anchor=None):
+    def draw_in_canvas(self, canvas, auto_size=None, auto_size_anchor=None):
+        auto_size = auto_size if auto_size is not None else self.fit_to_contents
         if auto_size:
             w, h = self.get_content_size()
             anchor = "top left" if auto_size_anchor is None else auto_size_anchor

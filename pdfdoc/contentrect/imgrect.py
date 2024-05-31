@@ -69,13 +69,14 @@ class ImageRect(ContentRect):
         return get_image_metrics(self.filename)
 
     def draw_in_canvas(self, c):
+        self.snapshot_rect()
         self.draw_rect(c)
         self.draw_image_rect(c)
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(c, inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
+        self.restore_rect()
 
     def get_content_size(self, with_padding=True):
         if self.filename is None:
@@ -93,16 +94,18 @@ class ImageRect(ContentRect):
         (iw, ih) = get_image_metrics(self.filename)
         if not iw > 0 or not ih > 0:
             return
-        inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
             tw, th = Rect.get_best_rect_metrics(
-                iw, ih, inset_rect.width, inset_rect.height
+                iw, ih, self.inset_width, self.inset_height
             )
         else:
             tw, th = PIX2PTS((iw, ih), self.dpi)
-        tx, ty = self.aligned_corner(tw, th)
         c.setFillColor(rl_colour((0, 0, 0)))
+        tx, ty = self.aligned_corner(tw, th)
+        tx, ty = self.rotated_origin(c, tx, ty)
         c.drawImage(self.filename, tx, ty, tw, th, mask="auto")
+        if self.style["rotation"]:
+            c.restoreState()
 
     def convert_rect_to_pix(self, rect):
         """Converts a passed rect into the pixel coordinates of this image."""
@@ -128,6 +131,7 @@ class ImageRect(ContentRect):
             _, pf = split_path(preset)
             if pf == name:
                 return ImageRect(filename=preset, **kwargs)
+        raise ValueError("Cannot find preset PNG image named %s" % (name))
 
     @staticmethod
     def list_presets():
@@ -140,4 +144,4 @@ class ImageRect(ContentRect):
         for file in files:
             if str(file).lower().endswith(".png"):
                 presets.append(str(file))
-        return presets
+        return sorted(presets)

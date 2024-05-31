@@ -357,6 +357,41 @@ haz_lookup_dict = {
     "power-off": "u",
 }
 
+haz_shape_dict = {
+    "caution": "triangle",
+    "laser": "triangle",
+    "radiation": "triangle",
+    "electrical": "triangle",
+    "fire": "triangle",
+    "poison": "triangle",
+    "oxidization": "triangle",
+    "eye-protection": "circle",
+    "boots": "circle",
+    "gloves": "circle",
+    "hat": "circle",
+    "ear-protection": "circle",
+    "wash-hands": "circle",
+    "face-shield": "circle",
+    "face-mask": "circle",
+    "no-people": "circle",
+    "no-smoking": "circle",
+    "no-cups": "circle",
+    "no-utensils": "circle",
+    "no-food": "circle",
+    "exit": "square",
+    "first-aid": "square",
+    "left-arrow": "square",
+    "right-arrow": "square",
+    "up-arrow": "square",
+    "down-arrow": "square",
+    "prohibited": "circle",
+    "power-off": "circle",
+    "fa-caution": "triangle",
+    "mandatory": "circle",
+    "fa-info": "circle",
+    "info": "circle",
+}
+
 
 def haz_symbol(x):
     """Returns a Hazard symbol using a descriptive name"""
@@ -392,3 +427,15 @@ def print_symbol_list():
             print("".join(s))
             s = []
     print("".join(s))
+
+
+def stroke_width(fontname, fontsize):
+    if fontsize is None or fontname is None:
+        return 0
+    if fontsize == 0 or fontname == "":
+        return 0
+    _ = pdfmetrics.getFont(fontname).face
+    width = 0
+    c = canvas.Canvas("tmp.pdf")
+    width = c.stringWidth("i", fontname, fontsize)
+    return width

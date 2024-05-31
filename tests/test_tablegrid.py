@@ -46,6 +46,10 @@ def test_tablegrid_rows():
         tc.style.set_attr("top-padding", tp)
         tc.style.set_attr("bottom-padding", bp)
         tc.show_debug_rects = True
+        if x == 0 or x == 9:
+            tc.rotation = 15
+            if x == 0:
+                tc.rotated_bounds = False
         tr.add_cell(cl, tc)
 
     assert len(tr) == 15

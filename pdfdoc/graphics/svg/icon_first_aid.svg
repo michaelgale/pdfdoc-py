@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" viewBox="107.9934 177.11125 39.9375 39.9375" width="39.9375" height="39.9375">
+  <defs/>
+  <g id="Canvas_1" stroke-dasharray="none" fill="none" stroke-opacity="1" stroke="none" fill-opacity="1">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Graphic_145">
+        <path d="M 109.9934 177.11125 L 145.9309 177.11125 C 147.03547 177.11125 147.9309 178.00668 147.9309 179.11125 L 147.9309 215.04875 C 147.9309 216.15332 147.03547 217.04875 145.9309 217.04875 L 109.9934 217.04875 C 108.88883 217.04875 107.9934 216.15332 107.9934 215.04875 L 107.9934 179.11125 C 107.9934 178.00668 108.88883 177.11125 109.9934 177.11125 Z" fill="#008f00"/>
+      </g>
+      <g id="Group_149">
+        <g id="Graphic_146">
+          <rect x="122.73989" y="181.23384" width="10.444523" height="31.69232" fill="white"/>
+        </g>
+        <g id="Graphic_147">
+          <rect x="112.11599" y="191.85774" width="31.69232" height="10.444523" fill="white"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

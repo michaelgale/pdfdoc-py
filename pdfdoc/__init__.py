@@ -46,6 +46,7 @@ from .helpers import (
     is_rect_in_transparent_region,
     modify_pdf_file,
     convert_pdf_to_thumbnail,
+    convert_pdf_to_png,
 )
 from .fonthelpers import (
     register_font_family,
@@ -69,6 +70,7 @@ from .contentrect.textrect import TextRect
 from .contentrect.imgrect import ImageRect
 from .contentrect.patternrect import PatternRect
 from .contentrect.svgrect import SvgRect
+from .contentrect.qrcoderect import QRCodeRect
 from .contentrect.alignmentrect import AlignmentRect
 from .tablecell.tablecell import TableCell
 from .tablecell.tablevector import TableVector

@@ -260,3 +260,31 @@ class ColumnLineCallback(DocumentCallback):
         c.setLineWidth(line_width)
         x = r.left + r.width / 2
         c.line(x, r.top - tm, x, r.bottom + bm)
+
+
+class WatermarkCallback(DocumentCallback):
+    """A callback which draws watermark text on top of the page."""
+
+    default_style = {
+        "font": "DIN-Bold",
+        "font-size": 64,
+        "font-colour": "#601010",
+        "kerning": 0.4,
+        "font-alpha": 0.25,
+        "rotation": 22,
+    }
+
+    def __init__(self, text=None, style=None):
+        super().__init__()
+        self.text = text
+        self.style = DocStyle(style=style)
+        self.z_order = 99
+        if style is None:
+            self.style.set_with_dict(self.default_style)
+
+    def render(self, context):
+        if self.text is None:
+            return
+        tr = TextRect(self.text, style=self.style)
+        tr.rect.move_to(context["page_rect"].centre)
+        tr.draw_in_canvas(context["canvas"])

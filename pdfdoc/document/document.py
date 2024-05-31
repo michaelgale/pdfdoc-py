@@ -64,6 +64,8 @@ class Document:
             self.set_page_size(PAGE_LETTER)
         self.section_list = []
         self.chapter = 1
+        self.page_count = 0
+        self.last_page = False
 
     def __repr__(self):
         return "%s(%r, %r)" % (
@@ -76,6 +78,8 @@ class Document:
         s = []
         s.append(title)
         if callbacks is not None:
+            if not isinstance(callbacks, (list, tuple)):
+                callbacks = [callbacks]
             for callback in callbacks:
                 s.append("    %r  z-order : %d" % (callback, callback.z_order))
                 if callback.sections_active is not None:
@@ -140,6 +144,10 @@ class Document:
             % (self.section, self.chapter, self.page_number, self.column, self.cursor)
         )
         return "\n".join(s)
+
+    @property
+    def context(self):
+        return self.get_context()
 
     def get_context(self):
         """Returns a dictionary representing essential document context state."""
@@ -439,11 +447,27 @@ class Document:
 
     # Automated document control actions/callbacks
 
+    def _valid_callbacks(self, callbacks):
+        if callbacks is None:
+            return False
+        if isinstance(callbacks, list):
+            if len(callbacks) > 0:
+                return True
+            return False
+        if isinstance(callbacks, DocumentCallback):
+            return True
+        if callable(callbacks):
+            return True
+        return False
+
     def _process_callbacks(self, callbacks):
         def z_order_key(e):
             if "z_order" in e.__dict__:
                 return e.z_order
             return 0
+
+        # if not self._valid_callbacks(callbacks):
+        #     return
 
         all_callbacks = []
         if isinstance(callbacks, list):
@@ -457,6 +481,8 @@ class Document:
         else:
             if callbacks is not None:
                 all_callbacks = [callbacks]
+        if len(all_callbacks) == 0:
+            return
         ordered = sorted(all_callbacks, key=z_order_key)
         for callback in ordered:
             if isinstance(callback, DocumentCallback):
@@ -477,6 +503,7 @@ class Document:
         if self.subject is not None:
             self.c.setSubject(self.subject)
         self.page_number = 1
+        self.page_count = 0
         if self.section_list is not None:
             if len(self.section_list) > 0:
                 self.section = self.section_list[0]
@@ -494,6 +521,7 @@ class Document:
         self._process_callbacks([self.page_end_callbacks, self.doc_end_callbacks])
         self.c.showPage()
         self.c.save()
+        self.page_count += 1
         self.c = None
 
     def _section_start(self):
@@ -517,6 +545,7 @@ class Document:
             self.page_number = new_page_number
         else:
             self.page_number += 1
+        self.page_count += 1
 
     def iter_doc(self, blocks):
         """Generator which yields sequential content generation based on the

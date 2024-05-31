@@ -66,9 +66,7 @@ class TableVector(DocStyleMixin, RectMixin):
                 elif k == "centre":
                     self.centre = v
             else:
-                key = self.style._attr_key(k)
-                if key in self.style.attr:
-                    self.style[key] = v
+                self.style[k] = v
 
     def __len__(self):
         return len(self.cells)
@@ -479,3 +477,35 @@ class TableVector(DocStyleMixin, RectMixin):
             if self.is_fixed_height and self.is_fixed_width:
                 self.draw_debug_rect(canvas, self.fixed_rect, (1, 0, 1))
             canvas.restoreState()
+
+    @staticmethod
+    def from_array(a, style=None, element_style=None, fit_to_contents=True, **kwargs):
+        """
+        Makes a TableVector instance from an array of text strings
+        """
+        from .tablecolumn import TableColumn
+        from .tablerow import TableRow
+        from pdfdoc.contentrect.textrect import TextRect
+
+        v = TableColumn(style=style, fit_to_contents=fit_to_contents, **kwargs)
+        sizing = CONTENT_SIZE if fit_to_contents else AUTO_SIZE
+        for row in a:
+            if isinstance(row, str):
+                r = TextRect(row, style=element_style)
+            elif isinstance(row, (tuple, list)):
+                r = TableRow(fit_to_contents=fit_to_contents)
+                for c in row:
+                    if isinstance(c, str):
+                        e = TextRect(c, style=element_style)
+                    else:
+                        e = c
+                        if "auto_size" in c.__dict__:
+                            c.auto_size = not fit_to_contents
+                    r.add_column(e, width=sizing)
+            else:
+                r = row
+                if "auto_size" in row.__dict__:
+                    row.auto_size = not fit_to_contents
+                    row.get_content_size()
+            v.add_row(r, height=sizing)
+        return v

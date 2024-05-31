@@ -4,12 +4,11 @@ import os
 import sys
 import pytest
 
-from toolbox import *
-from pdfdoc import TextRect
-from pdfdoc import TableRow
-from pdfdoc import TableColumn
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
+
+from toolbox import *
+from pdfdoc import *
 
 _test_dict = {"left-margin": 1 * inch, "right-margin": 1 * inch, "horz-align": "left"}
 
@@ -116,6 +115,5 @@ def test_tableimbedded():
     tr.border_colour = (0.1, 0.1, 0.1)
     tr.border_width = 0.02 * inch
     tr.draw_in_canvas(c)
-
     c.showPage()
     c.save()

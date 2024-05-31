@@ -115,14 +115,17 @@ class GenericLabel(TableColumn):
     def set_colour(self, colour):
         c = safe_colour_tuple(colour)
         self.title.background_colour = c
+        self.title.background_fill = True
         self.title.border_colour = c
         self.title.border_outline = True
         self.title.font_colour = high_contrast_complement(c)
         self.symbol.background_colour = c
+        self.symbol.background_fill = True
         self.symbol.border_colour = c
         self.symbol.border_outline = True
         self.symbol.font_colour = high_contrast_complement(c)
         self.symbol2.background_colour = c
+        self.symbol2.background_fill = True
         self.symbol2.border_colour = c
         self.symbol2.border_outline = True
         self.symbol2.font_colour = high_contrast_complement(c)

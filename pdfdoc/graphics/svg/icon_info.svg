@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" version="1.1" viewBox="54.33755 241.875 39.9375 39.9375" width="39.9375" height="39.9375">
+  <defs/>
+  <g id="Canvas_1" stroke-dasharray="none" stroke="none" fill-opacity="1" fill="none" stroke-opacity="1">
+    <title>Canvas 1</title>
+    <g id="Canvas_1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_141">
+        <g id="Graphic_121">
+          <circle cx="74.3063" cy="261.84375" r="19.9687819081035" fill="blue"/>
+        </g>
+        <g id="Graphic_129">
+          <circle cx="74.3063" cy="248.625" r="6.7500107858378" fill="white"/>
+        </g>
+        <g id="Graphic_140">
+          <path d="M 69.47797 273.31685 C 69.47797 273.86913 69.03026 274.31685 68.47797 274.31685 L 67.05915 274.31685 L 66.05915 274.31685 L 66.05915 275.31685 L 66.05915 276.12935 L 66.05915 277.12935 L 67.05915 277.12935 L 82.49665 277.12935 L 83.49665 277.12935 L 83.49665 276.12935 L 83.49665 275.31685 L 83.49665 274.31685 L 82.49665 274.31685 L 81.07783 274.31685 C 80.52555 274.31685 80.07783 273.86913 80.07783 273.31685 L 80.07783 257.87935 C 80.07783 257.32707 79.63012 256.87935 79.07783 256.87935 L 67.05915 256.87935 L 66.05915 256.87935 L 66.05915 257.87935 L 66.05915 258.69185 L 66.05915 259.69185 L 67.05915 259.69185 L 68.47797 259.69185 C 69.03026 259.69185 69.47797 260.13957 69.47797 260.69185 Z" fill="white"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

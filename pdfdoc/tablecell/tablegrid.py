@@ -133,7 +133,7 @@ class TableGrid(TableVector):
 
         self.gutters_from_rects(new_rects)
         for idx, cell in enumerate(self.iter_cells()):
-            cell.content.size = (new_rects[idx].width, new_rects[idx].height)
+            cell.content.rect.set_size(new_rects[idx].width, new_rects[idx].height)
             cell.content.top_left = (new_rects[idx].left, new_rects[idx].top)
         bounds = Rect.bounding_rect_from_rects(new_rects)
         self.total_width = bounds.width + self.style.width_pad_margin

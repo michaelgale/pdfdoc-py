@@ -31,15 +31,21 @@ class ContentRect(DocStyleMixin, RectMixin):
     def __init__(self, w=None, h=None, style=None, **kwargs):
         w = w if w is not None and not isinstance(w, str) else 1
         h = h if h is not None and not isinstance(w, str) else 1
-        self.rect = Rect(w, h)
         self.style = DocStyle()
         if style is not None:
             self.style.set_with_dict(style)
         self.show_debug_rects = False
         self.overlay_content = None
+        # rect which the contents are drawn (dynamic)
+        self.rect = Rect(w, h)
+        # a fixed size rect specification if desired
         self.is_fixed_width = False
         self.is_fixed_height = False
         self.fixed_rect = Rect(w, h)
+        # stores a nominal (un-rotated) version of rect
+        self.unrotated_rect = None
+        # temporary storage for keeping a copy of rect
+        self.rect_snapshot = Rect(w, h)
         self.parse_kwargs(**kwargs)
 
     def __repr__(self):
@@ -67,18 +73,54 @@ class ContentRect(DocStyleMixin, RectMixin):
                     self.bottom_right = v
                 elif k == "centre":
                     self.centre = v
-            else:
-                key = self.style._attr_key(k)
-                if key in self.style.attr:
-                    self.style[key] = v
+            elif self.style is not None:
+                self.style[k] = v
+
+    @property
+    def inset_rect(self):
+        return self.style.get_inset_rect(self.rect)
+
+    @property
+    def inset_width(self):
+        return self.inset_rect.width
+
+    @property
+    def inset_height(self):
+        return self.inset_rect.height
+
+    @property
+    def margin_rect(self):
+        return self.style.get_margin_rect(self.rect)
 
     def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
+        dr = r.copy()
         c.saveState()
+        if self.style["rotation"]:
+            c.translate(*dr.centre)
+            c.rotate(self.style["rotation"])
+            dr.move_to(0, 0)
         c.setFillColor(rl_colour_trans())
         c.setStrokeColor(rl_colour(colour))
         c.setLineWidth(0.1)
-        c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
+        c.rect(dr.left, dr.bottom, dr.width, dr.height, stroke=True, fill=False)
         c.restoreState()
+
+    def snapshot_rect(self):
+        if self.style["rotation"]:
+            # if we're rotated, then we need to reset our base rect to
+            # its original size as stored in zero_rect before we draw
+            # we'll also store a copy of rect so that we can restore it
+            if self.unrotated_rect is None:
+                self.unrotated_rect = self.rect.copy()
+            self.rect_snapshot = self.rect.copy()
+            self.rect.set_size_anchored(
+                self.unrotated_rect.width, self.unrotated_rect.height, "centre"
+            )
+
+    def restore_rect(self):
+        # restore our snapshot copy of the base rect
+        if self.style["rotation"]:
+            self.rect = self.rect_snapshot.copy()
 
     def draw_overlay_content(self, c):
         if self.overlay_content is not None:
@@ -86,12 +128,14 @@ class ContentRect(DocStyleMixin, RectMixin):
             self.overlay_content.draw_in_canvas(c)
 
     def draw_in_canvas(self, c):
+        self.snapshot_rect()
         self.draw_rect(c)
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
             self.draw_debug_rect(c, inset_rect, (0, 0, 1))
+        self.restore_rect()
 
     def set_fixed_size(self, w, h):
         self.is_fixed_height = True
@@ -106,6 +150,15 @@ class ContentRect(DocStyleMixin, RectMixin):
             height += self.style.height_pad_margin
         w = self.fixed_rect.width if self.is_fixed_width else width
         h = self.fixed_rect.height if self.is_fixed_height else height
+        # we can report our rotated size only if we
+        # have "rotated-bounds" style attribute set
+        # otherwise, report our nominal unrotated size
+        if self.rotation and self.rotated_bounds:
+            # retain our basic un-rotated size since we will need to
+            # reset this later when drawing
+            self.unrotated_rect = Rect(w, h)
+            bb = Rect(w, h)
+            w, h = bb.rotated_boundbox(self.rotation).size
         return w, h
 
     def draw_rect(self, c):
@@ -132,17 +185,22 @@ class ContentRect(DocStyleMixin, RectMixin):
             tx = inset_rect.left
         return tx, ty
 
+    def rotated_origin(self, c, tx, ty):
+        if self.style["rotation"]:
+            mx, my = self.inset_rect.centre
+            xo, yo = mx - tx, my - ty
+            c.saveState()
+            c.translate(mx, my)
+            c.rotate(self.style["rotation"])
+            tx, ty = -xo, -yo
+        return tx, ty
+
 
 class FixedRect(ContentRect):
-    """Convenience class to delcare a fixed sized rectangle."""
+    """Convenience class to declare a fixed sized rectangle."""
 
-    def __init__(self, w=1, h=1, style=None):
-        self.rect = Rect(w, h)
-        self.style = DocStyle()
-        if style is not None:
-            self.style.set_with_dict(style)
-        self.show_debug_rects = False
-        self.overlay_content = None
+    def __init__(self, w=None, h=None, style=None, **kwargs):
+        super().__init__(w=w, h=h, style=style, **kwargs)
         self.is_fixed_width = True
         self.is_fixed_height = True
         self.fixed_rect = Rect(w, h)

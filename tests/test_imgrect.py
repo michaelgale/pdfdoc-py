@@ -57,6 +57,7 @@ def test_imgrect_render():
     t1 = ImageRect(1 * inch, 2 * inch, "./tests/testfiles/long.png", _text_dict)
     t1.show_debug_rects = True
     t1.vert_align = "top"
+    t1.rotation = 22
     t1.top_left = 1 * inch, 8 * inch
     t1.draw_in_canvas(c)
 
@@ -64,28 +65,33 @@ def test_imgrect_render():
     t2.show_debug_rects = True
     t2.vert_align = "centre"
     t2.top_left = 1 * inch, 5.5 * inch
+    t2.rotation = 22
     t2.draw_in_canvas(c)
 
     t3 = ImageRect(1 * inch, 2 * inch, "./tests/testfiles/square.png", _text_dict)
     t3.show_debug_rects = True
     t3.vert_align = "bottom"
+    t3.rotation = 22
     t3.top_left = 1 * inch, 3 * inch
     t3.draw_in_canvas(c)
 
     t1 = ImageRect(3 * inch, 1 * inch, "./tests/testfiles/long.png", _text_dict)
     t1.show_debug_rects = True
     t1.horz_align = "left"
+    t1.rotation = -22
     t1.top_left = 4.5 * inch, 8 * inch
     t1.draw_in_canvas(c)
 
     t2 = ImageRect(3 * inch, 1 * inch, "./tests/testfiles/tall.png", _text_dict)
     t2.show_debug_rects = True
     t2.horz_align = "centre"
+    t2.rotation = -22
     t2.top_left = 4.5 * inch, 6.5 * inch
     t2.draw_in_canvas(c)
 
     t3 = ImageRect(3 * inch, 1 * inch, "./tests/testfiles/square.png", _text_dict)
     t3.show_debug_rects = True
+    t3.rotation = -22
     t3.horz_align = "right"
     t3.top_left = 4.5 * inch, 5 * inch
     t3.draw_in_canvas(c)

@@ -80,6 +80,7 @@ def test_layoutcell_inside():
     t1 = TextRect(0, 0, "42", _text_dict)
     t1.show_debug_rects = True
     t2 = ImageRect(0, 0, "./tests/testfiles/square.png")
+    t2.rotation = -35
     t2.show_debug_rects = True
     t3 = ImageRect(0, 0, "./tests/testfiles/tall.png")
     t3.show_debug_rects = True
@@ -89,7 +90,7 @@ def test_layoutcell_inside():
     tl.add_cell("Cell1", t1, constraints=["top left"])
     tl.add_cell("Cell2", t2, constraints=["top left to Cell1 top right"])
     tl.add_cell("Cell3", t3, constraints=["top right"])
-    tl.add_cell("Cell4", t4, constraints=["left to Cell2 left", "below Cell3"])
+    tl.add_cell("Cell4", t4, constraints=["left to Cell2 left", "below Cell3 Cell2"])
     tl.show_debug_rects = True
 
     tl2 = LayoutCell(6 * inch, 1 * inch)
@@ -110,6 +111,7 @@ def test_layoutcell_inside():
     t3 = ImageRect(0, 0, "./tests/testfiles/long.png")
     t3.show_debug_rects = True
     t4 = TextRect(0, 0, "Another Bottom Text Box", _text_dict)
+    t4.rotation = 15
     t4.show_debug_rects = True
     t5 = TextRect(0, 0, "Cell5 Text Box", _text_dict)
     t5.show_debug_rects = True

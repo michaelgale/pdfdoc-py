@@ -43,6 +43,7 @@ def test_alignmentrect_placement():
     )
     cr = ContentRect(32, 32)
     cr.background_colour = "#402080"
+    cr.background_fill = True
     ar = AlignmentRect(2.5 * inch, 1.5 * inch)
     ar.style.set_with_dict(
         {
@@ -63,6 +64,7 @@ def test_alignmentrect_placement():
 
     xr = ContentRect(32, 1.75 * inch)
     xr.background_colour = "#802040"
+    xr.background_fill = True
 
     tr = TextRect(32, 32, "1x")
     tr.font_size = 14

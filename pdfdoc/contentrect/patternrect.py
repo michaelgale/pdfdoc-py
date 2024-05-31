@@ -61,51 +61,51 @@ class PatternRect(ContentRect):
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(c, inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
 
     def _draw_slant_line(self, c, fc):
-        mrect = self.style.get_margin_rect(self.rect)
+        mrect = self.margin_rect
         x0, x1 = mrect.left, mrect.right
         y0, y1 = mrect.bottom, mrect.top
         xl = x1 - x0
         yl = y1 - y0
-        m = max(1, int(math.floor(yl / self.pattern_width)))
-        pw = yl / m
-        ps = self.pattern_slant * (pw / self.pattern_width)
-        n = int(math.ceil(xl / pw))
-        for i in range(n):
-            if i % 2 == 0:
-                c.setFillColor(fc)
-                c.setStrokeColor(fc)
-            else:
-                continue
-            xi = x0 + i * pw
-            xi0 = xi + ps
-            xi1 = xi0 + pw
-            xi2 = xi + pw
-            m = (y1 - y0) / ps
+        xp = max(1, int(math.ceil(xl / self.pattern_width)))
+        xs = xl / xp
+        xh = xs / 2
+        yp = max(1, int(math.ceil(yl / self.pattern_slant)))
+        ys = yl / yp
+
+        def _left_tri(xo, yo, xl, yl):
             p = c.beginPath()
-            p.moveTo(xi, y0)
-            if xi0 > x1:
-                yi = y0 + m * (x1 - xi)
-                p.lineTo(x1, yi)
-                p.lineTo(x1, y0)
-            elif xi1 > x1:
-                p.lineTo(xi0, y1)
-                p.lineTo(x1, y1)
-                yi = y0 + m * (x1 - xi2)
-                p.lineTo(x1, yi)
-                p.lineTo(xi2, y0)
-            else:
-                p.lineTo(xi0, y1)
-                p.lineTo(xi1, y1)
-                p.lineTo(xi2, y0)
-            p.lineTo(xi, y0)
+            p.moveTo(xo, yo)
+            p.lineTo(xo, yo + yl)
+            p.lineTo(xo + xl, yo + yl)
+            p.moveTo(xo, yo)
             c.drawPath(p, stroke=0, fill=1)
 
+        def _right_tri(xo, yo, xl, yl):
+            p = c.beginPath()
+            p.moveTo(xo, yo)
+            p.lineTo(xo + xl, yo + yl)
+            p.lineTo(xo + xl, yo)
+            p.moveTo(xo, yo)
+            c.drawPath(p, stroke=0, fill=1)
+
+        c.setFillColor(fc)
+        c.setStrokeColor(fc)
+        for i in range(xp):
+            for j in range(yp):
+                xi = x0 + i * xs
+                yi = y0 + j * ys
+                if j % 2 == 0:
+                    _left_tri(xi, yi, xh, ys)
+                    _right_tri(xi + xh, yi, xh, ys)
+                else:
+                    _right_tri(xi, yi, xh, ys)
+                    _left_tri(xi + xh, yi, xh, ys)
+
     def _draw_squares(self, c, fc):
-        mrect = self.style.get_margin_rect(self.rect)
+        mrect = self.margin_rect
         x0, x1 = mrect.left, mrect.right
         y0, y1 = mrect.bottom, mrect.top
         xl = x1 - x0
@@ -133,7 +133,7 @@ class PatternRect(ContentRect):
     def draw_pattern_rect(self, c):
         bc = rl_colour(self.background_colour)
         fc = rl_colour(self.foreground_colour)
-        mrect = self.style.get_margin_rect(self.rect)
+        mrect = self.margin_rect
         c.setFillColor(bc)
         c.setStrokeColor(bc)
         c.setLineWidth(0.1)

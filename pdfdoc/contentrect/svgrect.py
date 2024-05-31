@@ -60,13 +60,14 @@ class SvgRect(ContentRect):
         return "\n".join(s)
 
     def draw_in_canvas(self, c):
+        self.snapshot_rect()
         self.draw_rect(c)
         self.draw_svg_rect(c)
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(c, inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
+        self.restore_rect()
 
     def get_content_size(self, with_padding=True):
         if self.filename is None:
@@ -85,16 +86,18 @@ class SvgRect(ContentRect):
             return
         dwg = svg2rlg(self.filename)
         (iw, ih) = dwg.minWidth(), dwg.height
-        inset_rect = self.style.get_inset_rect(self.rect)
         if self.auto_size:
             tw, th = Rect.get_best_rect_metrics(
-                iw, ih, inset_rect.width, inset_rect.height
+                iw, ih, self.inset_width, self.inset_height
             )
         else:
             tw, th = iw, ih
         dwg.scale(tw / iw, th / ih)
         tx, ty = self.aligned_corner(tw, th)
+        tx, ty = self.rotated_origin(c, tx, ty)
         renderPDF.draw(dwg, c, tx, ty)
+        if self.style["rotation"]:
+            c.restoreState()
 
     @staticmethod
     def from_preset(name, **kwargs):
@@ -107,6 +110,7 @@ class SvgRect(ContentRect):
             _, pf = split_path(preset)
             if pf == name:
                 return SvgRect(filename=preset, **kwargs)
+        raise ValueError("Cannot find preset SVG named %s" % (name))
 
     @staticmethod
     def list_presets():
@@ -119,4 +123,4 @@ class SvgRect(ContentRect):
         for file in files:
             if str(file).lower().endswith(".svg"):
                 presets.append(str(file))
-        return presets
+        return sorted(presets)

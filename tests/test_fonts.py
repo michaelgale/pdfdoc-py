@@ -6,6 +6,7 @@ from toolbox import *
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from pdfdoc import *
+from pdfdoc.fonthelpers import stroke_width
 
 
 def test_listfiles():

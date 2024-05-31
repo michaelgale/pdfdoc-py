@@ -193,7 +193,7 @@ SAFETY_LABEL_ICON = {
 
 SAFETY_LABEL_TITLE = {
     "font": "IKEA-Sans-Heavy",
-    "font-size": 24,
+    "font-size": 36,
     "horz-align": "centre",
     "vert-align": "centre",
     "left-padding": 0.0 * inch,
@@ -212,4 +212,41 @@ SAFETY_LABEL_DESC = {
     "vert-align": "centre",
     "left-padding": 0.03 * inch,
     "right-padding": 0.03 * inch,
+}
+
+SAFETY_RED_STYLE = {
+    "background-fill": True,
+    "background-colour": "#FF0000",
+    "border-outline": False,
+    "font-colour": "#FFFFFF",
+}
+
+SAFETY_BLUE_STYLE = {
+    "background-fill": True,
+    "background-colour": "#0000FF",
+    "border-outline": False,
+    "font-colour": "#FFFFFF",
+}
+
+SAFETY_INFO_STYLE = {
+    "background-fill": False,
+    "background-colour": "#FFFFFF",
+    "border-outline": True,
+    "border-colour": "#0000FF",
+    "font-colour": "#000000",
+}
+
+SAFETY_GREEN_STYLE = {
+    "background-fill": True,
+    "background-colour": "#008F00",
+    "border-outline": False,
+    "font-colour": "#FFFFFF",
+}
+
+SAFETY_YELLOW_STYLE = {
+    "background-fill": True,
+    "background-colour": "#FFED10",
+    "border-outline": True,
+    "border-colour": "#000000",
+    "font-colour": "#000000",
 }
