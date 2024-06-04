@@ -429,13 +429,44 @@ def print_symbol_list():
     print("".join(s))
 
 
-def stroke_width(fontname, fontsize):
-    if fontsize is None or fontname is None:
-        return 0
-    if fontsize == 0 or fontname == "":
-        return 0
-    _ = pdfmetrics.getFont(fontname).face
-    width = 0
-    c = canvas.Canvas("tmp.pdf")
-    width = c.stringWidth("i", fontname, fontsize)
-    return width
+class FontWrapper:
+    def __init__(self, font_name, font_size, **kwargs):
+        self.font_name = font_name
+        self.font_size = font_size
+        self._face = None
+
+    @property
+    def face(self):
+        if self._face is None:
+            self._face = pdfmetrics.getFont(self.font_name).face
+        return self._face
+
+    @property
+    def ascent(self):
+        return self.face.ascent / 1000.0 * self.font_size
+
+    @property
+    def descent(self):
+        return self.face.descent / 1000.0 * self.font_size
+
+    @property
+    def nom_height(self):
+        return self.ascent - self.descent
+
+    @property
+    def height(self):
+        if abs(self.ascent - self.font_size) / self.font_size < 0.1:
+            return self.ascent
+        return self.ascent - self.descent
+
+    @property
+    def stroke_width(self):
+        c = canvas.Canvas("tmp.pdf")
+        width = c.stringWidth("i", self.font_name, self.font_size)
+        return width
+
+    def string_width(self, s):
+        c = canvas.Canvas("tmp.pdf")
+        c.setFont(self.font_name, self.font_size)
+        tw = c.stringWidth(s, self.font_name, self.font_size)
+        return tw

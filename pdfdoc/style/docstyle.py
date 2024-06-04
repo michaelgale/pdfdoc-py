@@ -26,9 +26,11 @@
 import copy
 from collections import OrderedDict
 import string
+from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
+import yaml
 
-from toolbox import Params
+from toolbox import Params, Rect
 from pdfdoc import *
 
 attr_aliases = {
@@ -46,6 +48,7 @@ attr_aliases = {
     "columns": "ncolumns",
     "cols": "ncolumns",
     "rows": "nrows",
+    "ncols": "ncolumns",
     "n-columns": "ncolumns",
     "n-rows": "nrows",
     "dash": "line-dash",
@@ -79,7 +82,7 @@ class DocStyle:
             "padding-ratio": 0,
             "cell-padding": 0,
             "text-baseline": 0,
-            "line-spacing": 1.1,
+            "line-spacing": 1.0,
             "gutter-width": 0,
             "gutter-height": 0,
             "gutter-line": 0,
@@ -240,11 +243,24 @@ class DocStyle:
             return self.attr[key]
         return def_value
 
+    @staticmethod
+    def from_yaml(yml):
+        s = DocStyle()
+        s.set_with_yaml(yml)
+        return s
+
+    def set_with_yaml(self, yml):
+        sd = yaml.safe_load(yml)
+        self.set_with_dict(sd)
+
     def set_with_dict(self, style_dict, key_mask=None):
         if isinstance(style_dict, dict):
             items = style_dict.items()
         elif isinstance(style_dict, DocStyle):
             items = style_dict.attr.items()
+        elif isinstance(style_dict, str):
+            self.set_with_yaml(style_dict)
+            return
         else:
             return
         if key_mask is not None:
@@ -261,6 +277,10 @@ class DocStyle:
                 if not k == "attr":
                     key = self._attr_key(k)
                     self.set_attr(key, v)
+
+    @property
+    def size(self):
+        return self.width, self.height
 
     def set_all_margins(self, withMargin):
         self.set_attr("left-margin", withMargin)
@@ -483,6 +503,86 @@ class DocStyle:
         else:
             self["background-fill"] = True
             self["background-colour"] = colour
+
+    @property
+    def font_height(self):
+        fw = FontWrapper(self.font_name, self.font_size)
+        return fw.height
+
+    @property
+    def line_height(self):
+        return self.font_height * self.line_spacing
+
+    @property
+    def font_descent(self):
+        fw = FontWrapper(self.font_name, self.font_size)
+        return fw.descent
+
+    @property
+    def font_baseline(self):
+        return self.font_height / 2 + self.font_descent
+
+    def font_stroke(self, size=None):
+        size = size if size is not None else self.font_size
+        fw = FontWrapper(self.font_name, size)
+        return fw.stroke_width
+
+    def string_width(self, string, size=None):
+        size = size if size is not None else self.font_size
+        fw = FontWrapper(self.font_name, size)
+        tw = fw.string_width(string)
+        tw += self.kerning * (len(string) - 1) * size
+        return tw
+
+    def text_bound_box(self, text, size=None):
+        size = size if size is not None else self.font_size
+        w = self.string_width(text, size)
+        fw = FontWrapper(self.font_name, size)
+        h = fw.height
+        return Rect(w, h)
+
+    def split_text_to_fit(self, text, width, size=None):
+        size = size if size is not None else self.font_size
+        words = text.split()
+        lines = []
+        line = []
+        line_sum = 0
+        for word in words:
+            sw = self.string_width(word + " ", size=size)
+            if "`" in word:
+                w = word.replace("`", "")
+                line.append(w)
+                lines.append(" ".join(line))
+                line_sum = 0
+                line = []
+            elif line_sum + sw < width:
+                line_sum += sw
+                line.append(word)
+            else:
+                lines.append(" ".join(line))
+                line_sum = sw
+                line = [word]
+        lines.append(" ".join(line))
+        if len(lines) == 2 and "`" not in text:
+            if len(lines[0]) == 0:
+                lines = [text]
+        return lines
+
+    def scale_text_to_fit(self, text, width):
+        fs = self.font_size
+        while not self.string_width(text, size=fs) <= width:
+            fs *= 0.95
+        return fs
+
+    def expand_text_to_fit(self, text, width):
+        fs = self.font_size
+        new_size = False
+        while self.string_width(text, size=fs) <= width:
+            fs *= 1.05
+            new_size = True
+        if new_size:
+            fs *= 0.9
+        return fs
 
 
 class DocStyleSheet:

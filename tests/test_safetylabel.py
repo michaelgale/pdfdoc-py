@@ -133,7 +133,7 @@ def test_safety_presets():
     s1 = SafetyLabel(
         "mandatory_icon",
         "Do This Thing",
-        size=28,
+        size=30,
         aspect_ratio=7,
         description="Failing to do so will result in bad things",
     )
@@ -167,6 +167,48 @@ def test_safety_presets():
 
     s1 = SafetyLabel("icon_first_aid", "First Aid Kit", size=42)
     s1.rect.top_left = IN2PTS((1, 1.5))
+    s1.draw_in_canvas(c)
+
+    c.showPage()
+    c.save()
+
+
+def test_safety_vertical():
+    c = canvas.Canvas(
+        "./tests/testfiles/test_safety_vertical.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+    )
+    s1 = SafetyLabel(
+        "warning_electrical",
+        "Danger",
+        description="Do not touch exposed live wires inside this box",
+        # description="Do not touch exposed live wires inside this box unless you know what you're doing",
+        size=20,
+        aspect_ratio=1.2,
+        vertical=True,
+        force_outlines=False,
+    )
+    s1.rect.top_left = IN2PTS((1, 10))
+    s1.draw_in_canvas(c)
+
+    s1 = SafetyLabel(
+        "mandatory_icon",
+        "Keep Clear!",
+        description="Authorised people only",
+        size=20,
+        aspect_ratio=1.2,
+        vertical=True,
+    )
+    s1.rect.top_left = IN2PTS((4, 10))
+    s1.draw_in_canvas(c)
+
+    s1 = SafetyLabel(
+        "mandatory_icon",
+        "Fire Door Keep Clear",
+        size=30,
+        aspect_ratio=1.2,
+        vertical=True,
+    )
+    s1.rect.top_left = IN2PTS((2, 5))
     s1.draw_in_canvas(c)
 
     c.showPage()

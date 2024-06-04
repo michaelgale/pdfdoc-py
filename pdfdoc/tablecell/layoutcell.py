@@ -393,5 +393,5 @@ class LayoutCell(TableVector):
             rh = Rect(1, self.height_constraint)
             rw.move_top_left_to((self.rect.left, self.rect.top))
             rh.move_top_left_to((self.rect.left, self.rect.top))
-            self.draw_debug_rect(canvas, rw, (1, 0, 1))
-            self.draw_debug_rect(canvas, rh, (1, 0, 1))
+            self.draw_debug_rect(canvas, rw, DEBUG_RECT_COLOUR)
+            self.draw_debug_rect(canvas, rh, DEBUG_RECT_COLOUR)

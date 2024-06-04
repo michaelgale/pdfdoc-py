@@ -21,6 +21,14 @@ def test_docstyle_attr():
     assert a2 == 0
     a3 = s1.top_margin
     assert a3 == 0
+    assert s1["ncolumns"] == 0
+    s1.columns = 3
+    assert s1["ncolumns"] == 3
+    assert s1["ncols"] == 3
+    assert s1["columns"] == 3
+    assert s1.columns == 3
+    s1["ncolumns"] = 1
+    assert s1.columns == 1
 
 
 def test_docstyle_setattr():
@@ -47,6 +55,36 @@ def test_docstyle_setattr():
     assert s1.top_margin == 13
     assert s1["top-margin"] == 13
     assert s1["top_margin"] == 13
+
+
+def test_set_yaml():
+    yml1 = """
+        font: "DIN-Bold"
+        font-size: 14
+        font-colour: "#FFFFFF"
+        background-colour: "#202020"
+        background-fill: True
+        border-radius: 6
+        horz_align: "left"
+        vert-align: "top"
+        left-padding: 8
+        top-padding: 8
+        """
+    e1 = DocStyle.from_yaml(yml1)
+    assert e1.font_size == 14
+    assert e1.border_radius == 6
+    assert e1.horz_align == "left"
+    assert e1.vert_align == "top"
+    assert e1.left_padding == 8
+    assert e1.background_fill
+
+    e2 = DocStyle(yml1)
+    assert e2.font_size == 14
+    assert e2.border_radius == 6
+    assert e2.horz_align == "left"
+    assert e2.vert_align == "top"
+    assert e2.left_padding == 8
+    assert e2.background_fill
 
 
 def test_docstylesheet():

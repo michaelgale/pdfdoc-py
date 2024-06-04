@@ -28,6 +28,7 @@ from reportlab.pdfgen import canvas
 from toolbox import *
 from pdfdoc import *
 from pdfdoc.helpers import expand_string_to_fit
+from reportlab.lib.colors import Color
 
 
 class TextRect(ContentRect):
@@ -42,9 +43,11 @@ class TextRect(ContentRect):
             self.text = withText if withText is not None else ""
         self.clip_text = False
         self.trim_callback = None
-        self.split_lines = True
+        self.split_lines = False
         self.scale_to_fit = False
         self.expand_to_fit = False
+        self._multi_line = False
+        self.show_text_bounds = False
         self.parse_kwargs(**kwargs)
         if "icon" in kwargs:
             self.set_icon(kwargs["icon"])
@@ -63,6 +66,10 @@ class TextRect(ContentRect):
         s.append("  Text: %s" % (self.text))
         return "\n".join(s)
 
+    @property
+    def is_multi_line(self):
+        return self._multi_line
+
     def set_icon(self, icon_name):
         """Automatically fills a TextRect with an icon from Hazard or FontAwesome fonts"""
         hs = haz_symbol(icon_name)
@@ -74,22 +81,27 @@ class TextRect(ContentRect):
             self.text = fa_symbol(icon_name)
 
     def get_content_size(self, with_padding=True):
-        c = canvas.Canvas("tmp.pdf")
-        c.saveState()
-        font_name = self.style["font-name"]
-        font_size = self.style["font-size"]
-        try:
-            c.setFont(font_name, font_size)
-        except:
-            c.setFont(DEF_FONT_NAME, font_size)
-        tw, th = get_string_metrics(c, self.text, font_name, font_size)
-        ta, _ = get_string_asc_des(c, self.text, font_name, font_size)
-        th += ta
-        tw += self.style.width_pad_margin
-        tw += self.kerning * (len(self.text) - 1)
-        tw *= 1.05
-        c.restoreState()
-        return super().get_content_size(tw, th, with_padding=with_padding)
+        self._multi_line = False
+        text_width = self.rect.width
+        font_size = self.font_size
+        if self.scale_to_fit:
+            font_size = self.style.scale_text_to_fit(self.text, text_width)
+        if self.expand_to_fit:
+            font_size = self.style.expand_text_to_fit(self.text, text_width)
+        if with_padding:
+            text_width -= self.style.width_pad_margin
+        if self.split_lines and text_width > 0:
+            lines = self.style.split_text_to_fit(self.text, text_width, font_size)
+        else:
+            lines = [self.text]
+        max_width = 0
+        height = 0
+        if len(lines) > 1:
+            self._multi_line = True
+        for line in lines:
+            max_width = max(max_width, self.style.string_width(line, font_size))
+            height += self.style.line_height
+        return super().get_content_size(max_width, height, with_padding=with_padding)
 
     def draw_in_canvas(self, c):
         self.snapshot_rect()
@@ -98,92 +110,88 @@ class TextRect(ContentRect):
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, DEBUG_INSET_COLOUR)
         self.restore_rect()
 
     def draw_text(self, c):
-        font_name = self.font
         font_size = self.font_size
-        try:
-            c.setFont(font_name, font_size)
-        except:
-            c.setFont(DEF_FONT_NAME, font_size)
-            font_name = DEF_FONT_NAME
-        font_colour = rl_colour(
-            self.style["font-colour"], alpha=self.style["font-alpha"]
-        )
+        font_colour = rl_colour(self.font_colour, self.font_alpha)
         c.setFillColor(font_colour)
         c.setStrokeColor(font_colour)
         text_width = self.rect.width - self.style.width_pad_margin
         if self.trim_callback is not None:
-            textLabel = self.trim_callback(c, self.text, self)
+            text = self.trim_callback(c, self.text, self)
         elif self.clip_text:
-            textLabel = trim_string_to_fit(
-                c, self.text, font_name, font_size, text_width
-            )
+            text = trim_string_to_fit(c, self.text, self.font, font_size, text_width)
         else:
-            textLabel = self.text
+            text = self.text
             if self.scale_to_fit:
-                font_size = scale_string_to_fit(
-                    c, self.text, font_name, font_size, text_width
-                )
-                c.setFont(font_name, font_size)
+                font_size = self.style.scale_text_to_fit(text, text_width)
             if self.expand_to_fit:
-                font_size = expand_string_to_fit(
-                    c, self.text, font_name, font_size, text_width
-                )
-                c.setFont(font_name, font_size)
+                font_size = self.style.expand_text_to_fit(text, text_width)
         if self.split_lines:
-            lines = split_string_to_fit(c, textLabel, font_name, font_size, text_width)
-            # check to make sure we didn't split by adding a blank line
-            if len(lines) == 2 and "`" not in textLabel:
-                if len(lines[0]) == 0:
-                    lines = [textLabel]
+            lines = self.style.split_text_to_fit(text, text_width, font_size)
         else:
-            lines = [textLabel]
-
-        _, th = get_string_metrics(c, self.text, font_name, font_size)
-        _, descent = get_string_metrics(
-            c, self.text, font_name, font_size, with_descent=False
-        )
-        descent = descent - th
-        tx = self.rect.left
-        cy = (len(lines) - 1) * th * self.style["line-spacing"]
-        line_space = (th + descent) * self.style["line-spacing"]
+            lines = [text]
         single_line = len(lines) == 1
-        half = th / 2
+        c.setFont(self.font, font_size)
+        cy = (len(lines) - 1) * self.style.line_height
         for i, line in enumerate(lines):
             if self.vert_align == "centre":
                 _, ty = self.inset_rect.get_centre()
                 if single_line:
-                    ty -= half
+                    ty -= self.style.font_height / 2 + self.style.font_descent / 2
                 else:
-                    ty = ty + cy - half - (i * line_space) - descent
+                    ty = (
+                        ty
+                        + cy / 2
+                        - self.style.line_height / 2
+                        - self.style.font_descent / 2
+                        - (i * self.style.line_height)
+                    )
             elif self.vert_align == "top":
-                ty = self.inset_rect.top - th - (i * line_space) - descent
+                ty = (
+                    self.inset_rect.top
+                    - self.style.font_descent
+                    - ((i + 1) * self.style.line_height)
+                )
             else:
                 if single_line:
                     ty = self.inset_rect.bottom + cy
                 else:
-                    ty = self.inset_rect.bottom + cy - ((i - 1) * line_space)
+                    ty = (
+                        self.inset_rect.bottom + cy - ((i - 1) * self.style.line_height)
+                    )
             kern = font_size * self.kerning
-            rotation = self.style["rotation"]
             if self.horz_align == "centre":
                 tx, _ = self.inset_rect.get_centre()
             elif self.horz_align == "right":
                 tx = self.inset_rect.right
             else:
                 tx = self.inset_rect.left
-            if rotation:
+            if self.rotation:
                 c.saveState()
                 c.translate(tx, ty)
-                c.rotate(rotation)
+                c.rotate(self.rotation)
                 tx, ty = 0, 0
+            bb = self.style.text_bound_box(line)
             if self.horz_align == "centre":
                 c.drawCentredString(tx, ty, line, charSpace=kern)
+                bb.move_to(tx, ty + self.style.font_baseline)
             elif self.horz_align == "right":
                 c.drawRightString(tx, ty, line, charSpace=kern)
+                bb.move_bottom_right_to((tx, ty - self.style.font_baseline))
             else:
                 c.drawString(tx, ty, line, charSpace=kern)
-            if rotation:
+                bb.move_bottom_left_to((tx, ty - self.style.font_baseline))
+            if self.show_text_bounds:
+                c.saveState()
+                if c._enforceColorSpace is not None:
+                    c.setFillColor(rl_colour((0.1, 0.6, 0.5, 0.0), alpha=0.25))
+                else:
+                    c.setFillColor(rl_colour((0.9, 0.5, 0.5), 0.25))
+                    c.rect(bb.left, bb.bottom, bb.width, bb.height, stroke=0, fill=1)
+                c.restoreState()
+
+            if self.rotation:
                 c.restoreState()

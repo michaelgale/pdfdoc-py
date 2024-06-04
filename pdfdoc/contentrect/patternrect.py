@@ -35,10 +35,11 @@ class PatternRect(ContentRect):
         self.pattern = "slant-line"
         if pattern is not None:
             self.pattern = pattern
-        self.pattern_width = 18.0
-        self.pattern_slant = 18.0
+        self.pattern_width = 36
+        self.pattern_slant = 18
         self.background_colour = (1, 1, 1)
         self.foreground_colour = (1, 0, 0)
+        self.inverted = False
         self.parse_kwargs(**kwargs)
 
     def __repr__(self):
@@ -61,7 +62,7 @@ class PatternRect(ContentRect):
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, DEBUG_INSET_COLOUR)
 
     def _draw_slant_line(self, c, fc):
         mrect = self.margin_rect
@@ -76,20 +77,26 @@ class PatternRect(ContentRect):
         ys = yl / yp
 
         def _left_tri(xo, yo, xl, yl):
+            y0, y1 = yo, yo + yl
+            if self.inverted:
+                y0, y1 = y1, y0
             p = c.beginPath()
-            p.moveTo(xo, yo)
-            p.lineTo(xo, yo + yl)
-            p.lineTo(xo + xl, yo + yl)
-            p.moveTo(xo, yo)
-            c.drawPath(p, stroke=0, fill=1)
+            p.moveTo(xo, y0)
+            p.lineTo(xo, y1)
+            p.lineTo(xo + xl, y1)
+            p.moveTo(xo, y0)
+            c.drawPath(p, stroke=1, fill=1)
 
         def _right_tri(xo, yo, xl, yl):
+            y0, y1 = yo, yo + yl
+            if self.inverted:
+                y0, y1 = y1, y0
             p = c.beginPath()
-            p.moveTo(xo, yo)
-            p.lineTo(xo + xl, yo + yl)
-            p.lineTo(xo + xl, yo)
-            p.moveTo(xo, yo)
-            c.drawPath(p, stroke=0, fill=1)
+            p.moveTo(xo, y0)
+            p.lineTo(xo + xl, y1)
+            p.lineTo(xo + xl, y0)
+            p.moveTo(xo, y0)
+            c.drawPath(p, stroke=1, fill=1)
 
         c.setFillColor(fc)
         c.setStrokeColor(fc)
@@ -135,10 +142,22 @@ class PatternRect(ContentRect):
         fc = rl_colour(self.foreground_colour)
         mrect = self.margin_rect
         c.setFillColor(bc)
-        c.setStrokeColor(bc)
-        c.setLineWidth(0.1)
         c.rect(mrect.left, mrect.bottom, mrect.width, mrect.height, stroke=0, fill=1)
         if self.pattern == "slant-line":
             self._draw_slant_line(c, fc)
         elif self.pattern == "squares":
             self._draw_squares(c, fc)
+
+    @staticmethod
+    def thick_bordered_rect(c, x, y, width, height, thickness, style=None, **kwargs):
+        p = PatternRect(width, thickness, style=style, **kwargs)
+        p.top_left = x, y
+        p.draw_in_canvas(c)
+        p.top_left = x, y - height + thickness
+        hp = height - 2 * thickness
+        p.draw_in_canvas(c)
+        p = PatternRect(thickness, hp, style=style, **kwargs)
+        p.top_left = x, y - thickness
+        p.draw_in_canvas(c)
+        p.top_left = x + width - thickness, y - thickness
+        p.draw_in_canvas(c)

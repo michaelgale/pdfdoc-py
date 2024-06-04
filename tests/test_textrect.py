@@ -6,10 +6,62 @@ import pytest
 
 from toolbox import *
 from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.units import inch
 from pdfdoc import *
+from rich import inspect
 
 _test_dict = {"left-margin": 2, "right-margin": 3, "horz-align": "left"}
+
+
+# def test_line_metrics():
+#     c = canvas.Canvas("./tests/testfiles/test_line_metrics.pdf")
+#     c.saveState()
+#     tx = 1 * inch
+#     ty = 10 * inch
+#     for font_name in ["IKEA-Sans-Heavy", "DroidSans", "DIN-Medium", "GDSTransport"]:
+#         font_size = 24
+#         c.setFont(font_name, font_size)
+#         text = "A font goes up and down"
+#         tw, th = get_string_metrics(c, text, font_name, font_size)
+#         face = pdfmetrics.getFont(font_name).face
+#         ascent, descent = (face.ascent / 1000.0), face.descent / 1000.0
+#         hh = (face.ascent - face.descent) / 1000.0 * font_size
+#         ta, td = ascent * font_size, descent * font_size
+#         # ta, td = get_string_asc_des(c, text, font_name, font_size)
+#         _, thd = get_string_metrics(
+#             c, text, font_name, font_size, with_descent=False
+#         )
+#         if abs(ta - font_size) < 2:
+#             hh = ta
+#         else:
+#             hh = ta - td
+#         print("The text: '%s' in font: %s-%d" % (text, font_name, font_size))
+#         print("  width: %.2f  height: %.2f" % (tw, th))
+#         print("  ascender: %.2f  descent: %.2f" % (ta, td))
+#         print("Line height can be:")
+#         print("  th + ta : %.2f" % (th + ta))
+#         print("  thd     : %.2f" % (thd))
+#         c.setFillColor((0.9, 0.5, 0.5))
+#         c.rect(tx, ty + td, tw, hh, stroke=0, fill=1)
+#         c.setStrokeColor((0, 0, 1))
+#         c.rect(tx, ty, tw, thd, stroke=1, fill=0)
+#         c.setStrokeColor((0, 0.5, 0))
+#         c.rect(tx, ty, tw, ta, stroke=1, fill=0)
+#         c.setFillColor((0, 0, 0))
+#         c.drawString(tx, ty, text)
+#         c.drawString(tx, ty - 1 * inch, "h:%.2f hh:%.2f a:%.2f d:%.2f" % (th, hh, ta, td))
+#         ty -= 2 * inch
+#     c.showPage()
+#     c.save()
+
+# def test_font_wrapper():
+#     for font_name in ["IKEA-Sans-Heavy", "DroidSans", "DIN-Medium", "GDSTransport"]:
+#         font_size = 24
+#         fw = FontWrapper(font_name, font_size)
+#         print(font_name, font_size)
+#         print("  asc:", fw.ascent, "desc:", fw.descent, "sw:", fw.stroke_width)
+#         print("  nom:", fw.nom_height, "height:", fw.height)
 
 
 def test_textrect_init():

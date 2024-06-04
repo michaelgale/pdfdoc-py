@@ -67,7 +67,7 @@ class GenericLabel(TableColumn):
         ht = 0.3
         hp2 = 0.07
         hp = hp2 if pattern is not None else 0
-        self.subtitle = TextRect(0, 0, "", GENERIC_LABEL_DESC)
+        self.subtitle = TextRect(0, 0, "", GENERIC_LABEL_DESC, split_lines=True)
         if subtitle is not None:
             self.subtitle.text = subtitle
         self.pattern = PatternRect(0, 0)

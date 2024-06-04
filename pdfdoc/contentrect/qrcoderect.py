@@ -164,7 +164,7 @@ class QRCodeRect(ContentRect):
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, DEBUG_INSET_COLOUR)
         self.restore_rect()
 
     def get_content_size(self, with_padding=True):

@@ -60,7 +60,7 @@ class AlignmentRect(ContentRect):
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(c, inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, inset_rect, (0, 1, 1))
 
     def rebound_rect(self):
         w, h = self.content.get_content_size()

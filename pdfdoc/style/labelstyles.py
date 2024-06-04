@@ -218,6 +218,7 @@ SAFETY_RED_STYLE = {
     "background-fill": True,
     "background-colour": "#FF0000",
     "border-outline": False,
+    "border-colour": "#FF0000",
     "font-colour": "#FFFFFF",
 }
 
@@ -225,6 +226,7 @@ SAFETY_BLUE_STYLE = {
     "background-fill": True,
     "background-colour": "#0000FF",
     "border-outline": False,
+    "border-colour": "#0000FF",
     "font-colour": "#FFFFFF",
 }
 
@@ -239,6 +241,7 @@ SAFETY_INFO_STYLE = {
 SAFETY_GREEN_STYLE = {
     "background-fill": True,
     "background-colour": "#008F00",
+    "border-colour": "#008F00",
     "border-outline": False,
     "font-colour": "#FFFFFF",
 }

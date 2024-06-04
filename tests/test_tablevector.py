@@ -13,40 +13,50 @@ from pdfdoc import *
 
 def test_table_text_array():
     c = canvas.Canvas(
-        "./tests/testfiles/test_table_textarray.pdf", pagesize=(8.5 * inch, 11.0 * inch)
+        "./tests/testfiles/test_table_textarray.pdf", pagesize=CANVAS_LETTER
     )
     a1 = [
         "This is row 1",
         "This is row 2 (hopefully)",
-        ["This is part of row 3", "And so is this"],
+        ["This is part of row 3", "And so is this", "as well as this thing"],
         "This is the last row",
-        TextRect(icon="mandatory", font_size=56, font_colour="#4010F0"),
+        TextRect(icon="mandatory", font_size=48, font_colour="#4010F0"),
         SafetyLabel("warning_icon", "Warning", size=42),
-        SafetyLabel("mandatory_icon", "This is an instruction"),
+        SafetyLabel("mandatory_icon", "This instruction", size=42),
+        SafetyLabel("icon_prohibited", "Do not do this", size=42),
         SafetyLabel("mandatory_icon", "You must do this thing"),
-        SafetyLabel("warning_icon", "This is a warning", size=32),
-        SafetyLabel("icon_prohibited", "Do not do this"),
+        SafetyLabel("warning_icon", "This is a warning", size=32, aspect_ratio=7),
     ]
-    s1 = DocStyle()
-    s1.background_colour = "#EEC0FF"
-    s1.background_fill = True
-    s1.border_outline = True
-    s1.border_colour = "#000000"
-    s1.border_radius = 8
-    e1 = DocStyle()
-    e1.font = "DIN-Bold"
-    e1.font_size = 14
-    e1.font_colour = "#FFFFFF"
-    e1.background_colour = "#4010F0"
-    e1.background_fill = True
-    e1.border_radius = 6
-    e1.horz_align = "left"
-    e1.left_padding = 12
-    e1.vert_align = "top"
-    e1.top_margin = 4
-    e1.bottom_margin = 4
-    e1.top_padding = 4
-    t1 = TableVector.from_array(a1, style=s1, element_style=e1, fit_to_contents=True)
+    s1 = DocStyle.from_yaml(
+        """
+        background_colour: "#EEE0FF"
+        background_fill: True
+        border_outline: True
+        border_width: 2
+        border_colour: "#000000"
+        border_radius: 8
+        """
+    )
+    s1.set_all_padding(6)
+    e1 = DocStyle.from_yaml(
+        """
+        font: DIN-Bold
+        font-size: 14
+        font-colour: "#FFFFFF"
+        background-colour: "#202020"
+        background-fill: True
+        border-radius: 6
+        horz-align: left
+        vert-align: top
+        left-padding: 8
+        right-padding: 8
+        top-padding: 8
+        bottom-padding: 8
+        """
+    )
+    t1 = TableVector.from_array(
+        a1, style=s1, element_style=e1, fit_to_contents=True, element_margin=8
+    )
     t1.size = 5 * inch, 8 * inch
     t1.top_left = 1 * inch, 10 * inch
     t1.show_debug_rects = True
@@ -58,7 +68,7 @@ def test_table_text_array():
 def test_table_from_array():
     c = canvas.Canvas(
         "./tests/testfiles/test_table_mixedarray.pdf",
-        pagesize=(8.5 * inch, 11.0 * inch),
+        pagesize=CANVAS_LETTER,
     )
     a1 = [
         TextRect("This is row 1"),
@@ -71,13 +81,16 @@ def test_table_from_array():
         "This is the last row",
     ]
 
-    s1 = DocStyle()
-    s1.background_colour = "#FFEEC0"
-    s1.background_fill = True
-    s1.border_outline = True
-    s1.border_colour = "#000000"
-    s1.border_radius = 8
-    s1.border_width = 4
+    s1 = DocStyle(
+        {
+            "background-colour": "#FFEEC0",
+            "background-fill": True,
+            "border-outline": True,
+            "border-colour": "#000000",
+            "border-radius": 8,
+            "border-width": 4,
+        }
+    )
 
     e1 = DocStyle(style={"font": "DIN-Bold", "font-size": 14, "horz-align": "left"})
     e1.set_all_padding(10)

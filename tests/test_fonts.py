@@ -6,7 +6,6 @@ from toolbox import *
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from pdfdoc import *
-from pdfdoc.fonthelpers import stroke_width
 
 
 def test_listfiles():
@@ -34,6 +33,10 @@ def test_font_specimen():
         "Transport-Medium",
         "Transport-Heavy",
         "British-Rail-Dark",
+        "British-Rail-Light",
+        "GDSTransport",
+        "GDSTransport-Bold",
+        "SFPro",
     ]
     for f in FONT_LIST:
         fn = f.replace(" ", "").replace("-", "").replace("_", "")

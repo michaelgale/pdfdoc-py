@@ -33,13 +33,23 @@ DEFAULT_MARGINS = {
 }
 
 PAGE_LETTER = {"width": 8.5 * inch, "height": 11 * inch, "orientation": "portrait"}
+CANVAS_LETTER = (8.5 * inch, 11 * inch)
+CANVAS_LETTER_LANDSCAPE = (11 * inch, 8.5 * inch)
 
 PAGE_TABLOID = {"width": 17 * inch, "height": 11 * inch, "orientation": "landscape"}
+CANVAS_TABLOID = (11 * inch, 17 * inch)
 
 PAGE_LEDGER = {"width": 11 * inch, "height": 17 * inch, "orientation": "portrait"}
+CANVAS_LEDGER = (17 * inch, 11 * inch)
 
 PAGE_A5 = {"width": 148 * mm, "height": 210 * mm, "orientation": "portrait"}
+CANVAS_A5 = (148 * mm, 210 * mm)
+CANVAS_A5_LANDSCAPE = (210 * mm, 148 * mm)
 
 PAGE_A4 = {"width": 210 * mm, "height": 297 * mm, "orientation": "portrait"}
+CANVAS_A4 = (210 * mm, 297 * mm)
+CANVAS_A4_LANDSCAPE = (297 * mm, 210 * mm)
 
 PAGE_A3 = {"width": 297 * mm, "height": 420 * mm, "orientation": "portrait"}
+CANVAS_A3 = (297 * mm, 420 * mm)
+CANVAS_A3_LANDSCAPE = (420 * mm, 297 * mm)

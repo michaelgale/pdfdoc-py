@@ -66,7 +66,7 @@ class SvgRect(ContentRect):
         self.draw_overlay_content(c)
         if self.show_debug_rects:
             self.draw_debug_rect(c, self.rect)
-            self.draw_debug_rect(c, self.inset_rect, (0, 0, 1))
+            self.draw_debug_rect(c, self.inset_rect, DEBUG_INSET_COLOUR)
         self.restore_rect()
 
     def get_content_size(self, with_padding=True):
@@ -113,7 +113,7 @@ class SvgRect(ContentRect):
         raise ValueError("Cannot find preset SVG named %s" % (name))
 
     @staticmethod
-    def list_presets():
+    def list_presets(as_files=True):
         fp, _ = split_path(__file__)
         fp = fp + os.sep + ".." + os.sep + "graphics"
         fp = os.path.abspath(fp)
@@ -123,4 +123,6 @@ class SvgRect(ContentRect):
         for file in files:
             if str(file).lower().endswith(".svg"):
                 presets.append(str(file))
-        return sorted(presets)
+        if as_files:
+            return sorted(presets)
+        return sorted([os.path.basename(f).replace(".svg", "") for f in presets])

@@ -4,7 +4,7 @@ import os
 
 # fmt: off
 __project__ = 'pdfdoc'
-__version__ = '0.9.9'
+__version__ = '0.9.10'
 # fmt: on
 
 VERSION = __project__ + "-" + __version__
@@ -15,8 +15,10 @@ DEF_FONT_NAME = "DroidSans"
 DEF_FONT_SIZE = 15
 AUTO_SIZE = 0
 CONTENT_SIZE = -1
+DEBUG_INSET_COLOUR = (0, 0.5, 0.5)
+DEBUG_RECT_COLOUR = (1, 0, 1)
 
-FONT_PATHS = ["/System/Library/Fonts/", "~/Library/Fonts/"]
+FONT_PATHS = ["/Library/Fonts", "/System/Library/Fonts/", "~/Library/Fonts/"]
 REGISTERED_FONTS = {}
 
 from .helpers import (
@@ -61,6 +63,7 @@ from .fonthelpers import (
     create_specimen_pdf,
     create_font_family_pdf,
     print_symbol_list,
+    FontWrapper,
 )
 from .style.docstyle import DocStyle, DocStyleSheet, DocStyleMixin, roman_number
 from .style.pagestyles import *
@@ -109,6 +112,8 @@ _font_dict = {
     "Zapf Dingbats": "ZapfDingbats.ttf",
     "Transport-Medium": "Transport Medium.ttf",
     "Transport-Heavy": "Transport Heavy.ttf",
+    "GDSTransport": "GDSTransportLight.ttf",
+    "GDSTransport-Bold": "GDSTransportBold.ttf",
 }
 
 for k, v in _font_dict.items():

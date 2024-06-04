@@ -80,7 +80,7 @@ class PlainTextLabel(TableRow):
     def __init__(self, text=""):
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
-        self.textlabel = TextRect(0, 0, text, GENERIC_LABEL_TITLE)
+        self.textlabel = TextRect(0, 0, text, GENERIC_LABEL_TITLE, split_lines=True)
         self.textlabel.text = text
         self.textlabel.font_size = 11
         self.textlabel.font_name = "DIN-Medium"

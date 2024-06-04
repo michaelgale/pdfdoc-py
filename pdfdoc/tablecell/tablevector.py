@@ -420,11 +420,17 @@ class TableVector(DocStyleMixin, RectMixin):
         if self.style["border-line-bottom"]:
             c.line(mrect.left, mrect.bottom, mrect.right, mrect.bottom)
 
-    def draw_debug_rect(self, c, r, colour=(0, 0, 0)):
+    def draw_debug_rect(self, c, r, colour=None):
+        lw = 0.5 if colour is None else 0.2
+        dash = [1, 2, 1, 0] if colour is None else [0.5, 0.5, 0.5, 0]
+        colour = colour if colour is not None else DEBUG_RECT_COLOUR
+        c.saveState()
         c.setFillColor(rl_colour_trans())
         c.setStrokeColor(rl_colour(colour))
-        c.setLineWidth(0.1)
+        c.setDash(dash)
+        c.setLineWidth(lw)
         c.rect(r.left, r.bottom, r.width, r.height, stroke=True, fill=False)
+        c.restoreState()
 
     def draw_background(self, c):
         rl_draw_rect(c, self.rect, self.style)
@@ -473,13 +479,20 @@ class TableVector(DocStyleMixin, RectMixin):
             canvas.saveState()
             self.draw_debug_rect(canvas, self.rect)
             inset_rect = self.style.get_inset_rect(self.rect)
-            self.draw_debug_rect(canvas, inset_rect, (0, 0, 1))
+            self.draw_debug_rect(canvas, inset_rect, DEBUG_INSET_COLOUR)
             if self.is_fixed_height and self.is_fixed_width:
-                self.draw_debug_rect(canvas, self.fixed_rect, (1, 0, 1))
+                self.draw_debug_rect(canvas, self.fixed_rect, (0, 1, 0))
             canvas.restoreState()
 
     @staticmethod
-    def from_array(a, style=None, element_style=None, fit_to_contents=True, **kwargs):
+    def from_array(
+        a,
+        style=None,
+        element_style=None,
+        fit_to_contents=True,
+        element_margin=0,
+        **kwargs
+    ):
         """
         Makes a TableVector instance from an array of text strings
         """
@@ -489,23 +502,27 @@ class TableVector(DocStyleMixin, RectMixin):
 
         v = TableColumn(style=style, fit_to_contents=fit_to_contents, **kwargs)
         sizing = CONTENT_SIZE if fit_to_contents else AUTO_SIZE
-        for row in a:
+        for i, row in enumerate(a):
             if isinstance(row, str):
                 r = TextRect(row, style=element_style)
             elif isinstance(row, (tuple, list)):
                 r = TableRow(fit_to_contents=fit_to_contents)
-                for c in row:
+                for j, c in enumerate(row):
                     if isinstance(c, str):
                         e = TextRect(c, style=element_style)
                     else:
                         e = c
                         if "auto_size" in c.__dict__:
                             c.auto_size = not fit_to_contents
+                    if j + 1 < len(row):
+                        e.right_margin = element_margin
                     r.add_column(e, width=sizing)
             else:
                 r = row
                 if "auto_size" in row.__dict__:
                     row.auto_size = not fit_to_contents
                     row.get_content_size()
+            if i + 1 < len(a):
+                r.bottom_margin = element_margin
             v.add_row(r, height=sizing)
         return v

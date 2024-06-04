@@ -51,7 +51,11 @@ def rl_colour(from_colour, alpha=None):
             return Color(from_colour[0], from_colour[1], from_colour[2], alpha=alpha)
         else:
             return CMYKColor(
-                from_colour[0], from_colour[1], from_colour[2], from_colour[3]
+                from_colour[0],
+                from_colour[1],
+                from_colour[2],
+                from_colour[3],
+                alpha=alpha,
             )
     return None
 
