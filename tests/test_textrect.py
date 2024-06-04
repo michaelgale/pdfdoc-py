@@ -152,7 +152,7 @@ def test_string_splitting():
     t1.vert_align = "centre"
     t1.top_left = 1 * inch, 3 * inch
     t1.split_lines = False
-    t1.scale_to_fit = True
+    t1.shrink_to_fit = True
     t1.draw_in_canvas(c)
 
     c.showPage()

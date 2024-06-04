@@ -26,7 +26,6 @@
 import copy
 from collections import OrderedDict
 import string
-from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 import yaml
 
@@ -568,7 +567,7 @@ class DocStyle:
                 lines = [text]
         return lines
 
-    def scale_text_to_fit(self, text, width):
+    def shrink_text_to_fit(self, text, width):
         fs = self.font_size
         while not self.string_width(text, size=fs) <= width:
             fs *= 0.95

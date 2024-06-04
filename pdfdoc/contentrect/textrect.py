@@ -23,12 +23,9 @@
 #
 # TextRect text cell container class derived from ContentRect
 
-from reportlab.pdfgen import canvas
 
 from toolbox import *
 from pdfdoc import *
-from pdfdoc.helpers import expand_string_to_fit
-from reportlab.lib.colors import Color
 
 
 class TextRect(ContentRect):
@@ -44,7 +41,7 @@ class TextRect(ContentRect):
         self.clip_text = False
         self.trim_callback = None
         self.split_lines = False
-        self.scale_to_fit = False
+        self.shrink_to_fit = False
         self.expand_to_fit = False
         self._multi_line = False
         self.show_text_bounds = False
@@ -82,10 +79,14 @@ class TextRect(ContentRect):
 
     def get_content_size(self, with_padding=True):
         self._multi_line = False
+        if self.text is None:
+            return 0, 0
+        if len(self.text) == 0:
+            return 0, 0
         text_width = self.rect.width
         font_size = self.font_size
-        if self.scale_to_fit:
-            font_size = self.style.scale_text_to_fit(self.text, text_width)
+        if self.shrink_to_fit:
+            font_size = self.style.shrink_text_to_fit(self.text, text_width)
         if self.expand_to_fit:
             font_size = self.style.expand_text_to_fit(self.text, text_width)
         if with_padding:
@@ -125,8 +126,8 @@ class TextRect(ContentRect):
             text = trim_string_to_fit(c, self.text, self.font, font_size, text_width)
         else:
             text = self.text
-            if self.scale_to_fit:
-                font_size = self.style.scale_text_to_fit(text, text_width)
+            if self.shrink_to_fit:
+                font_size = self.style.shrink_text_to_fit(text, text_width)
             if self.expand_to_fit:
                 font_size = self.style.expand_text_to_fit(text, text_width)
         if self.split_lines:
