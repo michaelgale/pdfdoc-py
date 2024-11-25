@@ -525,6 +525,7 @@ def convert_pdf_to_thumbnail(fn, ofn=None, res=144, **kwargs):
     s.append(outfile)
     s.append("-f 1 -l 1")
     s.append("-singlefile")
+    s.append("-verbose")
     s.append("-r %d" % (res))
     for k, v in kwargs.items():
         s.append("-%s %s" % (k, v))

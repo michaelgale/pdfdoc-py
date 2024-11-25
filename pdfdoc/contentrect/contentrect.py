@@ -42,6 +42,7 @@ class ContentRect(DocStyleMixin, RectMixin):
         self.is_fixed_width = False
         self.is_fixed_height = False
         self.fixed_rect = Rect(w, h)
+        self.max_rect = Rect(0, 0)
         # stores a nominal (un-rotated) version of rect
         self._unrotated_rect = None
         # temporary storage for keeping a copy of rect
@@ -154,6 +155,10 @@ class ContentRect(DocStyleMixin, RectMixin):
             height += self.style.height_pad_margin
         w = self.fixed_rect.width if self.is_fixed_width else width
         h = self.fixed_rect.height if self.is_fixed_height else height
+        if self.max_rect.width > 0:
+            w = min(w, self.max_rect.width)
+        if self.max_rect.height > 0:
+            h = min(h, self.max_rect.height)
         # we can report our rotated size only if we
         # have "rotated-bounds" style attribute set
         # otherwise, report our nominal unrotated size

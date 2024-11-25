@@ -68,6 +68,11 @@ class ImageRect(ContentRect):
     def image_shape(self):
         return get_image_metrics(self.filename)
 
+    @property
+    def aspect_ratio(self):
+        w, h = self.image_shape
+        return w / h
+
     def draw_in_canvas(self, c):
         self.snapshot_rect()
         self.draw_rect(c)

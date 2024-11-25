@@ -40,7 +40,6 @@ class TextRect(ContentRect):
             self.text = withText if withText is not None else ""
         self.clip_text = False
         self.trim_callback = None
-        self.split_lines = False
         self.shrink_to_fit = False
         self.expand_to_fit = False
         self._multi_line = False

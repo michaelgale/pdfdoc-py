@@ -240,16 +240,24 @@ class TableVector(DocStyleMixin, RectMixin):
         cell = self[label]
         return cell.content.rect if cell is not None else None
 
+    @property
+    def inset_rect(self):
+        return self.style.get_inset_rect(self.rect)
+
+    @property
+    def margin_rect(self):
+        return self.style.get_margin_rect(self.rect)
+
     def get_cell_inset_rect(self, label):
         cell = self[label]
         if cell is not None:
-            return cell.content.style.get_inset_rect(cell.content.rect)
+            return cell.content.inset_rect
         return None
 
     def get_cell_margin_rect(self, label):
         cell = self[label]
         if cell is not None:
-            return cell.content.style.get_margin_rect(cell.content.rect)
+            return cell.content.margin_rect
         return None
 
     def set_cell_rect(self, label, rect):

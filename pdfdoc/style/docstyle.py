@@ -80,7 +80,6 @@ class DocStyle:
             "right-padding": 0,
             "padding-ratio": 0,
             "cell-padding": 0,
-            "text-baseline": 0,
             "line-spacing": 1.0,
             "gutter-width": 0,
             "gutter-height": 0,
@@ -129,6 +128,7 @@ class DocStyle:
             "kerning": 0,
             "rotation": 0,
             "rotated-bounds": True,
+            "split-lines": False,
         }
         if style is not None:
             self.set_with_dict(style)
@@ -332,6 +332,23 @@ class DocStyle:
 
     def set_left_padding(self, withPadding):
         self.set_attr("left-padding", withPadding)
+
+    @property
+    def max_margin(self):
+        return max(
+            (self.left_margin, self.right_margin, self.top_margin, self.bottom_margin)
+        )
+
+    @property
+    def max_padding(self):
+        return max(
+            (
+                self.left_padding,
+                self.right_padding,
+                self.top_padding,
+                self.bottom_padding,
+            )
+        )
 
     # @property
     # def size(self):
