@@ -121,6 +121,51 @@ from pdfdoc import *
 #         sl.add_column(t2)
 #         ld.add_label(sl)
 
+def test_office_labels():
+    c = canvas.Canvas(
+        "./tests/testfiles/test_office_label.pdf", pagesize=CANVAS_A4
+    )
+    s1 = SafetyLabel("icon_garbage", "Food / Bio Waste", size=36, aspect_ratio=7)
+    s1.rect.top_left = IN2PTS((1, 11))
+    s1.draw_in_canvas(c)
+
+    s1 = SafetyLabel(
+        "mandatory_icon",
+        "Food Waste Only",
+        size=36,
+        aspect_ratio=7,
+        description="Dispose or recycle other items in their respective bins as appropriate",
+    )
+    s1.rect.top_left = IN2PTS((1, 9.75))
+    s1.draw_in_canvas(c)
+
+    s1 = SafetyLabel("icon_recycle", "Plastic Recycling", size=36, aspect_ratio=7)
+    s1.rect.top_left = IN2PTS((1, 7.5))
+    s1.draw_in_canvas(c)
+
+    s1 = SafetyLabel(
+        "mandatory_icon",
+        "Plastics and Polymers",
+        size=36,
+        aspect_ratio=7,
+        description="Dispose or recycle other items in their respective bins as appropriate",
+    )
+    s1.rect.top_left = IN2PTS((1, 6.25))
+    s1.draw_in_canvas(c)
+
+    s1 = SafetyLabel(
+        "mandatory_icon",
+        "Fire Door Keep Clear",
+        size=30,
+        aspect_ratio=1.2,
+        vertical=True,
+    )
+    s1.rect.top_left = IN2PTS((1, 4))
+    s1.draw_in_canvas(c)
+
+    c.showPage()
+    c.save()
+
 
 def test_safety_presets():
     c = canvas.Canvas(

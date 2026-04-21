@@ -34,6 +34,8 @@ from pdfrw.toreportlab import makerl
 from toolbox import toolboxprint, FileOps, colour_path_str, full_path, Rect
 from pdfdoc import *
 
+EPS = 0.05
+
 
 def draw_bleed_rect(doc, location, edge_colours, margin):
     """Draws colour rectangles in the specified bleed page location
@@ -57,14 +59,18 @@ def draw_bleed_rect(doc, location, edge_colours, margin):
     for i, edge in enumerate(edge_colours[location]):
         x0 = br.left if i == 0 else br.left + j + m
         x1 = pr.left + edge[0] if i < num_edges else br.right
+        x0 += EPS
+        x1 += EPS
         if location == "top":
-            r.set_points((x0, br.top), (x1, pr.top))
+            r.set_points((x0, br.top), (x1, pr.top - EPS))
         elif location == "bottom":
-            r.set_points((x0, pr.bottom), (x1, br.bottom))
+            r.set_points((x0, pr.bottom + EPS), (x1, br.bottom))
         elif location == "left":
-            r.set_points((br.left, pr.top - j), (pr.left, pr.top - edge[0]))
+            r.set_points((br.left, pr.top - j - EPS), (pr.left, pr.top - edge[0] - EPS))
         elif location == "right":
-            r.set_points((pr.right, pr.top - j), (br.right, pr.top - edge[0]))
+            r.set_points(
+                (pr.right, pr.top - j - EPS), (br.right, pr.top - edge[0] - EPS)
+            )
         j = edge[0]
         colour = edge[1]
         cr = ContentRect()
@@ -92,33 +98,33 @@ def add_bleed(
     num_pages = len(pages)
     pw, ph = get_page_size(pages)
     page_list = [pagexobj(x) for x in pages]
+    toolboxprint("Pixel scale        : %.3f ( %.1f dpi)" % (pix_scale, pix_scale * 72))
     toolboxprint(
-        "Document page size : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.2f x %5.2f in)"
+        "Document page size : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.3f x %5.3f in)"
         % (pw, ph, PTS2MM(pw), PTS2MM(ph), PTS2IN(pw), PTS2IN(ph))
     )
     w, h = pw * scale, ph * scale
     if abs(scale - 1.0) > 0:
         print(crayons.yellow("Rescaling document pages by %.2fx" % (scale)))
         toolboxprint(
-            "Scaled page size   : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.2f x %5.2f in)"
+            "Scaled page size   : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.3f x %5.3f in)"
             % (w, h, PTS2MM(w), PTS2MM(h), PTS2IN(w), PTS2IN(h))
         )
 
     doc_style = {"width": w, "height": h}
     doc = Document(ofn)
-    toolboxprint("Pixel scale : %.3f ( %.1f dpi)" % (pix_scale, pix_scale * 72))
     total_bleed = 0
     if bleed is not None:
         bleed = float(bleed)
         toolboxprint(
-            "Bleed size  : %4.0f pts (%4.1f mm) ( %5.3f in)"
+            "Bleed size         : %4.0f pts (%4.1f mm) ( %5.3f in)"
             % (float(bleed), PTS2MM(bleed), PTS2IN(bleed))
         )
         total_bleed += float(bleed)
     if margin is not None:
         margin = float(margin)
         toolboxprint(
-            "Margin size : %4.0f pts (%4.1f mm) ( %5.3f in)"
+            "Margin size        : %4.0f pts (%4.1f mm) ( %5.3f in)"
             % (float(margin), PTS2MM(margin), PTS2IN(margin))
         )
         total_bleed += float(margin)
@@ -130,33 +136,37 @@ def add_bleed(
         crop_callback.style["line-colour"] = (1.0, 0.1, 0.4)
         doc.page_end_callbacks.append(crop_callback)
         toolboxprint(
-            "Adding crop marks : %4.0f pts (%4.1f mm) ( %5.3f in)"
+            "Adding crop marks  : %4.0f pts (%4.1f mm) ( %5.3f in)"
             % (crop_marks, PTS2MM(crop_marks), PTS2IN(crop_marks))
         )
     doc.set_page_size(doc_style, with_bleed=total_bleed)
     if total_bleed > 0:
         wb, hb = doc.bleed_rect.width, doc.bleed_rect.height
         toolboxprint(
-            "Size with bleed    : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.2f x %5.2f in)"
+            "Size with bleed    : %4.0f x %4.0f pts ( %4.1f x %4.1f mm) ( %5.3f x %5.3f in)"
             % (wb, hb, PTS2MM(wb), PTS2MM(hb), PTS2IN(wb), PTS2IN(hb))
         )
     doc._doc_start()
     for idx, page in enumerate(pages):
-        toolboxprint("  Adding page : %3d / %-3d" % (idx + 1, num_pages))
+        toolboxprint("Adding page : %3d / %-3d" % (idx + 1, num_pages))
         x = 0
         y = 0
+        doc.c.saveState()
         if total_bleed > 0:
             x += float(total_bleed)
             y += float(total_bleed)
+        doc.c.translate(x, y)
+        doc.c.doForm(makerl(doc.c, page_list[idx]))
+        doc.c.restoreState()
+        doc.c.saveState()
+        if total_bleed > 0:
             edges = get_edge_colours(fn, idx, scale, pix_scale=pix_scale)
             draw_bleed_rect(doc, "top", edges, margin)
             draw_bleed_rect(doc, "left", edges, margin)
             draw_bleed_rect(doc, "bottom", edges, margin)
             draw_bleed_rect(doc, "right", edges, margin)
-        doc.c.saveState()
         doc.c.translate(x, y)
         doc.c.scale(scale, scale)
-        doc.c.doForm(makerl(doc.c, page_list[idx]))
         doc.c.restoreState()
         if (idx + 1) < num_pages:
             doc.page_break()
@@ -217,6 +227,13 @@ def main():
         default=4.1666667,
         help="Pixel scale resolution factor used for bleed (default=4.167, 300 dpi)",
     )
+    parser.add_argument(
+        "-k",
+        "--cmyk",
+        action="store_true",
+        default=False,
+        help="Convert PDF colour space to CMYK",
+    )
 
     args = parser.parse_args()
     argsd = vars(args)
@@ -239,8 +256,7 @@ def main():
     else:
         ofn = argsd["output"]
     if argsd["bleed"] is None and argsd["margin"] is None:
-        print("Converting text to outlines...")
-        modify_pdf_file(fn, ofn, outlines=True)
+        modify_pdf_file(fn, ofn, cmyk=argsd["cmyk"], outlines=True)
     else:
         add_bleed(
             fn,
@@ -252,8 +268,12 @@ def main():
             float(argsd["pixscale"]),
         )
         if argsd["fontoutlines"]:
-            print("Converting text to outlines...")
-            modify_pdf_file(ofn, ofn, outlines=True)
+            modify_pdf_file(ofn, ofn, cmyk=argsd["cmyk"], outlines=True)
+
+    if argsd["fontoutlines"]:
+        print("Converting text to outlines...")
+    if argsd["cmyk"]:
+        print("Converting to CMYK colour space...")
 
     toolboxprint("Output file : %s" % (colour_path_str(ofn)))
     pages = PdfReader(ofn).pages

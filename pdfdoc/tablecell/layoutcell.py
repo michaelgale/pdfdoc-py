@@ -53,6 +53,8 @@ CONSTRAINT_TOKENS = (
     "between",
     "horz_pos",
     "vert_pos",
+    "horz_offset",
+    "vert_offset",
     "left_bound",
     "right_bound",
     "top_bound",
@@ -72,7 +74,7 @@ SINGLE_TOKENS = (
     "top_bound",
     "bottom_bound",
 )
-ABS_TOKENS = ("horz_pos", "vert_pos")
+ABS_TOKENS = ("horz_pos", "vert_pos", "horz_offset", "vert_offset")
 BETWEEN_TOKENS = ("between", "between_horz", "between_vert")
 OTHER_TOKENS = (
     "to",
@@ -334,6 +336,14 @@ class LayoutCell(TableVector):
                         rect_mid = crect.get_centre()
                         vert_pos = prect.top - float(cd["abs_val"][0])
                         crect.move_to(rect_mid[0], vert_pos)
+                    elif cd["abs_pos"] == "horz_offset":
+                        rect_mid = crect.get_centre()
+                        horz_off = float(cd["abs_val"][0])
+                        crect.move_by(horz_off, 0)
+                    elif cd["abs_pos"] == "vert_offset":
+                        rect_mid = crect.get_centre()
+                        vert_off = float(cd["abs_val"][0])
+                        crect.move_by(0, vert_off)
                 else:
                     if cd["from_pt"] is not None:
                         crect.anchor_with_constraint(

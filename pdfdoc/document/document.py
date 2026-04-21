@@ -211,9 +211,10 @@ class Document:
         self.footer_rect.set_points((ri.left, ri.bottom), (ri.right, r.bottom))
 
     def set_columns(self, num_columns):
-        self.num_columns = num_columns
-        self.column = 1
-        self.compute_columns()
+        if not num_columns == self.num_columns:
+            self.num_columns = num_columns
+            self.column = 1
+            self.compute_columns()
 
     def compute_columns(self):
         """Recomputes the rectangular extents of columns. Useful if using

@@ -31,7 +31,6 @@ import tempfile
 
 from PIL import Image
 from pathlib import Path
-import fitz
 
 from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.colors import Color, CMYKColor
@@ -335,6 +334,8 @@ def get_edge_colours(fn, pageno, scale=1.0, pix_scale=2.0):
     """returns a dictionary containing a list of colour boundary
     regions for each edge of the page.
     """
+    import fitz
+
     PIX_SCALE = pix_scale
 
     def _rgb_at_xy(pixmap, x, y):
@@ -353,17 +354,10 @@ def get_edge_colours(fn, pageno, scale=1.0, pix_scale=2.0):
         return math.sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2])
 
     def _diff_rgb(p0, p1):
-        diff = (p0[0] - p1[0]) * (p0[0] - p1[0])
-        diff += (p0[1] - p1[1]) * (p0[1] - p1[1])
-        diff += (p0[2] - p1[2]) * (p0[2] - p1[2])
-        return math.sqrt(diff)
+        return math.sqrt(sum([(p0[i] - p1[i])**2 for i in range(3)]))
 
     def _diff_cmyk(p0, p1):
-        diff = (p0[0] - p1[0]) * (p0[0] - p1[0])
-        diff += (p0[1] - p1[1]) * (p0[1] - p1[1])
-        diff += (p0[2] - p1[2]) * (p0[2] - p1[2])
-        diff += (p0[3] - p1[3]) * (p0[3] - p1[3])
-        return math.sqrt(diff)
+        return math.sqrt(sum([(p0[i] - p1[i])**2 for i in range(4)]))
 
     def _sum_rgb(p0, p1):
         return (p0[0] + p1[0], p0[1] + p1[1], p0[2] + p1[2])
@@ -379,7 +373,7 @@ def get_edge_colours(fn, pageno, scale=1.0, pix_scale=2.0):
                 h1 = [_rgb_at_xy(pix, x, py) for x in range(0, pix.width)]
                 h0 = [_rgb_at_xy(pix, x, py - 1) for x in range(0, pix.width)]
                 diff = sum([_diff_rgb(h1[i], h0[i]) for i in range(pix.width)])
-                if diff / pix.width < 0.006:
+                if diff / pix.width < 0.005:
                     return h1
         return [_rgb_at_xy(pix, x, ph - 1) for x in range(0, pix.width)]
 
@@ -391,7 +385,7 @@ def get_edge_colours(fn, pageno, scale=1.0, pix_scale=2.0):
                 h1 = [_rgb_at_xy(pix, px, y) for y in range(0, pix.height)]
                 h0 = [_rgb_at_xy(pix, px - 1, y) for y in range(0, pix.height)]
                 diff = sum([_diff_rgb(h1[i], h0[i]) for i in range(pix.height)])
-                if diff / pix.height < 0.006:
+                if diff / pix.height < 0.005:
                     return h1
         return [_rgb_at_xy(pix, pw - 1, y) for y in range(0, pix.height)]
 
@@ -598,3 +592,13 @@ def linear_offset(length, width, thickness):
     th = math.atan2(width, length)
     rx = thickness / math.sin(th)
     return math.sqrt(rx * rx - thickness * thickness)
+
+def fraction_symbol(text):
+   s = text.replace("1/2", "½")
+   s = s.replace("1/4", "¼")
+   s = s.replace("3/4", "¾")
+   s = s.replace("1/8", "⅛")
+   s = s.replace("3/8", "⅜")
+   s = s.replace("5/8", "⅝")
+   s = s.replace("7/8", "⅞")
+   return s

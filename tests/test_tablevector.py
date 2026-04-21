@@ -109,3 +109,71 @@ def test_table_from_array():
 
     c.showPage()
     c.save()
+
+
+
+def test_table_text_array_qr():
+    c = canvas.Canvas(
+        "./tests/testfiles/test_table_qr.pdf", pagesize=CANVAS_LETTER
+    )
+    a1 = [
+        TextRect(icon="wifi", font_size=64, font_colour="#4010F0"),
+        TextRect("Join our WiFi", font_size=30, font="DIN-Medium"),
+        "Wightlink-Guest",
+        QRCodeRect.for_wifi("Wightlink-Guest", "26pentland", "wpa", False, w=240, h=240, top_padding=36)
+    ]
+    s1 = DocStyle.from_yaml(
+        """
+        background_colour: "#FFFFFF"
+        background_fill: True
+        border_outline: True
+        border_width: 2
+        border_colour: "#000000"
+        border_radius: 8
+        """
+    )
+
+    s1.set_all_padding(28)
+    e1 = DocStyle.from_yaml(
+        """
+        font: DIN-Medium
+        font-size: 28
+        font-colour: "#FFFFFF"
+        background-colour: "#202020"
+        background-fill: True
+        border-radius: 6
+        horz-align: centre
+        vert-align: centre
+        left-padding: 12
+        right-padding: 12
+        top-padding: 12
+        bottom-padding: 12
+        """
+    )
+    t1 = TableVector.from_array(
+        a1, style=s1, element_style=e1, fit_to_contents=True, element_margin=12
+    )
+    t1.size = 8 * inch, 8 * inch
+    t1.top_left = 1 * inch, 10 * inch
+    t1.show_debug_rects = False
+    t1.draw_in_canvas(c)
+    c.showPage()
+
+    a1 = [
+        TextRect(icon="wifi", font_size=64, font_colour="#F46508"),
+        TextRect("Join our WiFi", font_size=30, font="DIN-Medium"),
+        "Wightlink",
+        QRCodeRect.for_wifi("Wightlink", "crossthesolent", "wpa", False, w=240, h=240, top_padding=36)
+    ]
+    t1 = TableVector.from_array(
+        a1, style=s1, element_style=e1, fit_to_contents=True, element_margin=12
+    )
+    t1.size = 8 * inch, 8 * inch
+    t1.top_left = 1 * inch, 10 * inch
+    t1.show_debug_rects = False
+    t1.draw_in_canvas(c)
+    c.showPage()
+
+
+
+    c.save()

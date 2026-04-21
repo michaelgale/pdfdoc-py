@@ -129,6 +129,7 @@ class DocStyle:
             "rotation": 0,
             "rotated-bounds": True,
             "split-lines": False,
+            "_font_wrapper": None,
         }
         if style is not None:
             self.set_with_dict(style)
@@ -521,9 +522,32 @@ class DocStyle:
             self["background-colour"] = colour
 
     @property
+    def font_name(self):
+        return self["font_name"]
+
+    @font_name.setter
+    def font_name(self, name):
+        self["font_name"] = name
+        self.font_wrapper.font_name = name
+
+    @property
+    def font_size(self):
+        return self["font_size"]
+
+    @font_size.setter
+    def font_size(self, size):
+        self["font_size"] = size
+        self.font_wrapper.font_size = size
+
+    @property
+    def font_wrapper(self):
+        if self["_font_wrapper"] is None:
+            self["_font_wrapper"] = FontWrapper(self.font_name, self.font_size)
+        return self["_font_wrapper"]
+
+    @property
     def font_height(self):
-        fw = FontWrapper(self.font_name, self.font_size)
-        return fw.height
+        return self.font_wrapper.height
 
     @property
     def line_height(self):
@@ -531,8 +555,7 @@ class DocStyle:
 
     @property
     def font_descent(self):
-        fw = FontWrapper(self.font_name, self.font_size)
-        return fw.descent
+        return self.font_wrapper.descent
 
     @property
     def font_baseline(self):
@@ -540,21 +563,18 @@ class DocStyle:
 
     def font_stroke(self, size=None):
         size = size if size is not None else self.font_size
-        fw = FontWrapper(self.font_name, size)
-        return fw.stroke_width
+        return self.font_wrapper.stroke_width(size)
 
     def string_width(self, string, size=None):
         size = size if size is not None else self.font_size
-        fw = FontWrapper(self.font_name, size)
-        tw = fw.string_width(string)
+        tw = self.font_wrapper.string_width(string, size)
         tw += self.kerning * (len(string) - 1) * size
         return tw
 
     def text_bound_box(self, text, size=None):
         size = size if size is not None else self.font_size
         w = self.string_width(text, size)
-        fw = FontWrapper(self.font_name, size)
-        h = fw.height
+        h = self.font_wrapper.height
         return Rect(w, h)
 
     def split_text_to_fit(self, text, width, size=None):

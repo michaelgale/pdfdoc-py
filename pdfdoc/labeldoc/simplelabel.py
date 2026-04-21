@@ -33,7 +33,7 @@ from pdfdoc import *
 
 
 class SimpleLabel(TableRow):
-    def __init__(self, line1="", line2="", line3=""):
+    def __init__(self, line1="", line2="", line3="", title_ratio=0.37):
         super().__init__(0, 0)
         self.style.set_tb_padding(0.025 * inch)
         self.textcol = TableColumn(0, 0)
@@ -45,6 +45,7 @@ class SimpleLabel(TableRow):
         self.title.horz_align = "left"
         self.title.right_margin = 0
         self.title.right_padding = 0
+        self.title.left_padding = 0.04 * inch
 
         self.line2 = TextRect(0, 0, line2, GENERIC_LABEL_TITLE)
         self.line2.text = line2
@@ -54,6 +55,7 @@ class SimpleLabel(TableRow):
         self.line2.horz_align = "left"
         self.line2.right_margin = 0
         self.line2.right_padding = 0
+        self.line2.left_padding = 0.04 * inch
 
         self.line3 = TextRect(0, 0, line3, GENERIC_LABEL_TITLE)
         self.line3.text = line3
@@ -63,8 +65,9 @@ class SimpleLabel(TableRow):
         self.line3.horz_align = "left"
         self.line3.right_margin = 0
         self.line3.right_padding = 0
+        self.line3.left_padding = 0.04 * inch
 
-        self.textcol.add_row("Title", self.title, height=0.37)
+        self.textcol.add_row("Title", self.title, height=title_ratio)
         self.textcol.add_row("Line2", self.line2, height=AUTO_SIZE)
         self.textcol.add_row("Line3", self.line3, height=AUTO_SIZE)
         self.add_column("Label", self.textcol, width=AUTO_SIZE)

@@ -106,22 +106,26 @@ def test_layoutcell_inside():
 
     t1 = TextRect(0, 0, "43", _text_dict)
     t1.show_debug_rects = True
+    t1.style.left_margin = 0.05 * random.randint(0, 10) * inch
     t2 = ImageRect(0, 0, "./tests/testfiles/tall.png")
     t2.show_debug_rects = True
+    t2.style.left_padding = 0.05 * random.randint(0, 10) * inch
     t3 = ImageRect(0, 0, "./tests/testfiles/long.png")
     t3.show_debug_rects = True
     t4 = TextRect(0, 0, "Another Bottom Text Box", _text_dict)
-    t4.rotation = 15
+    t4.rotation = random.randint(0, 20)
+    t4.style.top_padding = 0.05 * random.randint(0, 10) * inch
     t4.show_debug_rects = True
     t5 = TextRect(0, 0, "Cell5 Text Box", _text_dict)
     t5.show_debug_rects = True
     t6 = TextRect(0, 0, "Cell6 Text Box", _text_dict)
     t6.show_debug_rects = True
+    t6.style.left_margin = 0.05 * random.randint(0, 10) * inch
 
     tl2.add_cell("Cell1", t1, constraints=["top left"])
     tl2.add_cell("Cell2", t2, constraints=["top left to Cell1 top right"])
-    tl2.add_cell("Cell3", t3, constraints=["top right"])
     tl2.add_cell("Cell4", t4, constraints=["left to Cell2 left", "below Cell3 Cell2"])
+    tl2.add_cell("Cell3", t3, constraints=["top right"])
     tl2.add_cell(
         "Cell5",
         t5,

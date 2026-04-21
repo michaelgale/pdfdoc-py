@@ -32,6 +32,9 @@ DEFAULT_MARGINS = {
     "bottom-margin": 0.5 * inch,
 }
 
+PAGE_BOOKLET = {"width": 5.5 * inch, "height": 8.5 * inch, "orientation": "portrait"}
+CANVAS_BOOKLET = (5.5 * inch, 8.5 * inch)
+
 PAGE_LETTER = {"width": 8.5 * inch, "height": 11 * inch, "orientation": "portrait"}
 CANVAS_LETTER = (8.5 * inch, 11 * inch)
 CANVAS_LETTER_LANDSCAPE = (11 * inch, 8.5 * inch)

@@ -23,17 +23,29 @@
 #
 # QRCodeRect image cell container class derived from ContentRect
 
+import decimal
 import hashlib
 import tempfile
 import qrcode
 import qrcode.image.pil
 import qrcode.image.svg
+from qrcode.image.styles.moduledrawers.svg import *
+from qrcode.image.styles.moduledrawers.pil import *
 from reportlab.graphics import renderPDF
 from svglib.svglib import svg2rlg
+from rich import inspect
 
 from toolbox import *
 from pdfdoc import *
 
+svg_dot_dict = {
+    "square": SvgSquareDrawer(size_ratio=decimal.Decimal(0.8)),
+    "circle": SvgCircleDrawer(size_ratio=decimal.Decimal(0.8)),
+}
+pil_dot_dict = {
+    "square": SquareModuleDrawer(size_ratio=decimal.Decimal(0.8)),
+    "circle": CircleModuleDrawer(size_ratio=decimal.Decimal(0.8)),
+}
 
 class QRCodeRect(ContentRect):
     def __init__(
@@ -63,6 +75,7 @@ class QRCodeRect(ContentRect):
         self.style["background-colour"] = "#FFFFFF"
         self.style["fill-colour"] = "#000000"
         self.format = "svg"
+        self.dot_type = "square"
         self.parse_kwargs(**kwargs)
         self._qrimg = None
 
@@ -222,3 +235,22 @@ class QRCodeRect(ContentRect):
         pt = ih - int((pt - self.rect.bottom) / self.rect.height * ih)
         pb = ih - int((pb - self.rect.bottom) / self.rect.height * ih)
         return Rect.rect_from_points((pl, pt), (pr, pb))
+
+    @staticmethod
+    def for_wifi(ssid, password, security, hidden, **kwargs):
+        def escape(s):
+            return s.replace("\\", "\\\\").replace(";", r"\;").replace(",", r"\,").replace(":", r"\:").replace('"', r"\"")
+
+        sec = security.upper()
+        if sec == "NOPASS":
+            sec = "nopass"
+            password = ""
+        elif sec == "WEP":
+            sec = "WEP"
+        elif sec in ("WPA", "WPA2", "WPA3"):
+            sec = "WPA"
+        else:
+            raise ValueError("security must be one of: WPA, WEP, nopass")
+        h = "true" if hidden else "false"
+        qrtext = "WIFI:T:%s;S:%s;P:%s;H:%s;;" % (escape(sec), escape(ssid), escape(password), escape(h))
+        return QRCodeRect(qrtext=qrtext, **kwargs)

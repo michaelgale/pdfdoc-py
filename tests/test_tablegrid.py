@@ -73,17 +73,18 @@ def test_tablegrid_rows():
 
 
 def test_tablegrid_cols():
-    NUM_ITEMS = 22
-    TABLE_WIDTH = 3.5 * inch
+    NUM_ITEMS = 25
+    TABLE_WIDTH = 4 * inch
     TABLE_HEIGHT = 6.5 * inch
     titles = [
         "TableCell-%d" % (x)
-        if x % 2 == 0
-        else "%d-%s" % (x, str(x) * random.randint(1, 8))
+        if random.randint(0, 1)
+        else "%d-%s" % (x, str(x)[-1] * random.randint(1, 12))
         for x in range(NUM_ITEMS)
     ]
-    top_pads = [random.randint(0, 10) * 0.02 * inch for _ in range(NUM_ITEMS)]
-    bot_pads = [random.randint(0, 10) * 0.02 * inch for _ in range(NUM_ITEMS)]
+    top_pads = [random.randint(0, 10) * 0.03 * inch for _ in range(NUM_ITEMS)]
+    bot_pads = [random.randint(0, 15) * 0.01 * inch for _ in range(NUM_ITEMS)]
+    left_pads = [random.randint(0, 20) * 0.01 * inch for _ in range(NUM_ITEMS)]
 
     def tablegrid_col_test(fn, title, opts):
         tr = TableGrid(TABLE_WIDTH, TABLE_HEIGHT)
@@ -111,6 +112,7 @@ def test_tablegrid_cols():
             tc.show_debug_rects = True
             tc.style.set_attr("top-padding", top_pads[x])
             tc.style.set_attr("bottom-padding", bot_pads[x])
+            tc.left_margin = left_pads[x]
             tr.add_cell(cl, tc)
 
         assert len(tr) == NUM_ITEMS

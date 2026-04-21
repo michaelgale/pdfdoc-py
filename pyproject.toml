@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdfdoc"
+dynamic = ["version"]
+description = "Python utility library for compositing PDF documents with reportlab."
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { text = "MIT" }
+authors = [{ name = "Michael Gale", email = "michael@fxbricks.com" }]
+requires-python = ">=3.7"
+dependencies = ["reportlab", "pdfrw"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.7",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/michaelgale/pdfdoc-py"
+
+[project.scripts]
+fourup = "pdfdoc.scripts.fourup:main"
+fullbleed = "pdfdoc.scripts.fullbleed:main"
+text2outlines = "pdfdoc.scripts.text2outlines:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "pdfdoc.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"*" = ["*.svg", "*.png"]

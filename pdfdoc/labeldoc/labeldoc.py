@@ -24,7 +24,7 @@
 # Label Document Class
 
 import math
-
+from rich import inspect
 from reportlab.pdfgen import canvas
 
 from toolbox import *

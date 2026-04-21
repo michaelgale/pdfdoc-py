@@ -86,7 +86,7 @@ from .document.doccallbacks import *
 from .labeldoc.labeldoc import LabelDoc
 from .labeldoc.genericlabel import GenericLabel
 from .labeldoc.safetylabel import SafetyLabel
-from .labeldoc.mechlabel import MechanicalLabel
+from .labeldoc.mechlabel import MechanicalLabel, MechanicalItem
 from .labeldoc.eleclabel import ElectronicLabel
 from .labeldoc.simplelabel import SimpleLabel, PlainTextLabel
 from .graphics.arrowhead import ArrowHead
@@ -100,6 +100,7 @@ _font_dict = {
     "DIN-Medium": "DIN-Medium.ttf",
     "DIN-Regular": "DIN-Regular.ttf",
     "DIN-Bold": "DIN-Bold.ttf",
+    "DIN-Condensed": "DIN Condensed Bold.ttf",
     "IKEA-Sans-Regular": "IKEA-Sans-Regular.ttf",
     "IKEA-Sans-Heavy": "IKEA-Sans-Heavy.ttf",
     "IKEA-Sans-Regular": "IKEA-Sans-Regular.ttf",
@@ -114,6 +115,15 @@ _font_dict = {
     "Transport-Heavy": "Transport Heavy.ttf",
     "GDSTransport": "GDSTransportLight.ttf",
     "GDSTransport-Bold": "GDSTransportBold.ttf",
+    "SF-Pro": "SF-Pro.ttf",
+    "EurostileLTStd-Ex2": "EurostileLTStd-Ex2.ttf",
+    "EurostileLTStd-BoldEx2": "EurostileLTStd-BoldEx2.ttf",
+    "UKNumberPlate": "UKNumberPlate.ttf",
+    "OSI": "osifont.ttf",
+    "Digital-Medium": "Digital-Medium.ttf",
+    "Data-70-LET": "Data 70 LET.ttf",
+    "Avenir Next Condensed": "Avenir Next Condensed7.ttf",
+
 }
 
 for k, v in _font_dict.items():
@@ -121,7 +131,7 @@ for k, v in _font_dict.items():
     if reg_font is not None:
         REGISTERED_FONTS[reg_font] = font_file
 
-_font_families = ["Avenir Next Condensed"]
+_font_families = ["Avenir Next", "Avenir Next Condensed"]
 
 for f in _font_families:
     _valid_fonts = register_font_family(f)

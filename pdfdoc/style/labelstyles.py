@@ -23,7 +23,7 @@
 #
 # Pre-defined Label Document Styles
 
-from reportlab.lib.units import inch
+from reportlab.lib.units import inch, mm
 
 #
 # Label Document Styles
@@ -150,6 +150,39 @@ AVERY_8126_LABEL_DOC_STYLE = {
     "gutter-height": 0,
 }
 
+# Unistat 4262
+# - 24 labels per sheet
+# - 64 x 33.8 mm
+
+UNISTAT_4262_LABEL_DOC_STYLE = {
+    "height": 297 * mm,
+    "width": 210 * mm,
+    "columns": 3,
+    "rows": 8,
+    "top-margin": 0.5 * inch,
+    "bottom-margin": 0.5 * inch,
+    "left-margin": 7.35 * mm,
+    "right-margin": 6.35 * mm,
+    "gutter-width": 2.5 * mm,
+    "gutter-height": 0,
+}
+
+# Unistat 4270
+# - 65 labels per sheet
+# - 38 x 21.2 mm
+
+UNISTAT_4270_LABEL_DOC_STYLE = {
+    "height": 297 * mm,
+    "width": 210 * mm,
+    "columns": 5,
+    "rows": 13,
+    "top-margin": 3 / 8 * inch,
+    "bottom-margin": 0.5 * inch,
+    "left-margin": 9.8 * mm,
+    "right-margin": 9.8 * mm,
+    "gutter-width": 1e-3,
+    "gutter-height": 0,
+}
 
 #
 # Label Cell Styles

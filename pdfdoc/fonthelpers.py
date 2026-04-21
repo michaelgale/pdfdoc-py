@@ -459,14 +459,15 @@ class FontWrapper:
             return self.ascent
         return self.ascent - self.descent
 
-    @property
-    def stroke_width(self):
+    def stroke_width(self, size=None):
         c = canvas.Canvas("tmp.pdf")
-        width = c.stringWidth("i", self.font_name, self.font_size)
+        size = size if size is not None else self.font_size
+        width = c.stringWidth("i", self.font_name, size)
         return width
 
-    def string_width(self, s):
+    def string_width(self, s, size=None):
         c = canvas.Canvas("tmp.pdf")
-        c.setFont(self.font_name, self.font_size)
-        tw = c.stringWidth(s, self.font_name, self.font_size)
+        size = size if size is not None else self.font_size
+        c.setFont(self.font_name, size)
+        tw = c.stringWidth(s, self.font_name, size)
         return tw

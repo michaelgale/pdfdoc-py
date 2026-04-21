@@ -77,6 +77,10 @@ class SafetyLabel(TableColumn):
             ic = SvgRect.from_preset(icon, **kwargs)
             ts.set_with_dict(SAFETY_YELLOW_STYLE)
             is_triangle = True
+        else:
+            ic = SvgRect.from_preset(icon, **kwargs)
+            ts.set_with_dict(SAFETY_INFO_STYLE)
+            
         if force_outlines is not None:
             ts.border_outline = force_outlines
 
@@ -143,7 +147,7 @@ class SafetyLabel(TableColumn):
             self.container = TableColumn(width, h)
             self.container.add_row("icon", ic, height=CONTENT_SIZE)
             self.container.add_row("title", textbox, height=CONTENT_SIZE)
-        self.add_row("label", self.container)
+        self.add_row("label", self.container, height=CONTENT_SIZE)
 
     def border_width_from_size(self, size):
         if not self.vertical:
