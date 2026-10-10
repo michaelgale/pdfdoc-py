@@ -121,10 +121,9 @@ from pdfdoc import *
 #         sl.add_column(t2)
 #         ld.add_label(sl)
 
+
 def test_office_labels():
-    c = canvas.Canvas(
-        "./tests/testfiles/test_office_label.pdf", pagesize=CANVAS_A4
-    )
+    c = canvas.Canvas("./tests/testfiles/test_office_label.pdf", pagesize=CANVAS_A4)
     s1 = SafetyLabel("icon_garbage", "Food / Bio Waste", size=36, aspect_ratio=7)
     s1.rect.top_left = IN2PTS((1, 11))
     s1.draw_in_canvas(c)

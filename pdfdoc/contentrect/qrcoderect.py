@@ -47,6 +47,7 @@ pil_dot_dict = {
     "circle": CircleModuleDrawer(size_ratio=decimal.Decimal(0.8)),
 }
 
+
 class QRCodeRect(ContentRect):
     def __init__(
         self,
@@ -56,7 +57,7 @@ class QRCodeRect(ContentRect):
         style=None,
         dpi=None,
         auto_size=None,
-        **kwargs
+        **kwargs,
     ):
         if isinstance(w, (int, float)) and isinstance(h, (int, float)):
             super().__init__(w, h, style)
@@ -239,7 +240,13 @@ class QRCodeRect(ContentRect):
     @staticmethod
     def for_wifi(ssid, password, security, hidden, **kwargs):
         def escape(s):
-            return s.replace("\\", "\\\\").replace(";", r"\;").replace(",", r"\,").replace(":", r"\:").replace('"', r"\"")
+            return (
+                s.replace("\\", "\\\\")
+                .replace(";", r"\;")
+                .replace(",", r"\,")
+                .replace(":", r"\:")
+                .replace('"', r"\"")
+            )
 
         sec = security.upper()
         if sec == "NOPASS":
@@ -252,5 +259,10 @@ class QRCodeRect(ContentRect):
         else:
             raise ValueError("security must be one of: WPA, WEP, nopass")
         h = "true" if hidden else "false"
-        qrtext = "WIFI:T:%s;S:%s;P:%s;H:%s;;" % (escape(sec), escape(ssid), escape(password), escape(h))
+        qrtext = "WIFI:T:%s;S:%s;P:%s;H:%s;;" % (
+            escape(sec),
+            escape(ssid),
+            escape(password),
+            escape(h),
+        )
         return QRCodeRect(qrtext=qrtext, **kwargs)

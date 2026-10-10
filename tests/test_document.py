@@ -208,3 +208,9 @@ def test_document_watermark():
     doc.page_start_callbacks = [back, p1]
     for section, ctx in doc.iter_doc([1, 2, 3]):
         doc.page_break()
+
+
+def test_pdf_page_size():
+    w, h = get_pdf_page_size("./tests/testfiles/pagesizetest")
+    assert abs(w - 595.2756) < 1e-2
+    assert abs(h - 841.8898) < 1e-2

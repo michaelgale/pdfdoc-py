@@ -78,21 +78,10 @@ def test_qrcodelink_render():
         "vert-align": "centre",
     }
 
-    qr = QRCodeRect.for_wifi("Wightlink-Guest", "26pentland", "wpa", False, w=72, h=72)
+    qr = QRCodeRect.for_wifi("WightOne", "rydepier", "wpa", False, w=72, h=72)
     qr.style.set_with_dict(style_dict)
     qr.top_left = 1 * inch, 10 * inch
     qr.draw_in_canvas(c)
 
-    # qr = QRCodeRect(2 * inch, 2 * inch, qrtext="https://www.fxbricks.com/assets/MOC-176932_Planet%20GBC_ListeningStation-FromZacharySteinman-InstructionsByPlanetGBC-V1.0.pdf")
-    # qr.style.set_with_dict(style_dict)
-    # qr.top_left = 1 * inch, 10 * inch
-    # qr.draw_in_canvas(c)
-
-    # qr = QRCodeRect(2 * inch, 2 * inch, qrtext="https://www.fxbricks.com/assets/MOC-179783_Planet%20GBC_DJRecordCase-FromZacharySteinman-InstructionsByPlanetGBC-V1.1.pdf")
-    # qr.style.set_with_dict(style_dict)
-    # qr.top_left = 1 * inch, 5 * inch
-    # qr.draw_in_canvas(c)
-
     c.showPage()
     c.save()
-

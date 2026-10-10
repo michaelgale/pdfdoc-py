@@ -49,6 +49,7 @@ from .helpers import (
     modify_pdf_file,
     convert_pdf_to_thumbnail,
     convert_pdf_to_png,
+    get_pdf_page_size,
 )
 from .fonthelpers import (
     register_font_family,
@@ -75,6 +76,7 @@ from .contentrect.patternrect import PatternRect
 from .contentrect.svgrect import SvgRect
 from .contentrect.qrcoderect import QRCodeRect
 from .contentrect.alignmentrect import AlignmentRect
+from .contentrect.pdfrect import PdfRect
 from .tablecell.tablecell import TableCell
 from .tablecell.tablevector import TableVector
 from .tablecell.tablegrid import TableGrid
@@ -123,7 +125,6 @@ _font_dict = {
     "Digital-Medium": "Digital-Medium.ttf",
     "Data-70-LET": "Data 70 LET.ttf",
     "Avenir Next Condensed": "Avenir Next Condensed7.ttf",
-
 }
 
 for k, v in _font_dict.items():

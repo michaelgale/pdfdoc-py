@@ -132,7 +132,7 @@ def test_layoutcell_inside():
         constraints=[
             "right_of Cell2 Cell4",
             "below Cell1",
-            "left to Cell6 right"
+            "left to Cell6 right",
             # "right to Cell3 right resize",
         ],
     )

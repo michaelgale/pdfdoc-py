@@ -31,7 +31,8 @@ import tempfile
 
 from PIL import Image
 from pathlib import Path
-
+from pdfrw import PdfReader
+from pdfrw.buildxobj import pagexobj
 from reportlab.pdfbase import pdfmetrics
 from reportlab.lib.colors import Color, CMYKColor
 
@@ -354,10 +355,10 @@ def get_edge_colours(fn, pageno, scale=1.0, pix_scale=2.0):
         return math.sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2])
 
     def _diff_rgb(p0, p1):
-        return math.sqrt(sum([(p0[i] - p1[i])**2 for i in range(3)]))
+        return math.sqrt(sum([(p0[i] - p1[i]) ** 2 for i in range(3)]))
 
     def _diff_cmyk(p0, p1):
-        return math.sqrt(sum([(p0[i] - p1[i])**2 for i in range(4)]))
+        return math.sqrt(sum([(p0[i] - p1[i]) ** 2 for i in range(4)]))
 
     def _sum_rgb(p0, p1):
         return (p0[0] + p1[0], p0[1] + p1[1], p0[2] + p1[2])
@@ -537,7 +538,7 @@ def convert_pdf_to_png(
     auto_crop_height=False,
     auto_crop_width=False,
     pad=None,
-    **kwargs
+    **kwargs,
 ):
     if ofn is not None:
         outfile = ofn
@@ -576,6 +577,13 @@ def convert_pdf_to_png(
         ImageMixin.save_image(pfn, img)
 
 
+def get_pdf_page_size(fn):
+    allpages = [pagexobj(x) for x in PdfReader(fn).pages]
+    width = max(page.BBox[2] for page in allpages)
+    height = max(page.BBox[3] for page in allpages)
+    return width, height
+
+
 def line_angle(p0, p1, degrees=True):
     """Angle of line from point p1 to p0"""
     xl, yl = p1[0] - p0[0], p1[1] - p0[1]
@@ -593,12 +601,13 @@ def linear_offset(length, width, thickness):
     rx = thickness / math.sin(th)
     return math.sqrt(rx * rx - thickness * thickness)
 
+
 def fraction_symbol(text):
-   s = text.replace("1/2", "½")
-   s = s.replace("1/4", "¼")
-   s = s.replace("3/4", "¾")
-   s = s.replace("1/8", "⅛")
-   s = s.replace("3/8", "⅜")
-   s = s.replace("5/8", "⅝")
-   s = s.replace("7/8", "⅞")
-   return s
+    s = text.replace("1/2", "½")
+    s = s.replace("1/4", "¼")
+    s = s.replace("3/4", "¾")
+    s = s.replace("1/8", "⅛")
+    s = s.replace("3/8", "⅜")
+    s = s.replace("5/8", "⅝")
+    s = s.replace("7/8", "⅞")
+    return s

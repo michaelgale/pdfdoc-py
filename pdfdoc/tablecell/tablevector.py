@@ -499,7 +499,7 @@ class TableVector(DocStyleMixin, RectMixin):
         element_style=None,
         fit_to_contents=True,
         element_margin=0,
-        **kwargs
+        **kwargs,
     ):
         """
         Makes a TableVector instance from an array of text strings
@@ -520,8 +520,9 @@ class TableVector(DocStyleMixin, RectMixin):
                         e = TextRect(c, style=element_style)
                     else:
                         e = c
-                        if "auto_size" in c.__dict__:
-                            c.auto_size = not fit_to_contents
+                        if not c.is_fixed_width and not c.is_fixed_height:
+                            if "auto_size" in c.__dict__:
+                                c.auto_size = not fit_to_contents
                     if j + 1 < len(row):
                         e.right_margin = element_margin
                     r.add_column(e, width=sizing)

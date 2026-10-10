@@ -111,16 +111,15 @@ def test_table_from_array():
     c.save()
 
 
-
 def test_table_text_array_qr():
-    c = canvas.Canvas(
-        "./tests/testfiles/test_table_qr.pdf", pagesize=CANVAS_LETTER
-    )
+    c = canvas.Canvas("./tests/testfiles/test_table_qr.pdf", pagesize=CANVAS_LETTER)
     a1 = [
         TextRect(icon="wifi", font_size=64, font_colour="#4010F0"),
         TextRect("Join our WiFi", font_size=30, font="DIN-Medium"),
-        "Wightlink-Guest",
-        QRCodeRect.for_wifi("Wightlink-Guest", "26pentland", "wpa", False, w=240, h=240, top_padding=36)
+        "BitLink",
+        QRCodeRect.for_wifi(
+            "BitLink", "closetohome", "wpa", False, w=240, h=240, top_padding=36
+        ),
     ]
     s1 = DocStyle.from_yaml(
         """
@@ -163,7 +162,9 @@ def test_table_text_array_qr():
         TextRect(icon="wifi", font_size=64, font_colour="#F46508"),
         TextRect("Join our WiFi", font_size=30, font="DIN-Medium"),
         "Wightlink",
-        QRCodeRect.for_wifi("Wightlink", "crossthesolent", "wpa", False, w=240, h=240, top_padding=36)
+        QRCodeRect.for_wifi(
+            "BitLink", "closetohome", "wpa", False, w=240, h=240, top_padding=36
+        ),
     ]
     t1 = TableVector.from_array(
         a1, style=s1, element_style=e1, fit_to_contents=True, element_margin=12
@@ -173,7 +174,5 @@ def test_table_text_array_qr():
     t1.show_debug_rects = False
     t1.draw_in_canvas(c)
     c.showPage()
-
-
 
     c.save()

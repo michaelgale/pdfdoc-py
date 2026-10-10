@@ -32,17 +32,18 @@ from pdfdoc import *
 from pdfdoc.helpers import fraction_symbol
 
 METRIC_SIZES = "M1.4 M1.5 M1.6 M2.5 M2 M3 M4 M5 M6 M8 M10".split()
-IMPERIAL_SIZES = '#2 #4 #5 #6 #8 #10 #12 #1/4 #3/8 #5/16'.split()
+IMPERIAL_SIZES = "#2 #4 #5 #6 #8 #10 #12 #1/4 #3/8 #5/16".split()
 HEAD_TYPES = "pan csk flat cheese socket hex carriage".split()
-MECH_TYPES = ["star washer",
+MECH_TYPES = [
+    "star washer",
     "lock washer",
     "split washer",
-    "washer", 
-    "cage nut", 
-    "lock nut", 
+    "washer",
+    "cage nut",
+    "lock nut",
     "cap nut",
     "tee nut",
-    "nut", 
+    "nut",
     "bolt",
     "hook screw",
     "thumb screw",
@@ -57,22 +58,22 @@ HAS_HEAD = ["bolt", "wood screw", "machine screw", "screw"]
 HAS_DRIVE = ["bolt", "wood screw", "machine screw", "screw", "grub screw"]
 
 SYMBOL_PREFIX_DICT = {
-     "washer": "FlatWasher",
-     "star washer": "StarWasher",
-     "split washer": "SplitWasher",
-     "lock washer": "SplitWasher",
-     "lock nut": "LockNut",
-     "cap nut": "CapNut",
-     "tee nut": "TNut",
-     "nut":  "HexNut",
-     "hook screw": "Hook",
-     "grub screw": "GrubScrew",
-     "thumb screw": "ThumbScrew",
-     "cage nut": "CageNut",
-     "wood screw": "WS",
-     "machine screw": "MS",
-     "screw": "MS",
-     "bolt": "Bolt",
+    "washer": "FlatWasher",
+    "star washer": "StarWasher",
+    "split washer": "SplitWasher",
+    "lock washer": "SplitWasher",
+    "lock nut": "LockNut",
+    "cap nut": "CapNut",
+    "tee nut": "TNut",
+    "nut": "HexNut",
+    "hook screw": "Hook",
+    "grub screw": "GrubScrew",
+    "thumb screw": "ThumbScrew",
+    "cage nut": "CageNut",
+    "wood screw": "WS",
+    "machine screw": "MS",
+    "screw": "MS",
+    "bolt": "Bolt",
 }
 DRIVE_SYMBOL_DICT = {
     "phillips": "Phillips",
@@ -84,7 +85,7 @@ DRIVE_SYMBOL_DICT = {
     "pozi": "Pozi",
 }
 
-TORX_SIZES = ["T%d" %(x+1) for x in range(30)]
+TORX_SIZES = ["T%d" % (x + 1) for x in range(30)]
 PHILLIPS_SIZES = "PH0 PH1 PH2 PZ0 PZ1 PZ2 JIS #0 #00 #000".split()
 ROBERTSON_SIZES = "#0 #1 #2 #3".split()
 
@@ -117,6 +118,7 @@ MCOLOUR_DICT = {
     "M10": M10_COLOUR,
 }
 
+
 def trim_mech_title(text, level):
     if level == 1:
         text = text.replace(" Head,", ",")
@@ -133,8 +135,12 @@ def trim_mech_title(text, level):
         text = text.replace("Rob'son", "Square")
     return text
 
+
 def trim_mech_title_callback(c, text, cr):
-    return trim_string_function(c, text, cr.font, cr.font_size, cr.rect.width, trim_mech_title)
+    return trim_string_function(
+        c, text, cr.font, cr.font_size, cr.rect.width, trim_mech_title
+    )
+
 
 class MechanicalLabel(TableRow):
     def __init__(self, title="", subtitle=None, colour=None, symbol=None):
@@ -192,7 +198,7 @@ class MechanicalLabel(TableRow):
         self.subtitle.style.set_attr("font-size", 8)
         self.subtitle.style.set_attr("font-name", "DIN-Regular")
         self.subtitle.style.set_attr("horz-align", "left")
-        
+
         if subtitle is not None:
             self.subtitle.text = subtitle
             self.subtitle.trim_callback = trim_mech_title_callback
@@ -228,11 +234,11 @@ class MechanicalItem:
         if self.head is not None:
             return any(e == self.type for e in HAS_HEAD)
         return False
-    
+
     @property
     def has_drive_type(self):
         return any(e == self.drive for e in HAS_DRIVE)
-    
+
     @property
     def colour(self):
         if self.type == "wood screw":
@@ -280,7 +286,7 @@ class MechanicalItem:
             else:
                 s.append(self.drive.title())
         return ", ".join(s)
-    
+
     @property
     def label_title(self):
         if self.length:
@@ -290,7 +296,7 @@ class MechanicalItem:
         if self.units:
             ts = ts + " " + self.units
         return ts
-    
+
     @property
     def symbol_filename(self):
         s = []
@@ -312,30 +318,31 @@ class MechanicalItem:
 
     @staticmethod
     def type_from_str(text):
-        for e in ["star washer",
-                "lock washer",
-                "washer",
-                "cap nut",
-                "tee nut",
-                "cage nut", 
-                "lock nut", 
-                "nut", 
-                "bolt", 
-                "hook screw",
-                "grub screw",
-                "wood screw",
-                "machine screw",
-                "thumb screw",
-                "screw",
-                "standoff",
-            ]:
+        for e in [
+            "star washer",
+            "lock washer",
+            "washer",
+            "cap nut",
+            "tee nut",
+            "cage nut",
+            "lock nut",
+            "nut",
+            "bolt",
+            "hook screw",
+            "grub screw",
+            "wood screw",
+            "machine screw",
+            "thumb screw",
+            "screw",
+            "standoff",
+        ]:
             if e in text.lower():
                 return e
         size, _ = MechanicalItem.size_from_str(text)
         if size is not None:
             return "screw"
         return None
-    
+
     @staticmethod
     def size_from_str(text):
         text = text.lstrip()
@@ -362,9 +369,9 @@ class MechanicalItem:
                 len_flag = True
             elif len_flag:
                 len_str = fraction_symbol(e)
-                len_flag = False                
+                len_flag = False
         return len_str
-    
+
     @staticmethod
     def head_from_str(text):
         for e in HEAD_TYPES:

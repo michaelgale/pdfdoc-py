@@ -167,9 +167,11 @@ class Document:
             "footer_rect": self.footer_rect,
             "bleed_rect": self.bleed_rect,
             "column_rects": self.column_rects,
-            "gutter_rect": None
-            if self.column >= self.num_columns
-            else self.gutter_rects[self.column - 1],
+            "gutter_rect": (
+                None
+                if self.column >= self.num_columns
+                else self.gutter_rects[self.column - 1]
+            ),
             "column_rect": self.column_rects[
                 min(self.column - 1, self.num_columns - 1)
             ],

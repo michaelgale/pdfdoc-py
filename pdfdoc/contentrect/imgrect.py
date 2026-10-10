@@ -36,7 +36,7 @@ class ImageRect(ContentRect):
         style=None,
         dpi=None,
         auto_size=None,
-        **kwargs
+        **kwargs,
     ):
         if isinstance(w, (int, float)) and isinstance(h, (int, float)):
             super().__init__(w, h, style)

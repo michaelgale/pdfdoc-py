@@ -77,9 +77,11 @@ def test_tablegrid_cols():
     TABLE_WIDTH = 4 * inch
     TABLE_HEIGHT = 6.5 * inch
     titles = [
-        "TableCell-%d" % (x)
-        if random.randint(0, 1)
-        else "%d-%s" % (x, str(x)[-1] * random.randint(1, 12))
+        (
+            "TableCell-%d" % (x)
+            if random.randint(0, 1)
+            else "%d-%s" % (x, str(x)[-1] * random.randint(1, 12))
+        )
         for x in range(NUM_ITEMS)
     ]
     top_pads = [random.randint(0, 10) * 0.03 * inch for _ in range(NUM_ITEMS)]
@@ -178,9 +180,11 @@ def test_tablegrid_gutters():
     TABLE_WIDTH = 6.5 * inch
     TABLE_HEIGHT = 1.5 * inch
     titles = [
-        "TableCell-%d" % (x)
-        if x % 2 == 0
-        else "%d-%s" % (x, str(x) * random.randint(1, 8))
+        (
+            "TableCell-%d" % (x)
+            if x % 2 == 0
+            else "%d-%s" % (x, str(x) * random.randint(1, 8))
+        )
         for x in range(NUM_ITEMS)
     ]
     top_pads = [random.randint(2, 10) * 0.03 * inch for _ in range(NUM_ITEMS)]

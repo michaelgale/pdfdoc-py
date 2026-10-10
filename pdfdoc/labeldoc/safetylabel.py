@@ -40,7 +40,7 @@ class SafetyLabel(TableColumn):
         description=None,
         vertical=False,
         force_outlines=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(**kwargs)
         self.vertical = vertical
@@ -80,7 +80,7 @@ class SafetyLabel(TableColumn):
         else:
             ic = SvgRect.from_preset(icon, **kwargs)
             ts.set_with_dict(SAFETY_INFO_STYLE)
-            
+
         if force_outlines is not None:
             ts.border_outline = force_outlines
 
